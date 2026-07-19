@@ -5,42 +5,37 @@ import CastingCard from "./CastingCard";
 import CastingModal from "./CastingModal";
 import { useState } from "react";
 
+
 interface Props {
   posts: CastingPost[];
-  currentUserId: string;
   onEdit: (post: CastingPost) => void;
   onDelete: (id: string) => void;
 }
 
-export default function MyPosts({
+export default function AllCastingCalls({
   posts,
-  currentUserId,
   onEdit,
   onDelete,
 }: Props) {
 
-  const myPosts = posts.filter(
-    (post) => post.userId === currentUserId
-  );
-
-  const [selectedPost, setSelectedPost] =
-        useState<CastingPost | null>(null);
+    const [selectedPost, setSelectedPost] =
+useState<CastingPost | null>(null);
 
   return (
-    <section className="my-posts">
+    <section className="all-posts">
 
       <div className="section-heading">
-        <h2>My Casting Calls</h2>
-        <p>Manage the casting calls you've created.</p>
+        <h2>All Casting Calls</h2>
+        <p>Browse every casting opportunity currently available.</p>
       </div>
 
-      {myPosts.length === 0 ? (
+      {posts.length === 0 ? (
         <div className="empty-posts">
-          <h2>No Casting Calls Yet</h2>
-          <p>Create your first casting call above.</p>
+          <h2>No Casting Calls Found</h2>
+          <p>Try changing your search or filters.</p>
         </div>
       ) : (
-        myPosts.map((post) => (
+        posts.map((post) => (
           <CastingCard
             key={post.id}
             post={post}
@@ -52,8 +47,11 @@ export default function MyPosts({
       )}
 
       <CastingModal
+
 post={selectedPost}
-onClose={()=>setSelectedPost(null)}
+
+onClose={() => setSelectedPost(null)}
+
 />
 
     </section>

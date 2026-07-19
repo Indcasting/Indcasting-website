@@ -11,6 +11,10 @@ import { CastingPost } from "@/types/casting";
 import { getPosts, savePosts } from "@/utils/storage";
 
 import FilterBar from "@/components/FilterBar";
+import AllCastingCalls from "@/components/AllCastingCalls";
+import CastingDetailsModal from "@/components/CastingDetailsModal";
+
+import DashboardStats from "@/components/DashboardStats";
 
 export default function HostPage() {
 
@@ -25,6 +29,44 @@ const [locationFilter, setLocationFilter] = useState("");
 const [statusFilter, setStatusFilter] = useState("");
 
 const [sortOrder, setSortOrder] = useState("newest");
+
+const [genderFilter, setGenderFilter] = useState("");
+
+const [experienceFilter, setExperienceFilter] = useState("");
+
+const [languageFilter, setLanguageFilter] = useState("");
+
+const [ageFilter, setAgeFilter] = useState("");
+
+const [budgetFilter, setBudgetFilter] = useState("");
+
+const [selectedPost, setSelectedPost] =
+  useState<CastingPost | null>(null);
+
+const currentUserId = "current-user";
+
+const totalPosts = posts.length;
+
+const openPosts = posts.filter(
+    p => p.status === "Open"
+).length;
+
+const closedPosts = posts.filter(
+    p => p.status === "Closed"
+).length;
+
+const thisMonth = posts.filter(post => {
+
+    const now = new Date();
+
+    const created = new Date(post.createdAt);
+
+    return (
+        created.getMonth() === now.getMonth() &&
+        created.getFullYear() === now.getFullYear()
+    );
+
+}).length;
 
   useEffect(() => {
     setPosts(getPosts());
@@ -75,6 +117,7 @@ const [sortOrder, setSortOrder] = useState("newest");
   }
 
   const filteredPosts = [...posts]
+  
   .filter((post) =>
 
     post.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -98,6 +141,49 @@ const [sortOrder, setSortOrder] = useState("newest");
       : true
 
   )
+
+  .filter(post =>
+
+    genderFilter
+        ? post.gender === genderFilter
+        : true
+
+)
+
+.filter(post =>
+
+    experienceFilter
+        ? post.experience === experienceFilter
+        : true
+
+)
+
+.filter(post =>
+
+    languageFilter
+        ? post.languages
+              .toLowerCase()
+              .includes(languageFilter.toLowerCase())
+        : true
+
+)
+
+.filter(post =>
+
+    ageFilter
+        ? post.age.includes(ageFilter)
+        : true
+
+)
+
+.filter(post =>
+
+    budgetFilter
+        ? Number(post.budget) >= Number(budgetFilter)
+        : true
+
+)
+
   .filter((post) =>
 
     statusFilter
@@ -105,17 +191,45 @@ const [sortOrder, setSortOrder] = useState("newest");
       : true
 
   )
-  .sort((a, b) =>
 
-    sortOrder === "newest"
+  
+  .sort((a, b) => {
 
-      ? new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime()
+  if (sortOrder === "newest") {
+    return (
+      new Date(b.createdAt).getTime() -
+      new Date(a.createdAt).getTime()
+    );
+  }
 
-      : new Date(a.createdAt).getTime() -
-        new Date(b.createdAt).getTime()
+  if (sortOrder === "oldest") {
+    return (
+      new Date(a.createdAt).getTime() -
+      new Date(b.createdAt).getTime()
+    );
+  }
 
-  );
+  if (sortOrder === "budget-high") {
+    return Number(b.budget) - Number(a.budget);
+  }
+
+  if (sortOrder === "budget-low") {
+    return Number(a.budget) - Number(b.budget);
+  }
+
+  if (sortOrder === "company") {
+    return a.company.localeCompare(b.company);
+  }
+
+  return 0;
+
+});
+
+  const allPosts = filteredPosts;
+
+const myPosts = filteredPosts.filter(
+  (post) => post.userId === "current-user"
+);
 
   return (
 
@@ -149,7 +263,7 @@ const [sortOrder, setSortOrder] = useState("newest");
         <div className="host-right">
 
           <Image
-            src="/images/host.png"
+            src="/images/host.jpg"
             alt="Host"
             width={500}
             height={500}
@@ -158,6 +272,8 @@ const [sortOrder, setSortOrder] = useState("newest");
         </div>
 
       </section>
+
+      <DashboardStats posts={posts} />
 
       {/* FORM */}
 
@@ -182,35 +298,61 @@ const [sortOrder, setSortOrder] = useState("newest");
       </section>
 
       <FilterBar
+  search={search}
+  setSearch={setSearch}
 
-    search={search}
-    setSearch={setSearch}
+  category={categoryFilter}
+  setCategory={setCategoryFilter}
 
-    category={categoryFilter}
-    setCategory={setCategoryFilter}
+  location={locationFilter}
+  setLocation={setLocationFilter}
 
-    location={locationFilter}
-    setLocation={setLocationFilter}
+  gender={genderFilter}
+  setGender={setGenderFilter}
 
-    status={statusFilter}
-    setStatus={setStatusFilter}
+  experience={experienceFilter}
+  setExperience={setExperienceFilter}
 
-    sort={sortOrder}
-    setSort={setSortOrder}
+  language={languageFilter}
+  setLanguage={setLanguageFilter}
 
+  age={ageFilter}
+  setAge={setAgeFilter}
+
+  budget={budgetFilter}
+  setBudget={setBudgetFilter}
+
+  status={statusFilter}
+  setStatus={setStatusFilter}
+
+  sort={sortOrder}
+  setSort={setSortOrder}
+
+  totalResults={filteredPosts.length}
 />
 
       {/* POSTS */}
 
-      <MyPosts
+<AllCastingCalls
+    posts={filteredPosts}
+    onEdit={handleEdit}
+    onDelete={handleDelete}
+/>
 
-        posts={filteredPosts}
+<MyPosts
+    posts={posts}
+    currentUserId={currentUserId}
+    onEdit={handleEdit}
+    onDelete={handleDelete}
+/>
 
-        onDelete={handleDelete}
+<CastingDetailsModal
 
-        onEdit={handleEdit}
+post={selectedPost}
 
-      />
+onClose={() => setSelectedPost(null)}
+
+/>
 
       <Footer />
 

@@ -9,9 +9,29 @@ export interface CastingPost {
 
   category: string;
 
-  location: string;
+  role: string;
+
+  gender: string;
 
   age: string;
+
+  height: string;
+
+  languages: string;
+
+  experience: string;
+
+  location: string;
+
+  shootStartDate: string;
+
+  shootEndDate: string;
+
+  budget: string;
+
+  vacancies: number;
+
+  applicationDeadline: string;
 
   description: string;
 

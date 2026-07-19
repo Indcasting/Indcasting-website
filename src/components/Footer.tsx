@@ -37,13 +37,13 @@ export default function Footer() {
 
           <h3>Support</h3>
 
-          <a href="#">Help Centre</a>
+          <Link href="/help">Help Centre</Link>
 
-          <a href="#">Privacy Policy</a>
+          <Link href="/privacy">Privacy Policy</Link>
 
-          <a href="#">Terms & Conditions</a>
+          <Link href="/terms">Terms & Conditions </Link>
 
-          <a href="#">FAQs</a>
+          <Link href="/faq">FAQs</Link>
 
         </div>
 

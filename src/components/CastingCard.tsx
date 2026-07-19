@@ -4,61 +4,86 @@ import { CastingPost } from "@/types/casting";
 
 interface Props {
   post: CastingPost;
-  onDelete: (id: string) => void;
   onEdit: (post: CastingPost) => void;
+  onDelete: (id: string) => void;
+  onView: (post: CastingPost) => void;
 }
 
 export default function CastingCard({
   post,
-  onDelete,
   onEdit,
+  onDelete,
+  onView,
 }: Props) {
   return (
-    <div className="casting-post-card">
+    <div className="casting-card">
 
-      <div className="post-top">
+      <div className="casting-header">
 
         <div>
 
-          <h3>{post.title}</h3>
+          <h2>{post.title}</h2>
 
-          <p>{post.category}</p>
+          <p className="company">{post.company}</p>
 
         </div>
 
-        <span className="status">
+        <span
+          className={
+            post.status === "Open"
+              ? "status open"
+              : "status closed"
+          }
+        >
           {post.status}
         </span>
 
       </div>
 
-      <p>
-        📍 {post.location}
-      </p>
+      <div className="casting-category">
 
-      <p>
-        👤 {post.age}
-      </p>
+        🎬 {post.category}
 
-      <p>
-        {post.description}
-      </p>
+      </div>
 
-      <small>
-        Posted: {post.createdAt}
-      </small>
+      <div className="casting-meta">
+
+        <span>📍 {post.location}</span>
+
+        <span>👤 {post.gender}</span>
+
+        <span>🎂 {post.age}</span>
+
+        <span>🎭 {post.role}</span>
+
+        <span>💰 ₹{post.budget}</span>
+
+      </div>
+
+      <div className="posted-date">
+
+        Posted on {post.createdAt}
+
+      </div>
 
       <div className="post-buttons">
 
         <button
-          className="outline-btn"
+          className="gold-btn"
+          onClick={() => onView(post)}
+        >
+          View Details
+        </button>
+
+        <button
+          className="gold-btn"
           onClick={() => onEdit(post)}
         >
           Edit
         </button>
 
         <button
-          className="gold-btn"
+          className="outline-btn"
           onClick={() => onDelete(post.id)}
         >
           Delete
