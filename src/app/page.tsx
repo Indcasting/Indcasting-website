@@ -27,15 +27,15 @@ export default function Home() {
 
           <div className="hero-buttons">
 
-            <button className="gold-btn">
-              Explore Talent
-            </button>
+  <button className="gold-btn">
+    Explore Talent
+  </button>
 
-            <button className="outline-btn">
-              Join as Talent
-            </button>
+  <button className="purple-btn">
+    Join as Talent
+  </button>
 
-          </div>
+</div>
 
         </div>
 
