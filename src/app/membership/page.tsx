@@ -396,7 +396,6 @@ export default function Membership() {
 
 </section>
 
-      <Footer />
 
     </main>
   );

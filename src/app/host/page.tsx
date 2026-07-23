@@ -354,7 +354,7 @@ onClose={() => setSelectedPost(null)}
 
 />
 
-      <Footer />
+    
 
     </main>
 
