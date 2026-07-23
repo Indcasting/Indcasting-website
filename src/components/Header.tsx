@@ -11,6 +11,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,7 +34,33 @@ export default function Header() {
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
+  useEffect(() => {
 
+  const savedTheme = localStorage.getItem("theme");
+
+  if (savedTheme === "light") {
+    setDarkMode(false);
+    document.documentElement.classList.remove("dark");
+    document.documentElement.classList.add("light");
+  } else {
+    setDarkMode(true);
+    document.documentElement.classList.remove("light");
+    document.documentElement.classList.add("dark");
+  }
+}, []);
+
+useEffect(() => {
+
+  if (darkMode) {
+    document.documentElement.classList.add("dark");
+    document.documentElement.classList.remove("light");
+    localStorage.setItem("theme", "dark");
+  } else {
+    document.documentElement.classList.add("light");
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme", "light");
+  }
+}, [darkMode]);
   function handleLogout() {
     logoutUser();
     setUser(null);
@@ -56,21 +83,36 @@ export default function Header() {
           INDCASTING
         </Link>
 
-        <nav className="header-nav">
-          <Link href="/membership" className="nav-link">
-            Membership
-          </Link>
-        </nav>
+       <nav className="header-nav">
 
+  <Link href="/membership" className="nav-link">
+    Membership
+  </Link>
+
+  <Link href="/applications" className="nav-link">
+    Applications
+  </Link>
+
+</nav>
         <div className="header-actions">
-          <button className="icon-btn" aria-label="Notifications">
-            <BellIcon />
-            <span className="icon-dot" />
-          </button>
-
+          <Link
+    href="/notifications"
+    className="icon-btn"
+    aria-label="Notifications"
+>
+    <BellIcon />
+    <span className="icon-dot"></span>
+</Link>
           <Link href="/messages" className="icon-btn" aria-label="Messages">
             <MessageIcon />
           </Link>
+          <button
+    className="theme-toggle"
+    aria-label="Toggle Theme"
+    onClick={() => setDarkMode(!darkMode)}
+>
+    {darkMode ? "☀️" : "🌙"}
+</button>
 
           {user ? (
             <div className="profile-menu-wrap" ref={menuRef}>
@@ -102,7 +144,7 @@ export default function Header() {
               <Link href="/login" className="outline-btn header-btn">
                 Log In
               </Link>
-             <Link href="/signin" className="signup-btn header-btn">
+             <Link href="/signup" className="signup-btn header-btn">
   Sign Up
 </Link>
             </div>

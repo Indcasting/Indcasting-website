@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -27,13 +28,13 @@ export default function Home() {
 
           <div className="hero-buttons">
 
-  <button className="gold-btn">
+  <Link href="/explore-talent" className="gold-btn">
     Explore Talent
-  </button>
+</Link>
 
-  <button className="purple-btn">
+  <Link href="/signup" className="purple-btn">
     Join as Talent
-  </button>
+</Link>
 
 </div>
 
@@ -65,19 +66,19 @@ export default function Home() {
 
         <div className="card-container">
 
-          <div className="card">
+         <Link href="/create-portfolio" className="card portfolio-card">
 
-            <h3>🎭</h3>
+  <h3>🎭</h3>
 
-            <h4>Create Your Portfolio</h4>
+  <h4>Create Your Portfolio</h4>
 
-            <p>
-              Upload headshots, audition videos, experience, skills and
-              achievements to build a professional profile.
-            </p>
+  <p>
+    Upload headshots, audition videos,
+    experience, skills and achievements
+    to build a professional profile.
+  </p>
 
-          </div>
-
+</Link>
           <div className="card">
 
             <h3>🎬</h3>
