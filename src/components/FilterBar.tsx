@@ -34,6 +34,8 @@ setAge: (value: string) => void;
 
 budget: string;
 setBudget: (value: string) => void;
+
+onReset: () => void;
 }
 
 export default function FilterBar({
@@ -62,6 +64,7 @@ setAge,
 
 budget,
 setBudget,
+onReset,
 }: Props) {
   return (
     <section className="filter-section">
@@ -113,8 +116,6 @@ setBudget,
         <option value="">👤 Gender</option>
         <option>Male</option>
         <option>Female</option>
-        <option>Non-binary</option>
-        <option>Any</option>
     </select>
 
     <input
@@ -169,6 +170,13 @@ setBudget,
         <option value="budget-low">💰 Budget Low</option>
         <option value="company">🏢 Company</option>
     </select>
+
+    <button
+  className="reset-btn"
+  onClick={onReset}
+>
+  ↺ Reset
+</button>
 
 </div>
 
