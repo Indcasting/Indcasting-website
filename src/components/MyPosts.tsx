@@ -29,10 +29,6 @@ export default function MyPosts({
   return (
     <section className="my-posts">
 
-      <div className="section-heading">
-        <h2>My Casting Calls</h2>
-        <p>Manage the casting calls you've created.</p>
-      </div>
 
       {myPosts.length === 0 ? (
         <div className="empty-posts">

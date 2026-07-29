@@ -21,11 +21,8 @@ export default function CastingCard({
       <div className="casting-header">
 
         <div>
-
           <h2>{post.title}</h2>
-
           <p className="company">{post.company}</p>
-
         </div>
 
         <span
@@ -41,29 +38,21 @@ export default function CastingCard({
       </div>
 
       <div className="casting-category">
-
         🎬 {post.category}
-
       </div>
 
       <div className="casting-meta">
 
         <span>📍 {post.location}</span>
-
         <span>👤 {post.gender}</span>
-
         <span>🎂 {post.age}</span>
-
         <span>🎭 {post.role}</span>
-
         <span>💰 ₹{post.budget}</span>
 
       </div>
 
       <div className="posted-date">
-
         Posted on {post.createdAt}
-
       </div>
 
       <div className="post-buttons">

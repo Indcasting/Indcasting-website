@@ -1,9 +1,8 @@
 "use client";
-
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-import Footer from "@/components/Footer";
 import CastingForm from "@/components/CastingForm";
 import MyPosts from "@/components/MyPosts";
 
@@ -15,12 +14,15 @@ import AllCastingCalls from "@/components/AllCastingCalls";
 import CastingDetailsModal from "@/components/CastingDetailsModal";
 
 import DashboardStats from "@/components/DashboardStats";
+import CastingList from "@/components/CastingList";
 
 export default function HostPage() {
 
   const [posts, setPosts] = useState<CastingPost[]>([]);
   const [editingPost, setEditingPost] = useState<CastingPost | null>(null);
   const [search, setSearch] = useState("");
+
+const [showFilters, setShowFilters] = useState(false);
 
 const [categoryFilter, setCategoryFilter] = useState("");
 
@@ -54,6 +56,8 @@ const openPosts = posts.filter(
 const closedPosts = posts.filter(
     p => p.status === "Closed"
 ).length;
+
+const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
 const thisMonth = posts.filter(post => {
 
@@ -116,22 +120,43 @@ const thisMonth = posts.filter(post => {
     });
   }
 
+  function handleViewDetails(post: CastingPost) {
+  setSelectedPost(post);
+}
+
+function handleResetFilters() {
+  setSearch("");
+  setCategoryFilter("");
+  setLocationFilter("");
+  setGenderFilter("");
+  setExperienceFilter("");
+  setLanguageFilter("");
+  setAgeFilter("");
+  setBudgetFilter("");
+  setStatusFilter("");
+  setSortOrder("newest");
+}
+
   const filteredPosts = [...posts]
   
-  .filter((post) =>
+  .filter(post => {
+  if (!search) return true;
 
-    post.title.toLowerCase().includes(search.toLowerCase()) ||
+  const term = search.toLowerCase();
 
-    post.company.toLowerCase().includes(search.toLowerCase())
+  return (
+    post.title.toLowerCase().includes(term) ||
+    post.company.toLowerCase().includes(term) ||
+    post.location.toLowerCase().includes(term) ||
+    post.category.toLowerCase().includes(term)
+  );
+})
 
-  )
-  .filter((post) =>
+  .filter(post =>
+  !categoryFilter ||
+  post.category.toLowerCase() === categoryFilter.toLowerCase()
+)
 
-    categoryFilter
-      ? post.category === categoryFilter
-      : true
-
-  )
   .filter((post) =>
 
     locationFilter
@@ -142,56 +167,92 @@ const thisMonth = posts.filter(post => {
 
   )
 
+  .filter(post => {
+
+  if (!genderFilter) return true;
+
+  return (
+    (post.gender ?? "").toLowerCase() ===
+    genderFilter.toLowerCase()
+  );
+
+})
+
+.filter(post => {
+
+  if (!experienceFilter) return true;
+
+  return (
+    (post.experience ?? "").toLowerCase() ===
+    experienceFilter.toLowerCase()
+  );
+
+})
+
+.filter(post => {
+
+  if (!languageFilter) return true;
+
+  const languages = (post.languages ?? "")
+    .toLowerCase()
+    .split(",")
+    .map(lang => lang.trim());
+
+  return languages.some(lang =>
+    lang.includes(languageFilter.toLowerCase())
+  );
+
+})
+
+.filter((post) => {
+  if (!ageFilter) return true;
+
+  const enteredAge = Number(ageFilter);
+
+  // Extract all numbers from the age string
+  const numbers = post.age.match(/\d+/g);
+
+  if (!numbers) return false;
+
+  // Single age (e.g. "21")
+  if (numbers.length === 1) {
+    return enteredAge === Number(numbers[0]);
+  }
+
+  // Age range (e.g. "18-25")
+  const minAge = Number(numbers[0]);
+  const maxAge = Number(numbers[1]);
+
+  return enteredAge >= minAge && enteredAge <= maxAge;
+})
+
+.filter(post => {
+
+  if (!budgetFilter) return true;
+
+  const budget = Number(post.budget);
+
+  if (budgetFilter.endsWith("+")) {
+
+      return budget >= Number(budgetFilter.replace("+",""));
+
+  }
+
+  const [min,max] = budgetFilter.split("-");
+
+  return budget >= Number(min) &&
+         budget <= Number(max);
+
+})
+
   .filter(post =>
 
-    genderFilter
-        ? post.gender === genderFilter
-        : true
+  !statusFilter ||
+
+  post.status.toLowerCase() ===
+  statusFilter.toLowerCase()
 
 )
-
-.filter(post =>
-
-    experienceFilter
-        ? post.experience === experienceFilter
-        : true
-
-)
-
-.filter(post =>
-
-    languageFilter
-        ? post.languages
-              .toLowerCase()
-              .includes(languageFilter.toLowerCase())
-        : true
-
-)
-
-.filter(post =>
-
-    ageFilter
-        ? post.age.includes(ageFilter)
-        : true
-
-)
-
-.filter(post =>
-
-    budgetFilter
-        ? Number(post.budget) >= Number(budgetFilter)
-        : true
-
-)
-
-  .filter((post) =>
-
-    statusFilter
-      ? post.status === statusFilter
-      : true
-
-  )
-
   
   .sort((a, b) => {
 
@@ -237,67 +298,114 @@ const myPosts = filteredPosts.filter(
 
       {/* HERO */}
 
-      <section className="host-hero">
+      <section className="host-dashboard">
 
-        <div className="host-left">
+  <div className="dashboard-top">
 
-          <span className="hero-badge">
-            🎬 For Casting Directors
-          </span>
+    <div>
 
-          <h1>
-            Find the Perfect
-            <span> Talent</span>
-            <br />
-            For Your Next Project
-          </h1>
+      <span className="hero-badge">
+        Host Dashboard
+      </span>
 
-          <p>
-            Post casting calls, discover verified artists,
-            filter by skills, experience and location,
-            then hire the best talent.
-          </p>
+      <h1>Welcome Back 👋</h1>
 
-        </div>
+      <p>
+        Manage casting calls, track opportunities and discover verified talent.
+      </p>
 
-        <div className="host-right">
+    </div>
 
-          <Image
-            src="/images/host.jpg"
-            alt="Host"
-            width={500}
-            height={500}
-          />
+    <Link href="/dashboard">
+  <button className="gold-btn">
+    + Create Casting Call
+  </button>
+</Link>
 
-        </div>
+  </div>
 
-      </section>
+  <div className="dashboard-overview">
 
-      <DashboardStats posts={posts} />
+    <div className="overview-card">
+      <h2>{totalPosts}</h2>
+      <p>Total Posts</p>
+    </div>
 
-      {/* FORM */}
+    <div className="overview-card">
+      <h2>{openPosts}</h2>
+      <p>Open</p>
+    </div>
 
-      <section className="section">
+    <div className="overview-card">
+      <h2>{closedPosts}</h2>
+      <p>Closed</p>
+    </div>
 
-        <h2 className="section-title">
+    <div className="overview-card">
+      <h2>{thisMonth}</h2>
+      <p>This Month</p>
+    </div>
 
-          {editingPost
-            ? "Edit Casting Call"
-            : "Create Casting Call"}
+  </div>
 
-        </h2>
+</section>
 
-        <CastingForm
 
-          onSave={handleSave}
+<div className="host-toolbar">
 
-          editingPost={editingPost}
+  <div className="toolbar-left">
+    <input
+      type="text"
+      placeholder="Search casting calls..."
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      className="search-input"
+    />
+  </div>
 
-        />
+  <div className="toolbar-right">
 
-      </section>
+    <button
+      className="filter-btn"
+      onClick={() => setShowFilters(!showFilters)}
+    >
+      <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+>
+    <path d="M3 5h18M6 12h12M10 19h4"/>
+</svg>
 
-      <FilterBar
+      {showFilters ? "Hide Filters" : "Filters"}
+
+      <span>{showFilters ? "▲" : "▼"}</span>
+    </button>
+
+    <button
+      className={`view-btn ${viewMode==="grid"?"active":""}`}
+      onClick={()=>setViewMode("grid")}
+    >
+      ⊞
+    </button>
+
+    <button
+      className={`view-btn ${viewMode==="list"?"active":""}`}
+      onClick={()=>setViewMode("list")}
+    >
+      ☰
+    </button>
+
+  </div>
+
+</div>
+
+
+  <div className={`filters-wrapper ${showFilters ? "open" : ""}`}>
+<FilterBar
   search={search}
   setSearch={setSearch}
 
@@ -329,30 +437,44 @@ const myPosts = filteredPosts.filter(
   setSort={setSortOrder}
 
   totalResults={filteredPosts.length}
+
+  onReset={handleResetFilters}
+
 />
+</div>
+
 
       {/* POSTS */}
 
-<AllCastingCalls
-    posts={filteredPosts}
-    onEdit={handleEdit}
-    onDelete={handleDelete}
-/>
+<section className="all-posts">
 
-<MyPosts
-    posts={posts}
-    currentUserId={currentUserId}
-    onEdit={handleEdit}
-    onDelete={handleDelete}
-/>
+  <div className="section-heading">
+    <h2>All Casting Calls</h2>
+    <p>Browse every casting opportunity currently available.</p>
+  </div>
 
-<CastingDetailsModal
+  {viewMode === "grid" ? (
+    <AllCastingCalls
+      posts={filteredPosts}
+      onEdit={handleEdit}
+      onDelete={handleDelete}
+      onView={handleViewDetails}
+    />
+  ) : (
+    <CastingList
+      posts={filteredPosts}
+      onView={handleViewDetails}
+    />
+  )}
 
-post={selectedPost}
+</section>
 
-onClose={() => setSelectedPost(null)}
-
-/>
+{selectedPost && (
+  <CastingDetailsModal
+    post={selectedPost}
+    onClose={() => setSelectedPost(null)}
+  />
+)}
 
     
 
