@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import Image from "next/image";
-import Footer from "@/components/Footer";
-import Link from "next/link";
-=======
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -72,7 +67,6 @@ function loadScript(src: string): Promise<void> {
     document.head.appendChild(s);
   });
 }
->>>>>>> 83b8488ff8916d518dfc46f901d15cbd87f0f516
 
 export default function Home() {
   const heroRef    = useRef<HTMLElement>(null);
@@ -512,15 +506,6 @@ export default function Home() {
         .why-list li:hover::after { width: 100%; }
         .why-list li span { color: var(--gold); font-size: 0.75rem; }
 
-<<<<<<< HEAD
-  <Link href="/explore-talent" className="gold-btn">
-    Explore Talent
-</Link>
-
-  <Link href="/signup" className="purple-btn">
-    Join as Talent
-</Link>
-=======
         /* ── CTA — artsy warm ── */
         .cta-section {
           padding: 140px 4vw 160px;
@@ -541,7 +526,6 @@ export default function Home() {
           background-size: 60px 60px;
           pointer-events: none;
         }
->>>>>>> 83b8488ff8916d518dfc46f901d15cbd87f0f516
 
         /* Floating orbs */
         .cta-orb {
@@ -646,34 +630,6 @@ export default function Home() {
 
       <main>
 
-<<<<<<< HEAD
-
-
-      {/* HOW IT WORKS */}
-
-      <section className="section">
-
-        <h2 className="section-title">
-          How IndCasting Works
-        </h2>
-
-        <div className="card-container">
-
-         <Link href="/create-portfolio" className="card portfolio-card">
-
-  <h3>🎭</h3>
-
-  <h4>Create Your Portfolio</h4>
-
-  <p>
-    Upload headshots, audition videos,
-    experience, skills and achievements
-    to build a professional profile.
-  </p>
-
-</Link>
-          <div className="card">
-=======
         {/* ── HERO ── */}
         <section className="hero" ref={heroRef}>
           <div>
@@ -704,7 +660,6 @@ export default function Home() {
             ))}
           </div>
         </section>
->>>>>>> 83b8488ff8916d518dfc46f901d15cbd87f0f516
 
         {/* ── TILE SCROLL ── Change 1: no marginTop on any column ── */}
         <section className="tiles-section" ref={tilesRef}>
