@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import SplitText from "../components/ui/SplitText";
 
 declare global {
   interface Window {
@@ -23,7 +24,7 @@ declare global {
 interface WhyItem     { icon: string; label: string }
 interface StatItem    { n: string; l: string; num: number }
 interface StepItem    { n: string; h: string; p: string }
-interface CategoryItem{ label: string; emoji: string; count: string; color: string }
+interface CategoryItem{ label: string; count: string; color: string }
 
 const WHY: WhyItem[] = [
   { icon: "✦", label: "Verified talent profiles" },
@@ -35,14 +36,14 @@ const WHY: WhyItem[] = [
 ];
 
 const CATEGORIES: CategoryItem[] = [
-  { label: "Actors",        emoji: "🎭", count: "12,400+", color: "#c9a84c" },
-  { label: "Models",        emoji: "✦",  count: "8,200+",  color: "#8b6914" },
-  { label: "Singers",       emoji: "🎵", count: "4,100+",  color: "#c9a84c" },
-  { label: "Dancers",       emoji: "🩰", count: "3,800+",  color: "#8b6914" },
-  { label: "Voice Artists", emoji: "🎙", count: "2,600+",  color: "#c9a84c" },
-  { label: "Child Artists", emoji: "⭐", count: "1,900+",  color: "#8b6914" },
-  { label: "Influencers",   emoji: "📱", count: "5,500+",  color: "#c9a84c" },
-  { label: "Anchors",       emoji: "🎤", count: "1,200+",  color: "#8b6914" },
+  { label: "Actors", count: "12,400+", color: "#c9a84c" },
+  { label: "Models", count: "8,200+",  color: "#8b6914" },
+  { label: "Singers", count: "4,100+",  color: "#c9a84c" },
+  { label: "Dancers", count: "3,800+",  color: "#8b6914" },
+  { label: "Voice Artists",  count: "2,600+",  color: "#c9a84c" },
+  { label: "Child Artists", count: "1,900+",  color: "#8b6914" },
+  { label: "Influencers", count: "5,500+",  color: "#c9a84c" },
+  { label: "Anchors", count: "1,200+",  color: "#8b6914" },
 ];
 
 const HERO_STATS: StatItem[] = [
@@ -446,8 +447,8 @@ export default function Home() {
         .categories-section {
           background:var(--cream);
           transition:background .35s;
-          padding: 80px 0 80px;
-          overflow: hidden;
+          padding: 100px 0 90px;
+          overflow: visible;
         }
         .cat-scroll-header {
           padding: 0 4vw 3rem;
@@ -476,12 +477,20 @@ export default function Home() {
         }
 
         /* Marquee wrapper — clips overflow */
-        .cat-marquee-wrap {
-          overflow: hidden;
-          /* fade edges */
-          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-          mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-        }
+        .cat-marquee-wrap{
+    overflow:hidden;
+    padding:20px 0 30px;   /* Gives space for hover lift */
+    -webkit-mask-image:linear-gradient(to right,
+        transparent 0%,
+        black 8%,
+        black 92%,
+        transparent 100%);
+    mask-image:linear-gradient(to right,
+        transparent 0%,
+        black 8%,
+        black 92%,
+        transparent 100%);
+}
 
         /* The scrolling track — two identical sets side-by-side for seamless loop */
         .cat-track {
@@ -502,19 +511,33 @@ export default function Home() {
         }
 
         /* Bigger cards */
-        .cat-card {
-          background: var(--white);
-          border: 1.5px solid var(--mist);
-          border-radius: var(--radius-lg);
-          padding: 2rem 2rem 1.75rem;
-          min-width: 220px;
-          width: 220px;
-          position: relative;
-          cursor: pointer;
-          transform-style: preserve-3d;
-          transition: background .35s, border-color .35s, box-shadow .35s, transform .25s;
-          flex-shrink: 0;
-        }
+        .cat-card{
+    background:var(--white);
+    border:1.5px solid var(--mist);
+    border-radius:36px;
+
+    padding:42px 34px;
+
+    width:340px;
+    min-width:340px;
+
+    min-height:440px;
+
+    position:relative;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+
+    cursor:pointer;
+
+    flex-shrink:0;
+
+    transition:
+        transform .35s ease,
+        border-color .35s,
+        box-shadow .35s;
+}
         .cat-card:hover {
           border-color: var(--gold);
           box-shadow: 0 20px 52px rgba(201,168,76,0.18);
@@ -542,31 +565,31 @@ export default function Home() {
         }
         .cat-card:hover .cat-emoji { transform: translateY(-4px) scale(1.12); }
         .cat-card-label {
-          font-size: 1.15rem;
-          font-weight: 700;
-          letter-spacing: -0.01em;
+          font-size: 2rem;
+          font-weight: 800;
+          letter-spacing: -0.02em;
           color: var(--ink);
           display: block;
-          margin-bottom: 0.4rem;
+          margin-bottom: 12px;
         }
         .cat-card-count {
-          font-size: 0.82rem;
+          font-size: 1.2rem;
           color: var(--mid);
           display: block;
-          margin-bottom: 1.4rem;
+          margin-bottom: auto;
         }
         .cat-card-arrow {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 36px; height: 36px;
+          width: 72px; height: 72px;
           border-radius: 50%;
           background: var(--mist);
-          font-size: 0.9rem;
+          font-size: 1.5rem;
           color: var(--ink);
           transition: background .2s, transform .3s cubic-bezier(0.34,1.56,0.64,1);
         }
-        .cat-card:hover .cat-card-arrow { background: var(--gold); transform: translateX(4px); }
+        .cat-card:hover .cat-card-arrow { background: var(--gold); transform: translateX(8px); }
 
         /* ── TILES ── */
         .tiles-section { padding: 40px 4vw 20px; overflow: hidden; }
@@ -647,6 +670,22 @@ export default function Home() {
         }
         .why-list li:hover::after { width: 100%; }
         .why-list li span { color: var(--gold); font-size: 0.75rem; }
+
+        .trust-title{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    margin-bottom:28px;
+}
+
+.trust-title h2{
+    margin:0;
+    line-height:1.05;
+}
+
+.trust-brand{
+    color:var(--gold);
+}
 
         /* ── CTA ── */
         .cta-section {
@@ -814,9 +853,8 @@ export default function Home() {
           {/* Two identical sets → seamless 50% translateX loop */}
           <div className="cat-marquee-wrap">
             <div className="cat-track">
-              {[...CATEGORIES, ...CATEGORIES].map(({ label, emoji, count }: CategoryItem, i: number) => (
+              {[...CATEGORIES, ...CATEGORIES].map(({ label, count }: CategoryItem, i: number) => (
                 <div className="cat-card" key={`${label}-${i}`}>
-                  <span className="cat-emoji" role="img" aria-label={label}>{emoji}</span>
                   <span className="cat-card-label">{label}</span>
                   <span className="cat-card-count">{count} artists</span>
                   <span className="cat-card-arrow">→</span>
@@ -875,9 +913,48 @@ export default function Home() {
         {/* ── WHY INDCASTING ── */}
         <section className="why-section">
           <div className="why-left">
-            <h2 className="why-title">
-              Why The Industry Trusts <em>IndCasting</em>
-            </h2>
+            <div className="trust-title">
+  <SplitText
+    tag="h2"
+    text="Why The Industry Trusts"
+    splitType="words"
+    delay={80}
+    duration={0.9}
+    ease="power3.out"
+    from={{
+      opacity: 0,
+      y: 50
+    }}
+    to={{
+      opacity: 1,
+      y: 0
+    }}
+    threshold={0.2}
+    textAlign="left"
+  />
+
+  <SplitText
+    tag="h2"
+    text="IndCasting"
+    className="trust-brand"
+    splitType="chars"
+    delay={35}
+    duration={0.8}
+    ease="power3.out"
+    from={{
+      opacity: 0,
+      y: 35,
+      rotateX: -90
+    }}
+    to={{
+      opacity: 1,
+      y: 0,
+      rotateX: 0
+    }}
+    threshold={0.2}
+    textAlign="left"
+  />
+</div>
             <p className="why-body reveal">
               Built for the pace of Indian entertainment — from national OTT releases
               to regional ad shoots. Every feature is designed to save time and

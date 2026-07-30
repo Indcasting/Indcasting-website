@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import MagicRings from "@/components/ui/MagicRings";
 
 declare global {
   interface Window {
@@ -99,46 +100,62 @@ function Stars({ n }: { n: number }) {
 }
 
 function PlanCard({ plan }: { plan: Plan }) {
-  const [open, setOpen] = useState(false);
-  const bodyRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = bodyRef.current;
-    if (!el) return;
-    if (open) {
-      el.style.maxHeight = el.scrollHeight + "px";
-      el.style.opacity   = "1";
-    } else {
-      el.style.maxHeight = "0px";
-      el.style.opacity   = "0";
-    }
-  }, [open]);
-
   return (
-    <div className={`plan-card${plan.featured ? " plan-featured" : ""}${open ? " plan-open" : ""}`}>
-      {plan.featured && <div className="plan-popular-bar">Most Popular</div>}
+    <div className={`plan-card${plan.featured ? " plan-featured" : ""}`}>
+      {plan.featured && (
+        <div className="plan-popular-bar">
+          Most Popular
+        </div>
+      )}
+
       <div className="plan-top">
         <span className="plan-name">{plan.name}</span>
+
         <div className="plan-price-wrap">
           <span className="plan-price">{plan.price}</span>
-          {plan.priceNum && <span className="plan-per">/mo</span>}
+
+          {plan.priceNum && (
+            <span className="plan-per">/mo</span>
+          )}
         </div>
+
         <p className="plan-sub">{plan.sub}</p>
       </div>
-      <button className="plan-cta">{plan.cta}</button>
-      <button className="plan-toggle" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-        <span>{open ? "Hide features" : "See what's included"}</span>
-        <span className={`plan-chevron${open ? " open" : ""}`}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+
+      <button className="plan-cta">
+        {plan.cta}
+      </button>
+
+      <div className="plan-toggle">
+        <span>See what's included</span>
+
+        <span className="plan-chevron">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M4 6l4 4 4-4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </span>
-      </button>
-      <div className="plan-features-wrap" ref={bodyRef}>
+      </div>
+
+      <div className="plan-features-wrap">
         <ul className="plan-features">
           {plan.features.map((f, i) => (
-            <li key={f} style={{ "--fi": i } as React.CSSProperties}>
-              <span className="plan-check">✦</span>{f}
+            <li
+              key={f}
+              style={{ "--fi": i } as React.CSSProperties}
+            >
+              <span className="plan-check">✦</span>
+              {f}
             </li>
           ))}
         </ul>
@@ -146,6 +163,7 @@ function PlanCard({ plan }: { plan: Plan }) {
     </div>
   );
 }
+
 
 export default function Membership() {
   const gsapLoaded = useRef<boolean>(false);
@@ -225,15 +243,6 @@ export default function Membership() {
           duration: 0.75, delay: i * 0.12, ease: "power3.out",
           transformPerspective: 900,
           scrollTrigger: { trigger: ".plans-grid", start: "top 80%", toggleActions: "play none none none" },
-        });
-        el.addEventListener("mousemove", (e: MouseEvent) => {
-          const r = el.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width  - 0.5;
-          const y = (e.clientY - r.top)  / r.height - 0.5;
-          gsap.to(el, { rotateY: x * 8, rotateX: -y * 8, duration: 0.3, ease: "power2.out", transformPerspective: 900 });
-        });
-        el.addEventListener("mouseleave", () => {
-          gsap.to(el, { rotateY: 0, rotateX: 0, duration: 0.6, ease: "elastic.out(1,0.5)" });
         });
       });
 
@@ -385,32 +394,120 @@ export default function Membership() {
         }
 
         /* ── HERO ── */
-        .m-hero {
-          min-height: 100svh;
-          padding: 120px 4vw 80px;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 4rem;
-          align-items: center;
-          background: var(--cream);
-          position: relative;
-          isolation: isolate;
-          transition: background .35s ease;
-        }
-        .m-hero::before {
-          content: "";
-          position: absolute; inset: 0; z-index: 0;
-          background-image:
-            linear-gradient(rgba(201,168,76,.08) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(201,168,76,.08) 1px, transparent 1px);
-          background-size: 62px 62px;
-        }
-        .m-hero::after {
-          content: "";
-          position: absolute; inset: 0; z-index: 0;
-          background: radial-gradient(circle at 70% 50%, rgba(201,168,76,.10), transparent 50%);
-        }
-        .m-hero > * { position: relative; z-index: 2; }
+        .m-hero{
+
+    position:relative;
+
+    min-height:100vh;
+
+    overflow:hidden;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    background:var(--cream);
+
+    transition:
+        background .35s ease;
+
+}
+
+html.dark .m-hero{
+
+    background:#090909;
+
+}
+
+    .hero-rings{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:0;
+
+    transform:translateY(-8%);
+
+}
+    .hero-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:1;
+
+    pointer-events:none;
+
+    transition:background .35s ease;
+
+}
+
+/* LIGHT */
+
+html:not(.dark) .hero-overlay{
+
+    background:
+
+        radial-gradient(
+
+            circle at center,
+
+            rgba(255,255,255,.15),
+
+            rgba(255,253,247,.55)
+
+        );
+
+}
+
+/* DARK */
+
+html.dark .hero-overlay{
+
+    background:
+
+        radial-gradient(
+
+            circle at center,
+
+            rgba(0,0,0,.18),
+
+            rgba(0,0,0,.78)
+
+        );
+
+}
+
+html:not(.dark) .m-hero{
+
+    background:
+
+        radial-gradient(
+            circle at top,
+            #ffffff 0%,
+            #fdf9ef 45%,
+            #f7f1e4 100%
+        );
+
+}
+
+}
+        .hero-content{
+    position:relative;
+    z-index:2;
+
+    width:min(1200px,90vw);
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
 
         html.dark .m-hero { background: #090909; }
         html.dark .m-hero::before {
@@ -427,16 +524,68 @@ export default function Membership() {
           letter-spacing: 0.08em; text-transform: uppercase;
           margin-bottom: 1.5rem; width: fit-content;
         }
-        .m-hero-title {
-          font-size: clamp(2.6rem,5vw,4rem); font-weight: 900;
-          line-height: 1.05; letter-spacing: -0.035em;
-          margin-bottom: 1.5rem; overflow: hidden;
-          color: var(--ink); transition: color .35s;
-        }
-        .m-hero-title em { color: var(--gold); font-style: normal; }
+        .m-hero-title{
+
+    font-size:clamp(3.8rem,7vw,6.8rem);
+
+    font-weight:900;
+
+    line-height:1.08;
+
+    letter-spacing:-0.055em;
+
+    margin-bottom:2rem;
+
+    max-width:1100px;
+
+    color:var(--ink);
+
+    text-align:center;
+
+    text-wrap:balance;
+
+    transition:color .35s;
+
+}
+        .m-hero-title em{
+
+    color:var(--gold);
+
+    font-style:normal;
+
+    text-shadow:
+        0 0 18px rgba(201,168,76,.18);
+
+}
         .m-hero-word { display: inline-block; }
-        .m-hero-sub  { font-size: 1.05rem; color: var(--mid); line-height: 1.7; max-width: 460px; margin-bottom: 2.5rem; transition: color .35s; }
-        .m-hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .m-hero-sub{
+
+    max-width:760px;
+
+    margin:0 auto 3rem;
+
+    font-size:1.28rem;
+
+    line-height:1.75;
+
+    font-weight:400;
+
+    color:var(--mid);
+
+    opacity:.92;
+
+}
+        .m-hero-btns{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:1rem;
+
+    flex-wrap:wrap;
+
+}
         .m-hero-img  { width: 100%; max-width: 500px; border-radius: 24px; will-change: transform; display: block; }
 
         .btn-gold {
@@ -446,7 +595,7 @@ export default function Membership() {
         }
         .btn-gold::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,0.25); transform: translateX(-100%); transition: transform .3s ease; }
         .btn-gold:hover::after { transform: translateX(0); }
-        .btn-gold:hover { background: var(--gold2); }
+        .btn-gold:hover { background: var(--gold2); color:#111;}
 
         .btn-ink {
           background: transparent; color: var(--ink); border: 1.5px solid var(--ink);
@@ -455,6 +604,27 @@ export default function Membership() {
         }
         .btn-ink:hover { background: var(--ink); color: var(--cream); }
         html.dark .btn-ink { color: var(--ink); border-color: var(--ink); }
+        html.dark .btn-ink:hover{
+    background: var(--ink);
+    color: #111;
+    border-color: var(--ink);
+}
+
+        .magic-rings-container{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    pointer-events:none;
+}
+
+.magic-rings-container canvas{
+    width:100% !important;
+    height:100% !important;
+    display:block;
+    pointer-events:none;
+}
 
         /* ── PRICING ── */
         .pricing-section {
@@ -476,19 +646,26 @@ export default function Membership() {
         }
 
         .plan-card {
-          border-radius: 22px;
-          border: 1.5px solid var(--mist);
-          background: var(--white);
-          overflow: hidden;
-          position: relative;
-          transform-style: preserve-3d;
-          transition: border-color .25s, box-shadow .25s, background .35s;
-          cursor: default;
-        }
-        .plan-card:hover {
-          border-color: rgba(201,168,76,0.5);
-          box-shadow: 0 16px 48px rgba(201,168,76,0.12);
-        }
+  border-radius: 22px;
+  border: 1.5px solid var(--mist);
+  background: var(--white);
+  overflow: hidden;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: border-color .25s, box-shadow .25s, background .35s;
+  cursor: default;
+}
+
+.plan-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:var(--gold);
+
+    box-shadow:
+        0 20px 55px rgba(201,168,76,.16);
+
+}
 
         html.dark .plan-card {
           background: #141414;
@@ -519,13 +696,13 @@ export default function Membership() {
           text-transform: uppercase; letter-spacing: 0.1em; padding: 6px 0;
         }
 
-        .plan-top { padding: 1.8rem 1.8rem 1.2rem; }
+        .plan-top { padding:2.4rem 2.4rem 1.5rem; }
         .plan-name {
           display: block; font-size: 0.78rem; font-weight: 700;
           text-transform: uppercase; letter-spacing: 0.1em;
-          color: var(--gold); margin-bottom: 0.8rem;
+          color: var(--gold); margin-bottom: 1.3rem;
         }
-        .plan-price-wrap { display: flex; align-items: baseline; gap: 4px; margin-bottom: 0.6rem; }
+        .plan-price-wrap { display: flex; align-items: baseline; gap: 4px; margin-bottom: 1.1rem; }
         .plan-price {
           font-size: clamp(2rem,3.5vw,2.8rem); font-weight: 900;
           letter-spacing: -0.04em; line-height: 1;
@@ -535,7 +712,7 @@ export default function Membership() {
         .plan-card.plan-featured .plan-price { color: #ffffff; }
         .plan-per { font-size: 0.8rem; font-weight: 500; color: var(--mid); }
         .plan-card.plan-featured .plan-per { color: rgba(255,255,255,0.4); }
-        .plan-sub { font-size: 0.82rem; color: var(--mid); line-height: 1.5; }
+        .plan-sub { font-size: 1.25rem; color: var(--mid); line-height: 1.5; margin-top:.8rem; margin-bottom:2rem;}
         .plan-card.plan-featured .plan-sub { color: rgba(255,255,255,0.45); }
 
         .plan-cta {
@@ -553,14 +730,25 @@ export default function Membership() {
         }
         .plan-card.plan-featured .plan-cta:hover { background: var(--gold2); border-color: var(--gold2); }
 
-        .plan-toggle {
-          display: flex; align-items: center; justify-content: space-between;
-          width: 100%; padding: 0.85rem 1.8rem;
-          border: none; border-top: 1px solid var(--mist); background: transparent;
-          font-size: 0.78rem; font-weight: 600; color: var(--mid); cursor: pointer;
-          transition: background .2s, color .2s, border-color .35s;
-          letter-spacing: 0.02em;
-        }
+        .plan-toggle{
+
+    margin-top:auto;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:1.25rem 2.4rem;
+
+    border-top:1px solid var(--mist);
+
+    color:var(--mid);
+
+    font-weight:600;
+
+}
         html.dark .plan-toggle { border-top-color: #2a2a2a; }
         .plan-card.plan-featured .plan-toggle { border-top-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
         .plan-toggle:hover { background: rgba(201,168,76,0.06); color: var(--ink); }
@@ -574,30 +762,70 @@ export default function Membership() {
         }
         html.dark .plan-chevron { background: #2a2a2a; color: #888; }
         .plan-card.plan-featured .plan-chevron { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
-        .plan-chevron.open { transform: rotate(180deg); background: var(--gold); color: #111; }
+        .plan-card:hover .plan-chevron{
 
-        .plan-features-wrap {
-          max-height: 0; opacity: 0; overflow: hidden;
-          transition: max-height 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
-        }
+    transform:rotate(180deg);
+
+    background:var(--gold);
+
+    color:#111;
+
+}
+        .plan-features-wrap{
+
+    max-height:0;
+
+    opacity:0;
+
+    overflow:hidden;
+
+    transition:
+        max-height .45s ease,
+        opacity .35s ease;
+
+}
+
+.plan-card:hover .plan-features-wrap{
+
+    max-height:600px;
+
+    opacity:1;
+
+}
         .plan-features {
-          list-style: none; padding: 0.8rem 1.8rem 1.6rem;
+          list-style: none; padding: 1.4rem 2.4rem 2rem;
           border-top: 1px solid var(--mist);
-          display: flex; flex-direction: column; gap: 0.65rem;
+          display: flex; flex-direction: column; gap: 1rem;
         }
         html.dark .plan-features { border-top-color: #2a2a2a; }
         .plan-card.plan-featured .plan-features { border-top-color: rgba(255,255,255,0.1); }
-        .plan-features li {
-          font-size: 0.88rem; display: flex; align-items: center; gap: 0.6rem;
-          color: var(--ink); transition: color .35s;
-          opacity: 0; transform: translateY(6px);
-          animation: featureIn 0.3s ease forwards;
-          animation-delay: calc(var(--fi, 0) * 55ms + 60ms);
-        }
+        .plan-features li{
+
+    opacity:0;
+
+    transform:translateY(10px);
+
+    transition:
+        opacity .35s,
+        transform .35s;
+
+}
+
+.plan-card:hover .plan-features li{
+
+    opacity:1;
+
+    transform:none;
+
+}
+
+.plan-card:hover .plan-features li:nth-child(1){transition-delay:.05s;}
+.plan-card:hover .plan-features li:nth-child(2){transition-delay:.10s;}
+.plan-card:hover .plan-features li:nth-child(3){transition-delay:.15s;}
+.plan-card:hover .plan-features li:nth-child(4){transition-delay:.20s;}
+.plan-card:hover .plan-features li:nth-child(5){transition-delay:.25s;}
+.plan-card:hover .plan-features li:nth-child(6){transition-delay:.30s;}
         .plan-card.plan-featured .plan-features li { color: rgba(255,255,255,0.82); }
-        .plan-card:not(.plan-open) .plan-features li { animation: none; opacity: 0; transform: translateY(6px); }
-        @keyframes featureIn { to { opacity: 1; transform: translateY(0); } }
-        .plan-check { color: var(--gold); font-size: 0.65rem; flex-shrink: 0; }
 
         /* ── COMPARE TABLE ── */
         .compare-section {
@@ -629,40 +857,224 @@ export default function Membership() {
         .cell-yes { color: #2a9d5c; font-size: 1.05rem; font-weight: 700; }
         .cell-no  { color: #e03434; font-size: 1rem; font-weight: 700; }
 
-        /* ── TESTIMONIALS ── */
-        .testi-section {
-          padding: 100px 0;
-          background: var(--ink);
-          overflow: hidden;
-          transition: background .35s;
-        }
-        html.dark .testi-section { background: #060606; }
-        .testi-header { padding: 0 4vw 3rem; text-align: center; }
-        .testi-header .section-title { color: #fff; }
-        .testi-rows { display: flex; flex-direction: column; gap: 1.25rem; }
-        .testi-row { display: flex; gap: 1.25rem; width: max-content; }
-        .testi-row-1 { animation: marqueeL 35s linear infinite; }
-        .testi-row-2 { animation: marqueeR 40s linear infinite; }
-        .testi-rows:hover .testi-row-1,
-        .testi-rows:hover .testi-row-2 { animation-play-state: paused; }
-        @keyframes marqueeL { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-        @keyframes marqueeR { from{transform:translateX(-50%)} to{transform:translateX(0)} }
-        .testi-card {
-          flex-shrink: 0; width: 320px; border-radius: 18px; padding: 1.6rem 1.8rem;
-          border: 1.5px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04);
-          display: flex; flex-direction: column; gap: 1rem;
-          transition: border-color .2s, background .2s; cursor: default;
-        }
-        .testi-card:hover { border-color: var(--gold); background: rgba(201,168,76,0.07); }
-        .testi-quote { font-size: 0.88rem; line-height: 1.7; color: rgba(255,255,255,0.68); flex: 1; }
-        .testi-footer { display: flex; flex-direction: column; gap: 0.3rem; }
-        .testi-name { font-size: 0.88rem; font-weight: 700; color: #fff; }
-        .testi-role { font-size: 0.72rem; color: var(--gold); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+        /* ─────────────────────────────────────
+   TESTIMONIALS
+───────────────────────────────────── */
 
+.testi-section{
+    padding:100px 0;
+    background:var(--cream);
+    overflow:hidden;
+    transition:
+        background .35s ease,
+        color .35s ease;
+}
+
+html.dark .testi-section{
+    background:#0b0b0b;
+}
+
+/* Heading */
+
+.testi-header{
+    padding:0 4vw 3rem;
+    text-align:center;
+}
+
+.testi-header .section-title{
+    color:var(--ink);
+    transition:color .35s;
+}
+
+html.dark .testi-header .section-title{
+    color:#fff;
+}
+
+/* Rows */
+
+.testi-rows{
+    display:flex;
+    flex-direction:column;
+    gap:1.25rem;
+}
+
+.testi-row{
+    display:flex;
+    gap:1.25rem;
+    width:max-content;
+}
+
+.testi-row-1{
+    animation:marqueeL 35s linear infinite;
+}
+
+.testi-row-2{
+    animation:marqueeR 40s linear infinite;
+}
+
+.testi-rows:hover .testi-row-1,
+.testi-rows:hover .testi-row-2{
+    animation-play-state:paused;
+}
+
+@keyframes marqueeL{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+}
+
+@keyframes marqueeR{
+    from{transform:translateX(-50%);}
+    to{transform:translateX(0);}
+}
+
+/* Cards */
+
+.testi-card{
+
+    flex-shrink:0;
+
+    width:320px;
+
+    border-radius:20px;
+
+    padding:1.7rem 1.8rem;
+
+    background:var(--white);
+
+    border:1.5px solid var(--mist);
+
+    display:flex;
+    flex-direction:column;
+    gap:1rem;
+
+    cursor:default;
+
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        background .3s ease,
+        box-shadow .3s ease;
+}
+
+.testi-card:hover{
+
+    transform:translateY(-8px);
+
+    border-color:var(--gold);
+
+    box-shadow:
+        0 18px 40px rgba(201,168,76,.15);
+
+}
+
+/* Quote */
+
+.testi-quote{
+
+    flex:1;
+
+    font-size:.92rem;
+
+    line-height:1.8;
+
+    color:var(--mid);
+
+}
+
+/* Footer */
+
+.testi-footer{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:.35rem;
+
+}
+
+.testi-name{
+
+    font-size:.95rem;
+
+    font-weight:700;
+
+    color:var(--ink);
+
+}
+
+.testi-role{
+
+    font-size:.74rem;
+
+    color:var(--gold);
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.08em;
+
+}
+
+/* Stars */
+
+.testi-stars{
+
+    color:var(--gold);
+
+    font-size:.9rem;
+
+    letter-spacing:2px;
+
+}
+
+/* -------------------------
+   DARK MODE
+-------------------------- */
+
+html.dark .testi-card{
+
+    background:#171717;
+
+    border-color:#2c2c2c;
+
+    box-shadow:none;
+
+}
+
+html.dark .testi-card:hover{
+
+    border-color:var(--gold);
+
+    background:#1d1d1d;
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.45);
+
+}
+
+html.dark .testi-quote{
+
+    color:#bdbdbd;
+
+}
+
+html.dark .testi-name{
+
+    color:#f5f5f5;
+
+}
+
+html.dark .testi-role{
+
+    color:var(--gold);
+
+}
         /* ================= FAQ ================= */
 
 .faq-section{
-    padding:100px 4vw;
+    padding:50px 4vw;
     background:var(--cream);
     transition:background .35s ease;
 }
@@ -700,14 +1112,14 @@ export default function Membership() {
     justify-content:space-between;
     align-items:center;
 
-    padding:1.6rem 2rem;
+    padding:1.2rem 1.5rem;
 
     background:transparent;
     border:none;
 
     text-align:left;
 
-    font-size:1.2rem;
+    font-size:1.1rem;
     font-weight:700;
 
     color:var(--ink);
@@ -728,7 +1140,7 @@ export default function Membership() {
 }
 
 .faq-a{
-    padding:0 2rem 1.6rem;
+    padding:0 1.5rem 1.2rem;
 
     color:var(--mid);
 
@@ -809,47 +1221,365 @@ html.dark .faq-item.faq-open .faq-icon{
     color:#111;
 }
 
-        /* ── UPGRADE ── */
-        .upgrade-section {
-          padding: 100px 4vw; text-align: center;
-          background: var(--cream);
-          border-top: 1.5px solid var(--mist);
-          position: relative; overflow: hidden;
-          transition: background .35s, border-color .35s;
-        }
-        html.dark .upgrade-section { background: #0d0c0b; }
-        .upgrade-section::before {
-          content: ""; position: absolute; inset: 0;
-          background-image:
-            linear-gradient(rgba(201,168,76,0.07) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(201,168,76,0.07) 1px, transparent 1px);
-          background-size: 60px 60px; pointer-events: none;
-        }
-        html.dark .upgrade-section::before { opacity: .5; }
-        .upgrade-inner { position: relative; z-index: 1; }
-        .upgrade-label {
-          display: inline-flex; align-items: center; gap: 0.6rem;
-          font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase;
-          color: var(--gold); font-weight: 700; margin-bottom: 1.2rem;
-        }
-        .upgrade-label::before,.upgrade-label::after { content: ""; display: block; width: 28px; height: 1px; background: var(--gold); opacity: 0.5; }
-        .upgrade-tagline {
-          font-size: clamp(1rem,1.5vw,1.15rem); color: var(--mid); margin-bottom: 2.5rem;
-          max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6;
-          transition: color .35s;
-        }
-        .upgrade-btn {
-          display: inline-flex; align-items: center; gap: 0.6rem;
-          background: var(--gold); color: #111; border: none; border-radius: 100px;
-          padding: 1.1rem 3rem; font-size: 1.05rem; font-weight: 800; cursor: pointer;
-          position: relative; overflow: hidden; transition: background .2s;
-          box-shadow: 0 10px 36px rgba(201,168,76,0.35); letter-spacing: -0.01em;
-        }
-        .upgrade-btn::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,0.2); transform: translateX(-100%); transition: transform .3s ease; }
-        .upgrade-btn:hover::after { transform: translateX(0); }
-        .upgrade-btn:hover { background: var(--gold2); }
-        .upgrade-btn-arrow { font-size: 1.1rem; transition: transform .3s cubic-bezier(0.34,1.56,0.64,1); }
-        .upgrade-btn:hover .upgrade-btn-arrow { transform: translateX(4px); }
+        /* ─────────────────────────────────────
+   FINAL UPGRADE CTA
+───────────────────────────────────── */
+
+.upgrade-section{
+
+    position:relative;
+
+    overflow:hidden;
+
+    padding:140px 4vw;
+
+    background:var(--cream);
+
+    border-top:1px solid rgba(201,168,76,.15);
+
+    transition:
+        background .35s ease,
+        border-color .35s ease;
+
+}
+
+html.dark .upgrade-section{
+
+    background:#0b0b0b;
+
+}
+
+/* Background Grid */
+
+.upgrade-section::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background-image:
+        linear-gradient(rgba(201,168,76,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,.05) 1px, transparent 1px);
+
+    background-size:60px 60px;
+
+    pointer-events:none;
+
+}
+
+html.dark .upgrade-section::before{
+
+    opacity:.45;
+
+}
+
+/* Gold Glow */
+
+.upgrade-section::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:700px;
+    height:700px;
+
+    left:50%;
+    bottom:-350px;
+
+    transform:translateX(-50%);
+
+    background:
+        radial-gradient(circle,
+            rgba(201,168,76,.16) 0%,
+            rgba(201,168,76,.08) 35%,
+            transparent 75%);
+
+    pointer-events:none;
+
+}
+
+/* CTA Card */
+
+.upgrade-inner{
+
+    position:relative;
+
+    z-index:2;
+
+    max-width:900px;
+
+    margin:auto;
+
+    padding:70px 80px;
+
+    border-radius:34px;
+
+    border:1px solid rgba(201,168,76,.16);
+
+    background:rgba(255,255,255,.04);
+
+    backdrop-filter:blur(14px);
+
+    text-align:center;
+
+}
+
+html.dark .upgrade-inner{
+
+    background:rgba(255,255,255,.03);
+
+}
+
+/* Label */
+
+.upgrade-label{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:16px;
+
+    font-size:.78rem;
+
+    letter-spacing:.22em;
+
+    text-transform:uppercase;
+
+    font-weight:800;
+
+    color:var(--gold);
+
+    margin-bottom:26px;
+
+}
+
+.upgrade-label::before,
+.upgrade-label::after{
+
+    content:"";
+
+    width:56px;
+
+    height:1px;
+
+    background:var(--gold);
+
+    opacity:.4;
+
+}
+
+/* Heading */
+
+.upgrade-title{
+
+    font-size:clamp(2.4rem,4vw,4rem);
+
+    font-weight:800;
+
+    line-height:1.12;
+
+    letter-spacing:-.04em;
+
+    color:var(--ink);
+
+    margin-bottom:24px;
+
+}
+
+html.dark .upgrade-title{
+
+    color:#fff;
+
+}
+
+/* Description */
+
+.upgrade-tagline{
+
+    max-width:620px;
+
+    margin:0 auto 42px;
+
+    font-size:1.22rem;
+
+    line-height:1.8;
+
+    color:var(--mid);
+
+}
+
+html.dark .upgrade-tagline{
+
+    color:#bcbcbc;
+
+}
+
+/* Stats */
+
+.upgrade-stats{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:42px;
+
+    margin-bottom:50px;
+
+    flex-wrap:wrap;
+
+}
+
+.upgrade-stat{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+}
+
+.upgrade-stat strong{
+
+    font-size:1.5rem;
+
+    color:var(--gold);
+
+}
+
+.upgrade-stat span{
+
+    margin-top:6px;
+
+    font-size:.9rem;
+
+    color:var(--mid);
+
+}
+
+/* Button */
+
+.upgrade-btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:14px;
+
+    padding:1.2rem 3.6rem;
+
+    border:none;
+
+    border-radius:999px;
+
+    background:var(--gold);
+
+    color:#111;
+
+    font-size:1.15rem;
+
+    font-weight:800;
+
+    cursor:pointer;
+
+    position:relative;
+
+    overflow:hidden;
+
+    transition:
+        transform .3s ease,
+        background .3s ease,
+        box-shadow .3s ease;
+
+    box-shadow:
+        0 18px 50px rgba(201,168,76,.28);
+
+}
+
+.upgrade-btn:hover{
+
+    background:var(--gold2);
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 28px 70px rgba(201,168,76,.36);
+
+}
+
+.upgrade-btn::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent 20%,
+            rgba(255,255,255,.35) 50%,
+            transparent 80%
+        );
+
+    transform:translateX(-120%);
+
+    transition:transform .6s ease;
+
+}
+
+.upgrade-btn:hover::before{
+
+    transform:translateX(120%);
+
+}
+
+.upgrade-btn-arrow{
+
+    font-size:1.3rem;
+
+    transition:transform .3s ease;
+
+}
+
+.upgrade-btn:hover .upgrade-btn-arrow{
+
+    transform:translateX(6px);
+
+}
+
+/* Mobile */
+
+@media(max-width:768px){
+
+    .upgrade-section{
+
+        padding:100px 24px;
+
+    }
+
+    .upgrade-inner{
+
+        padding:50px 28px;
+
+    }
+
+    .upgrade-stats{
+
+        gap:24px;
+
+    }
+
+}
 
         /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
@@ -868,31 +1598,91 @@ html.dark .faq-item.faq-open .faq-icon{
 
         {/* ── HERO ── */}
         <section className="m-hero">
-          <div>
-            <div className="m-hero-badge">
-              <span className="badge-scramble">✨ Premium Membership</span>
-            </div>
-            <h1 className="m-hero-title">
-              {"Unlock Your Full Casting Potential".split(" ").map((w, i) => (
+
+    <div className="hero-rings">
+
+        <MagicRings
+            color={dark ? "#C9A84C" : "#C49A2E"}
+            colorTwo={dark ? "#F5E6A8" : "#F2D98C"}
+
+            ringCount={8}
+            speed={0.35}
+
+            attenuation={16}
+
+            lineThickness={2}
+
+            baseRadius={0.48}
+
+            radiusStep={0.11}
+
+            scaleRate={0.05}
+
+            opacity={dark ? 0.65 : 0.7}
+
+            blur={dark ? 1.2 : 0.5}
+
+            noiseAmount={0.03}
+
+            rotation={-8}
+
+            ringGap={1.8}
+
+            fadeIn={0.85}
+
+            fadeOut={0.8}
+
+            mouseInfluence={0.05}
+
+            hoverScale={1.05}
+
+            parallax={0.02}
+
+            followMouse={false}
+
+            clickBurst={false}
+        />
+
+    </div>
+
+    <div className="hero-overlay"></div>
+
+    <div className="hero-content">
+
+        <div className="m-hero-badge">
+            <span className="badge-scramble">
+                ✨ Premium Membership
+            </span>
+        </div>
+
+        <h1 className="m-hero-title">
+            {"Unlock Your Full Casting Potential".split(" ").map((w, i) => (
                 <span key={i} className="m-hero-word">
-                  {w === "Potential" ? <em>{w}</em> : w}&nbsp;
+                    {w === "Potential" ? <em>{w}</em> : w}&nbsp;
                 </span>
-              ))}
-            </h1>
-            <p className="m-hero-sub">
-              Whether you&apos;re an aspiring artist or a casting professional,
-              our premium memberships provide better visibility, unlimited connections,
-              and powerful casting tools.
-            </p>
-            <div className="m-hero-btns">
-              <button className="btn-gold">Join as Talent</button>
-              <button className="btn-ink">Hire Talent</button>
-            </div>
-          </div>
-          <div style={{ display:"flex", justifyContent:"center", alignItems:"center" }}>
-            <img className="m-hero-img" src="/images/membership.png" alt="Membership" />
-          </div>
-        </section>
+            ))}
+        </h1>
+
+        <p className="m-hero-sub">
+            Whether you're an aspiring artist or a casting professional,
+            our premium memberships provide better visibility,
+            unlimited connections,
+            and powerful casting tools.
+        </p>
+
+        <div className="m-hero-btns">
+            <button className="btn-gold">
+                Join as Talent
+            </button>
+
+            <button className="btn-ink">
+                Hire Talent
+            </button>
+        </div>
+
+    </div>
+
+</section>
 
         {/* ── PRICING ── */}
         <section className="pricing-section">
