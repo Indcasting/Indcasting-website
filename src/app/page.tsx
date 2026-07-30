@@ -71,7 +71,6 @@ function loadScript(src: string): Promise<void> {
 export default function Home() {
   const heroRef    = useRef<HTMLElement>(null);
   const tilesRef   = useRef<HTMLElement>(null);
-  const catRef     = useRef<HTMLElement>(null);
   const gsapLoaded = useRef<boolean>(false);
 
   useEffect(() => {
@@ -142,20 +141,15 @@ export default function Home() {
         gsap.to(card, { y: -20, duration: 2.5, ease: "sine.inOut", yoyo: true, repeat: -1, delay: i * 0.25 });
       });
 
-      /* ── TILE SCROLL
-         Change 1: all columns start at marginTop:0 in JSX.
-         We give alternating vertical offsets via GSAP fromTo
-         so they begin visually level and diverge as you scroll.
-      ── */
+      /* ── TILE SCROLL ── */
       const columns = tilesRef.current?.querySelectorAll<HTMLElement>(".tile-col");
       if (columns) {
-        // Even columns travel downward, odd columns travel upward — equal magnitude
         const distances = [180, -180, 180, -180];
         columns.forEach((col, i) => {
           gsap.fromTo(col,
-            { y: -distances[i] * 0.5 },   // start offset (half, so midpoint = 0)
+            { y: -distances[i] * 0.5 },
             {
-              y: distances[i] * 0.5,        // end offset
+              y: distances[i] * 0.5,
               ease: "none",
               scrollTrigger: {
                 trigger: tilesRef.current,
@@ -185,37 +179,6 @@ export default function Home() {
           scrollTrigger: { trigger: eyebrow, start: "top 90%" },
         });
       }
-
-      /* ── CATEGORIES — horizontal scroll (Change 2) ── */
-      const catTrack = catRef.current?.querySelector<HTMLElement>(".cat-track");
-      if (catTrack && catRef.current) {
-        const totalWidth = catTrack.scrollWidth - catRef.current.offsetWidth;
-        gsap.to(catTrack, {
-          x: -totalWidth,
-          ease: "none",
-          scrollTrigger: {
-            trigger: catRef.current,
-            start: "top top",
-            end: () => `+=${totalWidth + 200}`,
-            scrub: 1.2,
-            pin: true,
-            anticipatePin: 1,
-          },
-        });
-      }
-
-      /* Category card 3D tilt */
-      document.querySelectorAll<HTMLElement>(".cat-card").forEach((card) => {
-        card.addEventListener("mousemove", (e: MouseEvent) => {
-          const r = card.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width  - 0.5;
-          const y = (e.clientY - r.top)  / r.height - 0.5;
-          gsap.to(card, { rotateY: x * 14, rotateX: -y * 14, duration: 0.3, ease: "power2.out", transformPerspective: 800 });
-        });
-        card.addEventListener("mouseleave", () => {
-          gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.5, ease: "elastic.out(1,0.5)" });
-        });
-      });
 
       /* ── HOW IT WORKS ── */
       gsap.utils.toArray<Element>(".step").forEach((step, i) => {
@@ -256,42 +219,35 @@ export default function Home() {
         scrollTrigger: { trigger: ".why-title", start: "top 85%", toggleActions: "play none none none" },
       });
 
-      /* ── CTA — artsy (Change 5) ── */
-      // Headline masked word reveal
+      /* ── CTA ── */
       const ctaH2 = document.querySelector<HTMLElement>(".cta-headline");
       if (ctaH2) {
-        const words = (ctaH2.textContent ?? "").split(" ");
-        ctaH2.innerHTML = words.map(w =>
-          `<span style="display:inline-block;overflow:hidden;vertical-align:bottom;"><span class="cta-inner" style="display:inline-block;">${w}</span></span>`
-        ).join(" ");
+        gsap.from(".cta-headline > *", {
+          y: 100, opacity: 0, stagger: 0.15, duration: 0.9, ease: "power4.out",
+          scrollTrigger: { trigger: ".cta-section", start: "top 82%" },
+        });
         gsap.from(".cta-inner", {
           y: "110%", duration: 0.9, stagger: 0.08, ease: "power4.out",
           scrollTrigger: { trigger: ".cta-section", start: "top 82%", toggleActions: "play none none none" },
         });
       }
 
-      // Floating gold orbs parallax
       gsap.utils.toArray<HTMLElement>(".cta-orb").forEach((orb, i) => {
         gsap.to(orb, {
-          y: i % 2 === 0 ? -60 : 60,
-          x: i % 3 === 0 ? -30 : 30,
-          ease: "none",
+          y: i % 2 === 0 ? -60 : 60, x: i % 3 === 0 ? -30 : 30, ease: "none",
           scrollTrigger: { trigger: ".cta-section", start: "top bottom", end: "bottom top", scrub: 2 },
         });
-        // Also animate on entrance
         gsap.from(orb, {
           scale: 0, opacity: 0, duration: 1.2, delay: i * 0.15, ease: "elastic.out(1,0.6)",
           scrollTrigger: { trigger: ".cta-section", start: "top 80%", toggleActions: "play none none none" },
         });
       });
 
-      // CTA sub + label slide up
       gsap.from(".cta-sub, .cta-label", {
         y: 30, opacity: 0, stagger: 0.1, duration: 0.7, ease: "power3.out",
         scrollTrigger: { trigger: ".cta-section", start: "top 78%", toggleActions: "play none none none" },
       });
 
-      // Magnetic CTA buttons
       document.querySelectorAll<HTMLElement>(".cta-btns button").forEach((btn) => {
         btn.addEventListener("mousemove", (e: MouseEvent) => {
           const r = btn.getBoundingClientRect();
@@ -304,13 +260,8 @@ export default function Home() {
         });
       });
 
-      // Rotating ring
-      gsap.to(".cta-ring", {
-        rotation: 360, duration: 18, ease: "none", repeat: -1,
-      });
-      gsap.to(".cta-ring-2", {
-        rotation: -360, duration: 26, ease: "none", repeat: -1,
-      });
+      gsap.to(".cta-ring",   { rotation: 360,  duration: 18, ease: "none", repeat: -1 });
+      gsap.to(".cta-ring-2", { rotation: -360, duration: 26, ease: "none", repeat: -1 });
 
       /* ── GENERIC REVEALS ── */
       gsap.utils.toArray<Element>(".reveal").forEach((el) => {
@@ -335,143 +286,338 @@ export default function Home() {
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-          --ink:  #0f0e0d; --cream: #FFFDF7; --gold: #c9a84c; --gold2: #e8c96a;
-          --mist: #f0ebe0; --mid:  #6b6560; --white: #ffffff;
-          --radius-md: 14px; --radius-lg: 24px;
+          --ink:#0f0e0d;
+          --cream:#FFFDF7;
+          --gold:#c9a84c;
+          --gold2:#e8c96a;
+          --mist:#f0ebe0;
+          --mid:#6b6560;
+          --white:#ffffff;
+          --radius-md:14px;
+          --radius-lg:24px;
         }
-        body { background: var(--cream); color: var(--ink); overflow-x: hidden; font-family: system-ui, sans-serif; }
+        html.dark {
+          --ink:#f6f6f6;
+          --cream:#0b0b0b;
+          --gold:#c9a84c;
+          --gold2:#f1d472;
+          --mist:#1c1c1c;
+          --mid:#b8b8b8;
+          --white:#161616;
+        }
+        body {
+          background:var(--cream);
+          color:var(--ink);
+          overflow-x:hidden;
+          font-family:system-ui,sans-serif;
+          transition:background .35s ease,color .35s ease;
+        }
 
-        /* ── HERO ── */
+        /* ───────────────── HERO ───────────────── */
         .hero {
-          min-height: 100svh; padding: 120px 4vw 80px;
-          display: grid; grid-template-columns: 1fr 1fr;
-          gap: 4rem; align-items: center;
+          min-height:100svh;
+          padding:120px 4vw 80px;
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:4rem;
+          align-items:center;
+          position:relative;
+          overflow:hidden;
+          isolation:isolate;
+          background:var(--cream);
+          transition:background .35s ease,color .35s ease;
+        }
+        .hero::before {
+          content:"";
+          position:absolute;
+          inset:0;
+          z-index:0;
+          background-image:
+            linear-gradient(rgba(201,168,76,.08) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(201,168,76,.08) 1px,transparent 1px);
+          background-size:62px 62px;
+        }
+        .hero::after {
+          content:"";
+          position:absolute;
+          inset:0;
+          z-index:0;
+          background:radial-gradient(circle at center,rgba(201,168,76,.10),transparent 45%);
+        }
+        .hero > * { position:relative; z-index:2; }
+        .hero-scramble {
+          display:block;
+          margin-bottom:1rem;
+          font-size:.82rem;
+          font-family:monospace;
+          letter-spacing:.12em;
+          color:var(--gold);
+          opacity:.85;
         }
         .hero-eyebrow {
-          display: inline-flex; align-items: center; gap: 0.5rem;
-          font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
-          color: var(--gold); font-weight: 600; margin-bottom: 1.5rem;
+          display:flex;
+          align-items:center;
+          gap:.7rem;
+          margin-bottom:1.7rem;
+          font-size:.9rem;
+          font-weight:600;
+          text-transform:uppercase;
+          letter-spacing:.08em;
+          color:var(--gold);
         }
-        .hero-eyebrow::before { content:""; display:block; width:28px; height:1px; background:var(--gold); }
+        .hero-eyebrow::before { content:""; width:30px; height:2px; background:var(--gold); }
         .hero-title {
-          font-size: clamp(2.6rem, 5vw, 4.2rem); font-weight: 800; line-height: 1.06;
-          letter-spacing: -0.03em; margin-bottom: 1.5rem; overflow: hidden; perspective: 800px;
+          color:var(--ink);
+          font-size:clamp(2.8rem,5vw,4.6rem);
+          font-weight:900;
+          line-height:1.05;
+          letter-spacing:-0.04em;
+          margin-bottom:1.5rem;
+          overflow:hidden;
+          perspective:800px;
         }
-        .hero-word { display: inline-block; transform-style: preserve-3d; }
-        .hero-scramble {
-          display: block; font-size: 0.78rem; font-family: monospace;
-          color: var(--gold); letter-spacing: 0.1em; margin-bottom: 1rem; opacity: 0.7;
-        }
-        .hero-sub { font-size: 1.05rem; color: var(--mid); line-height: 1.7; max-width: 460px; margin-bottom: 2.5rem; }
-        .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .hero-word { display:inline-block; transform-style:preserve-3d; }
+        .hero-sub { color:var(--mid); font-size:1.08rem; line-height:1.7; max-width:520px; margin-bottom:2.7rem; }
+        .hero-btns { display:flex; gap:1rem; flex-wrap:wrap; }
         .btn-primary {
-          background: var(--gold); color: var(--ink); border: none; border-radius: 100px;
-          padding: 0.85rem 2.2rem; font-size: 0.95rem; font-weight: 700;
-          position: relative; overflow: hidden; transition: background .2s; cursor: pointer;
+          position:relative;
+          overflow:hidden;
+          background:var(--gold);
+          color:#111;
+          border:none;
+          border-radius:999px;
+          padding:.95rem 2.4rem;
+          font-size:.95rem;
+          font-weight:700;
+          cursor:pointer;
+          transition:.3s;
         }
         .btn-primary::after {
-          content:""; position:absolute; inset:0; background:rgba(255,255,255,0.25);
-          transform:translateX(-100%); transition:transform .3s ease;
+          content:"";
+          position:absolute;
+          inset:0;
+          background:rgba(255,255,255,.25);
+          transform:translateX(-100%);
+          transition:transform .35s ease;
         }
         .btn-primary:hover::after { transform:translateX(0); }
-        .btn-primary:hover { background: var(--gold2); }
+        .btn-primary:hover { background:var(--gold2); }
         .btn-outline {
-          background: transparent; color: var(--ink); border: 1.5px solid var(--ink);
-          border-radius: 100px; padding: 0.85rem 2.2rem; font-size: 0.95rem; font-weight: 600;
-          cursor: pointer; transition: background .15s, color .15s;
+          background:transparent;
+          color:var(--ink);
+          border:2px solid var(--ink);
+          border-radius:999px;
+          padding:.95rem 2.4rem;
+          font-size:.95rem;
+          font-weight:600;
+          cursor:pointer;
+          transition:.3s;
         }
-        .btn-outline:hover { background: var(--ink); color: var(--white); }
-
+        .btn-outline:hover { background:var(--ink); color:var(--cream); }
         .stat-card {
-          background: rgba(255,255,255,0.5); border-radius: 12px;
-          padding: 1.2rem 1.6rem; border-left: 3px solid var(--gold);
-          backdrop-filter: blur(8px);
+          background:rgba(255,255,255,.82);
+          border-radius:18px;
+          border-left:4px solid var(--gold);
+          padding:1.4rem 1.8rem;
+          backdrop-filter:blur(14px);
+          box-shadow:0 12px 35px rgba(0,0,0,.08);
+          transition:.35s;
         }
-        .stat-num { font-size: clamp(2rem,4vw,2.6rem); font-weight:900; letter-spacing:-0.04em; line-height:1; }
+        .stat-num {
+          color:var(--ink);
+          font-size:clamp(2rem,4vw,2.7rem);
+          font-weight:900;
+          letter-spacing:-0.04em;
+          line-height:1;
+        }
+        html.dark .hero { background:#090909; }
+        html.dark .hero::before {
+          background-image:
+            linear-gradient(rgba(201,168,76,.07) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(201,168,76,.07) 1px,transparent 1px);
+        }
+        html.dark .hero::after { background:radial-gradient(circle at center,rgba(201,168,76,.05),transparent 45%); }
+        html.dark .hero-title { color:#fff; }
+        html.dark .hero-sub { color:#b8b8b8; }
+        html.dark .stat-card { background:rgba(255,255,255,.06); box-shadow:none; }
+        html.dark .stat-num { color:#fff; }
 
-        /* ── TILES ──
-           Change 1: no marginTop offsets — columns start level.
-           GSAP drives the parallax divergence from centre.
-        ── */
-        .tiles-section { padding: 40px 4vw 60px; overflow: hidden; }
+        /* ── CATEGORIES — auto-scrolling marquee ── */
+        .categories-section {
+          background:var(--cream);
+          transition:background .35s;
+          padding: 80px 0 80px;
+          overflow: hidden;
+        }
+        .cat-scroll-header {
+          padding: 0 4vw 3rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+        }
+        .section-label {
+          font-size: 0.72rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--gold);
+          display: block;
+          margin-bottom: 0.5rem;
+        }
+        .cat-title {
+          font-size: clamp(1.8rem,3vw,2.6rem);
+          font-weight: 800;
+          letter-spacing: -0.025em;
+          line-height: 1.1;
+        }
+        .cat-scroll-hint {
+          font-size: 0.78rem;
+          color: var(--mid);
+          letter-spacing: 0.06em;
+        }
+
+        /* Marquee wrapper — clips overflow */
+        .cat-marquee-wrap {
+          overflow: hidden;
+          /* fade edges */
+          -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+        }
+
+        /* The scrolling track — two identical sets side-by-side for seamless loop */
+        .cat-track {
+          display: flex;
+          gap: 1.5rem;
+          width: max-content;
+          animation: catMarquee 28s linear infinite;
+        }
+
+        /* Pause on hover of any card */
+        .cat-track:hover {
+          animation-play-state: paused;
+        }
+
+        @keyframes catMarquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+
+        /* Bigger cards */
+        .cat-card {
+          background: var(--white);
+          border: 1.5px solid var(--mist);
+          border-radius: var(--radius-lg);
+          padding: 2rem 2rem 1.75rem;
+          min-width: 220px;
+          width: 220px;
+          position: relative;
+          cursor: pointer;
+          transform-style: preserve-3d;
+          transition: background .35s, border-color .35s, box-shadow .35s, transform .25s;
+          flex-shrink: 0;
+        }
+        .cat-card:hover {
+          border-color: var(--gold);
+          box-shadow: 0 20px 52px rgba(201,168,76,0.18);
+          transform: translateY(-6px);
+        }
+        .cat-card::before {
+          content: "";
+          display: block;
+          position: absolute;
+          top: 0; left: 1.6rem; right: 1.6rem;
+          height: 2px;
+          background: var(--gold);
+          border-radius: 0 0 4px 4px;
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform .35s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .cat-card:hover::before { transform: scaleX(1); }
+        .cat-emoji {
+          font-size: 2.6rem;
+          line-height: 1;
+          margin-bottom: 1.2rem;
+          display: block;
+          transition: transform .4s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .cat-card:hover .cat-emoji { transform: translateY(-4px) scale(1.12); }
+        .cat-card-label {
+          font-size: 1.15rem;
+          font-weight: 700;
+          letter-spacing: -0.01em;
+          color: var(--ink);
+          display: block;
+          margin-bottom: 0.4rem;
+        }
+        .cat-card-count {
+          font-size: 0.82rem;
+          color: var(--mid);
+          display: block;
+          margin-bottom: 1.4rem;
+        }
+        .cat-card-arrow {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px; height: 36px;
+          border-radius: 50%;
+          background: var(--mist);
+          font-size: 0.9rem;
+          color: var(--ink);
+          transition: background .2s, transform .3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .cat-card:hover .cat-card-arrow { background: var(--gold); transform: translateX(4px); }
+
+        /* ── TILES ── */
+        .tiles-section { padding: 40px 4vw 20px; overflow: hidden; }
         .tiles-eyebrow {
-          text-align: center; font-size: 0.72rem; letter-spacing: 0.14em;
-          text-transform: uppercase; color: var(--mid); margin-bottom: 2.5rem;
+          text-align: center;
+          font-size: 0.72rem;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: var(--mid);
+          margin-bottom: 2.5rem;
         }
         .tiles-grid {
-          display: grid; grid-template-columns: repeat(4,1fr);
-          gap: 16px; align-items: start; min-height: 1100px;
+          display: grid;
+          grid-template-columns: repeat(4,1fr);
+          gap: 16px;
+          align-items: start;
+          min-height: 1100px;
         }
         .tile-col { display: flex; flex-direction: column; gap: 16px; will-change: transform; }
         .tile { border-radius: var(--radius-md); overflow: hidden; position: relative; background: var(--mist); }
         .tile img { width: 100%; display: block; object-fit: cover; object-position: center; will-change: transform; }
         .tile-overlay {
           position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem;
-          background: linear-gradient(to top, rgba(15,14,13,0.7) 0%, transparent 100%);
+          background: linear-gradient(to top, rgba(0,0,0,.82), transparent);
           color: var(--white);
         }
         .tile-overlay h4 { font-size: 0.9rem; font-weight: 700; }
         .tile-overlay p  { font-size: 0.75rem; opacity: 0.8; }
         .tile-tag {
-          position: absolute; top: 12px; left: 12px; background: var(--gold); color: var(--ink);
-          border-radius: 100px; padding: 3px 10px; font-size: 0.68rem; font-weight: 700;
+          position: absolute; top: 12px; left: 12px;
+          background: var(--gold); color: var(--ink);
+          border-radius: 100px; padding: 3px 10px;
+          font-size: 0.68rem; font-weight: 700;
           text-transform: uppercase; letter-spacing: 0.06em;
         }
 
-        /* ── CATEGORIES — horizontal scroll (Change 2) ── */
-        .categories-section {
-          overflow: hidden;
-          background: #FFF9EE;
-        }
-        .cat-scroll-header {
-          padding: 80px 4vw 3rem;
-          display: flex; justify-content: space-between; align-items: flex-end;
-        }
-        .section-label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); display: block; margin-bottom: 0.5rem; }
-        .cat-title { font-size: clamp(1.8rem,3vw,2.6rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; }
-        .cat-scroll-hint { font-size: 0.78rem; color: var(--mid); letter-spacing: 0.06em; }
-        .cat-track-wrap { padding: 0 4vw 80px; overflow: visible; }
-        .cat-track {
-          display: flex; gap: 1.25rem; width: max-content;
-        }
-        .cat-card {
-          flex-shrink: 0; width: 220px;
-          position: relative; border-radius: 18px; padding: 2rem 1.6rem 1.8rem;
-          background: var(--white); border: 1.5px solid var(--mist); cursor: pointer;
-          will-change: transform; transition: border-color .2s, box-shadow .2s;
-          transform-style: preserve-3d;
-        }
-        .cat-card:hover { border-color: var(--gold); box-shadow: 0 16px 48px rgba(201,168,76,0.18); }
-        .cat-card::before {
-          content: ""; display: block; position: absolute; top: 0; left: 1.6rem; right: 1.6rem;
-          height: 2px; background: var(--gold); border-radius: 0 0 4px 4px;
-          transform: scaleX(0); transform-origin: left;
-          transition: transform .35s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .cat-card:hover::before { transform: scaleX(1); }
-        .cat-emoji { font-size: 2rem; line-height: 1; margin-bottom: 1rem; display: block; transition: transform .4s cubic-bezier(0.34,1.56,0.64,1); }
-        .cat-card:hover .cat-emoji { transform: translateY(-4px) scale(1.12); }
-        .cat-card-label { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); display: block; margin-bottom: 0.35rem; }
-        .cat-card-count { font-size: 0.78rem; color: var(--mid); display: block; margin-bottom: 1.2rem; }
-        .cat-card-arrow {
-          display: inline-flex; align-items: center; justify-content: center;
-          width: 32px; height: 32px; border-radius: 50%; background: var(--mist);
-          font-size: 0.85rem; color: var(--ink);
-          transition: background .2s, transform .3s cubic-bezier(0.34,1.56,0.64,1);
-        }
-        .cat-card:hover .cat-card-arrow { background: var(--gold); transform: translateX(4px); }
-
         /* ── HOW IT WORKS ── */
-        .how-section { padding: 100px 4vw; }
+        .how-section { padding: 40px 4vw 100px; }
         .how-title { font-size: clamp(1.8rem,3.5vw,2.8rem); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
         .how-sub { color: var(--mid); margin-bottom: 3.5rem; font-size: 1rem; }
         .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; border: 1.5px solid var(--mist); }
         .step {
-          padding: 2.5rem; border: 1.5px solid var(--mist);
-          transition: background .3s, box-shadow .3s; position: relative; overflow: hidden;
+          padding:2.5rem;
+          border:1.5px solid var(--mist);
+          background:var(--cream);
+          transition:.35s;
+          position: relative;
         }
         .step::after {
-          content: attr(data-n); position: absolute; bottom: -1rem; right: 1rem;
+          content: attr(data-n);
+          position: absolute; bottom: -1rem; right: 1rem;
           font-size: 7rem; font-weight: 900; color: var(--gold); opacity: 0.04;
           line-height: 1; pointer-events: none; user-select: none;
         }
@@ -485,12 +631,8 @@ export default function Home() {
           background: var(--cream); color: var(--ink); padding: 100px 4vw;
           display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
         }
-        .why-left {
-          display: flex; flex-direction: column; justify-content: center; align-self: center;
-        }
-        .why-title {
-          font-size: clamp(2rem,3.5vw,3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1;
-        }
+        .why-left { display: flex; flex-direction: column; justify-content: center; align-self: center; }
+        .why-title { font-size: clamp(2rem,3.5vw,3rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; }
         .why-title em { color: var(--gold); font-style: normal; }
         .why-body { color: var(--mid); margin-top: 1rem; line-height: 1.7; }
         .why-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
@@ -506,17 +648,15 @@ export default function Home() {
         .why-list li:hover::after { width: 100%; }
         .why-list li span { color: var(--gold); font-size: 0.75rem; }
 
-        /* ── CTA — artsy warm ── */
+        /* ── CTA ── */
         .cta-section {
-          padding: 140px 4vw 160px;
-          text-align: center;
-          background: #FFFBF0;
+          background: var(--cream);
+          border-top: 1px solid var(--mist);
+          transition: background .35s, border-color .35s;
           position: relative;
+          padding: 100px 4vw 0;
           overflow: hidden;
-          border-top: 1.5px solid #f0e8cc;
         }
-
-        /* Decorative background grid */
         .cta-section::before {
           content: "";
           position: absolute; inset: 0;
@@ -526,8 +666,6 @@ export default function Home() {
           background-size: 60px 60px;
           pointer-events: none;
         }
-
-        /* Floating orbs */
         .cta-orb {
           position: absolute; border-radius: 50%;
           background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%);
@@ -536,8 +674,6 @@ export default function Home() {
         .cta-orb-1 { width: 500px; height: 500px; top: -120px; left: -140px; }
         .cta-orb-2 { width: 360px; height: 360px; bottom: -80px; right: -80px; }
         .cta-orb-3 { width: 220px; height: 220px; top: 35%; left: 58%; }
-
-        /* Rotating rings */
         .cta-ring, .cta-ring-2 {
           position: absolute; border-radius: 50%; pointer-events: none;
           border: 1px solid rgba(201,168,76,0.18);
@@ -545,72 +681,64 @@ export default function Home() {
         }
         .cta-ring   { width: 620px; height: 620px; margin: -310px 0 0 -310px; }
         .cta-ring-2 { width: 940px; height: 940px; margin: -470px 0 0 -470px; border-color: rgba(201,168,76,0.09); }
-
-        /* CTA content */
-        .cta-inner-wrap {
-          position: relative; z-index: 2;
-          max-width: 780px; margin: 0 auto;
-        }
+        .cta-inner-wrap { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; text-align: center; }
         .cta-label {
-          display: inline-flex; align-items: center; gap: 0.6rem;
-          font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
-          color: var(--gold); font-weight: 700; margin-bottom: 2rem;
+          display: inline-flex; align-items: center; gap: .7rem;
+          margin-bottom: 2rem; color: var(--gold);
+          font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .16em;
         }
-        .cta-label::before, .cta-label::after {
-          content: ""; display: block; width: 32px; height: 1px; background: var(--gold); opacity: 0.6;
-        }
+        .cta-label::before, .cta-label::after { content: ""; width: 34px; height: 1px; background: var(--gold); opacity: .6; }
         .cta-headline {
-          font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 900;
-          letter-spacing: -0.04em; line-height: 1.04;
-          color: var(--ink); margin-bottom: 1.8rem;
+          font-size: clamp(2.8rem,6vw,5rem); font-weight: 900; line-height: 1.05;
+          letter-spacing: -.025em; color: var(--ink); text-align: center; margin-bottom: 1.8rem;
         }
+        .cta-last-line { display: block; text-align: center; width: 100%; }
         .cta-headline em { color: var(--gold); font-style: normal; }
-        .cta-sub {
-          color: var(--mid); max-width: 480px; margin: 0 auto 3rem;
-          font-size: 1rem; line-height: 1.7;
-        }
+        .cta-sub { max-width: 500px; margin: 0 auto 3rem; color: var(--mid); font-size: 1.05rem; line-height: 1.7; }
         .cta-btns {
-          display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+          display: flex; justify-content: center; align-items: center;
+          gap: 1.25rem; flex-wrap: wrap; margin-top: .5rem;
         }
         .cta-btn-gold {
-          background: var(--gold); color: var(--ink); border: none;
-          border-radius: 100px; padding: 1rem 2.6rem; font-size: 1rem; font-weight: 700;
-          cursor: pointer; position: relative; overflow: hidden; transition: background .2s;
-          box-shadow: 0 8px 28px rgba(201,168,76,0.35);
+          display: inline-flex; align-items: center; justify-content: center;
+          min-width: 220px; height: 58px; padding: 0 2.6rem;
+          border: none; border-radius: 999px; background: var(--gold); color: #111;
+          font-size: 1rem; font-weight: 700; cursor: pointer;
+          position: relative; overflow: hidden; transition: all .3s ease;
+          box-shadow: 0 10px 30px rgba(201,168,76,.30);
         }
         .cta-btn-gold::after {
-          content: ""; position: absolute; inset: 0; background: rgba(255,255,255,0.25);
-          transform: translateX(-100%); transition: transform .3s ease;
+          content: ""; position: absolute; inset: 0;
+          background: rgba(255,255,255,.25); transform: translateX(-100%); transition: transform .35s ease;
         }
         .cta-btn-gold:hover::after { transform: translateX(0); }
-        .cta-btn-gold:hover { background: var(--gold2); }
+        .cta-btn-gold:hover { background: var(--gold2); transform: translateY(-2px); }
         .cta-btn-outline {
-          background: transparent; color: var(--ink);
-          border: 1.5px solid rgba(15,14,13,0.25);
-          border-radius: 100px; padding: 1rem 2.6rem; font-size: 1rem; font-weight: 600;
-          cursor: pointer; transition: background .2s, border-color .2s;
+          display: inline-flex; align-items: center; justify-content: center;
+          min-width: 220px; height: 58px; padding: 0 2.6rem;
+          background: transparent; color: var(--ink); border: 2px solid var(--ink);
+          border-radius: 999px; font-size: 1rem; font-weight: 600;
+          cursor: pointer; transition: all .3s ease;
         }
-        .cta-btn-outline:hover { background: rgba(15,14,13,0.06); border-color: var(--ink); }
-
-        /* Ticker */
+        .cta-btn-outline:hover { background: var(--ink); color: var(--cream); transform: translateY(-2px); }
+        html.dark .cta-btn-outline { color: #fff; border-color: #fff; }
+        html.dark .cta-btn-outline:hover { background: #fff; color: #111; }
         .cta-ticker {
-          margin-top: 4rem;
-          overflow: hidden;
-          border-top: 1px solid rgba(201,168,76,0.25);
-          padding-top: 1.4rem;
-          position: relative; z-index: 2;
+          margin-top: 4rem; overflow: hidden;
+          border-top: 1px solid rgba(201,168,76,.25);
+          padding-top: 1.4rem; position: relative; z-index: 2;
         }
         .cta-ticker-track {
           display: flex; gap: 3rem; width: max-content;
           animation: ctaTicker 20s linear infinite;
         }
         .cta-ticker-item {
-          white-space: nowrap; font-size: 0.7rem; font-weight: 700;
-          letter-spacing: 0.14em; text-transform: uppercase;
-          color: rgba(15,14,13,0.3); display: flex; align-items: center; gap: 1rem;
+          display: flex; align-items: center; gap: 1rem;
+          white-space: nowrap; font-size: .72rem; font-weight: 700;
+          letter-spacing: .14em; text-transform: uppercase; color: var(--mid);
         }
         .cta-ticker-item em { color: var(--gold); font-style: normal; }
-        .cta-ticker-item::after { content: "✦"; color: var(--gold); font-size: 0.45rem; opacity: 0.7; }
+        .cta-ticker-item::after { content: "✦"; color: var(--gold); font-size: .45rem; opacity: .7; }
         @keyframes ctaTicker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
         /* ── RESPONSIVE ── */
@@ -618,13 +746,25 @@ export default function Home() {
           .hero { grid-template-columns: 1fr; }
           .hero-image { display: none; }
           .tiles-grid { grid-template-columns: repeat(2,1fr); }
-          .cat-card { width: 180px; }
+          .cat-card { width: 190px; min-width: 190px; }
           .steps-grid { grid-template-columns: 1fr; }
           .why-section { grid-template-columns: 1fr; gap: 3rem; }
         }
         @media (max-width: 540px) {
           .tiles-grid { grid-template-columns: repeat(2,1fr); }
-          .cat-card { width: 160px; }
+          .cat-card { width: 170px; min-width: 170px; }
+        }
+
+        /* DARK MODE */
+        html.dark .tile { background: #181818; }
+        html.dark .step { background: #111; }
+        html.dark .cta-section::before { opacity: .45; }
+        html.dark .cta-ring { border-color: rgba(201,168,76,.14); }
+        html.dark .cta-ring-2 { border-color: rgba(201,168,76,.08); }
+
+        /* Respect reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .cat-track { animation: none; }
         }
       `}</style>
 
@@ -661,7 +801,32 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── TILE SCROLL ── Change 1: no marginTop on any column ── */}
+        {/* ── CATEGORIES — auto-scrolling marquee (moved before Tiles) ── */}
+        <section className="categories-section">
+          <div className="cat-scroll-header reveal">
+            <div>
+              <span className="section-label">Explore by discipline</span>
+              <h2 className="cat-title">Browse talent categories</h2>
+            </div>
+            <span className="cat-scroll-hint">Hover to pause</span>
+          </div>
+
+          {/* Two identical sets → seamless 50% translateX loop */}
+          <div className="cat-marquee-wrap">
+            <div className="cat-track">
+              {[...CATEGORIES, ...CATEGORIES].map(({ label, emoji, count }: CategoryItem, i: number) => (
+                <div className="cat-card" key={`${label}-${i}`}>
+                  <span className="cat-emoji" role="img" aria-label={label}>{emoji}</span>
+                  <span className="cat-card-label">{label}</span>
+                  <span className="cat-card-count">{count} artists</span>
+                  <span className="cat-card-arrow">→</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── TILE SCROLL ── */}
         <section className="tiles-section" ref={tilesRef}>
           <div className="tiles-grid">
 
@@ -692,29 +857,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CATEGORIES — horizontal scroll (Changes 2 & 3) ── */}
-        <section className="categories-section" ref={catRef}>
-          <div className="cat-scroll-header reveal">
-            <div>
-              <span className="section-label">Explore by discipline</span>
-              <h2 className="cat-title">Browse talent categories</h2>
-            </div>
-            <span className="cat-scroll-hint">← drag to scroll →</span>
-          </div>
-          <div className="cat-track-wrap">
-            <div className="cat-track">
-              {CATEGORIES.map(({ label, emoji, count }: CategoryItem) => (
-                <div className="cat-card" key={label}>
-                  <span className="cat-emoji" role="img" aria-label={label}>{emoji}</span>
-                  <span className="cat-card-label">{label}</span>
-                  <span className="cat-card-count">{count} artists</span>
-                  <span className="cat-card-arrow">→</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* ── HOW IT WORKS ── */}
         <section className="how-section">
           <h2 className="how-title reveal">How IndCasting works</h2>
@@ -734,7 +876,7 @@ export default function Home() {
         <section className="why-section">
           <div className="why-left">
             <h2 className="why-title">
-              Why the industry trusts <em>IndCasting</em>
+              Why The Industry Trusts <em>IndCasting</em>
             </h2>
             <p className="why-body reveal">
               Built for the pace of Indian entertainment — from national OTT releases
@@ -749,39 +891,31 @@ export default function Home() {
           </ul>
         </section>
 
-        {/* ── CTA — artsy (Change 5) ── */}
+        {/* ── CTA ── */}
         <section className="cta-section">
-
-          {/* Decorative orbs */}
           <div className="cta-orb cta-orb-1" />
           <div className="cta-orb cta-orb-2" />
           <div className="cta-orb cta-orb-3" />
-
-          {/* Rotating rings */}
           <div className="cta-ring" />
           <div className="cta-ring-2" />
 
           <div className="cta-inner-wrap">
             <span className="cta-label">Start your journey</span>
-
             <h2 className="cta-headline">
-              Your next<br />
-              opportunity<br />
-              <em>starts here.</em>
+              Your next <br />
+              opportunity <br />
+              <span className="cta-last-line"><em>starts here.</em></span>
             </h2>
-
             <p className="cta-sub">
               Join thousands of artists and casting professionals building
               careers and projects on IndCasting every day.
             </p>
-
             <div className="cta-btns">
               <button className="cta-btn-gold">Join as Talent</button>
               <button className="cta-btn-outline">Hire Talent</button>
             </div>
           </div>
 
-          {/* Bottom ticker */}
           <div className="cta-ticker">
             <div className="cta-ticker-track">
               {["Actors", "Models", "Singers", "Dancers", "Voice Artists", "Influencers", "Anchors", "Child Artists",
@@ -790,7 +924,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-
         </section>
 
       </main>

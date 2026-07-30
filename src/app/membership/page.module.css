@@ -1,0 +1,169 @@
+/* ==========================================================
+   HOME PAGE STYLES (page.module.css)
+   NOTE:
+   This is the foundation stylesheet with isolated .home-* classes
+   for light/dark theming. It is intended to replace Home-page-
+   specific styles from globals.css.
+   ========================================================== */
+
+/* ---------- Theme Variables ---------- */
+:root{
+  --home-bg:#FFFDF7;
+  --home-surface:#FFFFFF;
+  --home-surface-2:#F8F4EC;
+  --home-text:#141414;
+  --home-text-light:#666;
+  --home-border:#E8D7AF;
+  --home-gold:#D4AF37;
+  --home-purple:#7B2CBF;
+  --home-shadow:0 20px 60px rgba(0,0,0,.08);
+}
+
+.dark,
+body.dark-mode{
+  --home-bg:#0B0B0B;
+  --home-surface:#171717;
+  --home-surface-2:#202020;
+  --home-text:#FFF;
+  --home-text-light:#BDBDBD;
+  --home-border:#303030;
+  --home-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+
+.home-page{
+  background:var(--home-bg);
+  color:var(--home-text);
+  transition:.35s;
+}
+
+/* ---------- HERO ---------- */
+.home-hero{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  align-items:center;
+  padding:120px 5vw 80px;
+  background:var(--home-bg);
+}
+.home-hero-title{font-size:clamp(2.8rem,5vw,4.8rem);font-weight:800;line-height:1.05;}
+.home-hero-sub{margin-top:1.5rem;color:var(--home-text-light);line-height:1.8;max-width:620px;}
+.home-hero-buttons{display:flex;gap:18px;margin-top:2rem;flex-wrap:wrap;}
+
+.home-gold-btn{
+  background:var(--home-gold);
+  color:#111;
+  border:none;
+  padding:14px 28px;
+  border-radius:999px;
+  font-weight:700;
+}
+.home-outline-btn{
+  background:transparent;
+  color:var(--home-text);
+  border:2px solid var(--home-text);
+  padding:14px 28px;
+  border-radius:999px;
+}
+
+/* ---------- COMMON SECTIONS ---------- */
+.home-section,
+.home-how-section,
+.home-categories-section,
+.home-featured-section,
+.home-why-section,
+.home-cta-section,
+.home-tiles-section{
+  background:var(--home-bg);
+  color:var(--home-text);
+  padding:100px 5vw;
+}
+
+/* ---------- CARDS ---------- */
+.home-card,
+.home-stat-card,
+.home-step,
+.home-category-card,
+.home-talent-card,
+.home-casting-card,
+.home-tile{
+  background:var(--home-surface);
+  border:1px solid var(--home-border);
+  border-radius:20px;
+  box-shadow:var(--home-shadow);
+  transition:.3s;
+}
+
+.home-card:hover,
+.home-stat-card:hover,
+.home-step:hover,
+.home-category-card:hover,
+.home-talent-card:hover,
+.home-casting-card:hover{
+  transform:translateY(-6px);
+}
+
+/* ---------- TILE GRID ---------- */
+.home-tiles-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+}
+.home-tile-col{display:flex;flex-direction:column;gap:18px;}
+.home-tile img{
+  width:100%;
+  display:block;
+  border-radius:18px;
+}
+
+/* ---------- CATEGORY ---------- */
+.home-category-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+}
+
+/* ---------- WHY ---------- */
+.home-why-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  align-items:center;
+}
+
+/* ---------- CTA ---------- */
+.home-cta-section{
+  text-align:center;
+  background:var(--home-surface-2);
+}
+.home-cta-title{
+  font-size:clamp(2.5rem,5vw,4rem);
+  margin-bottom:1rem;
+}
+.home-cta-sub{
+  color:var(--home-text-light);
+  max-width:700px;
+  margin:0 auto 2rem;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:900px){
+  .home-hero,
+  .home-why-grid{
+    grid-template-columns:1fr;
+  }
+  .home-tiles-grid,
+  .home-category-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media (max-width:600px){
+  .home-tiles-grid,
+  .home-category-grid{
+    grid-template-columns:1fr;
+  }
+  .home-hero{
+    padding:100px 24px 60px;
+  }
+}
