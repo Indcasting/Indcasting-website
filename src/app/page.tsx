@@ -618,6 +618,17 @@ export default function Home() {
         }
         .tile-overlay h4 { font-size: 0.9rem; font-weight: 700; }
         .tile-overlay p  { font-size: 0.75rem; opacity: 0.8; }
+        html.dark .tile-overlay {
+  color: #fff;
+}
+
+html.dark .tile-overlay h4 {
+  color: #fff;
+}
+
+html.dark .tile-overlay p {
+  color: rgba(255,255,255,0.9);
+}
         .tile-tag {
           position: absolute; top: 12px; left: 12px;
           background: var(--gold); color: var(--ink);
@@ -877,7 +888,7 @@ export default function Home() {
             <div className="tile-col">
               <div className="tile"><img src="images/img_7.png"  alt="Model"  style={{height:"240px"}} /><div className="tile-overlay"><h4>Arjun Mehta</h4><p>Model · Delhi</p></div><span className="tile-tag">Model</span></div>
               <div className="tile"><img src="images/img3.jpg"   alt="Actor"  style={{height:"300px"}} /><div className="tile-overlay"><h4>Priya Nair</h4><p>Actor · Chennai</p></div><span className="tile-tag">Actor</span></div>
-              <div className="tile"><img src="images/img8.png"   alt="Anchor" style={{height:"200px"}} /><div className="tile-overlay"><h4>Dev Khanna</h4><p>Anchor · Pune</p></div><span className="tile-tag">Anchor</span></div>
+              <div className="tile"><img src="images/img_8.png"   alt="Anchor" style={{height:"200px"}} /><div className="tile-overlay"><h4>Dev Khanna</h4><p>Anchor · Pune</p></div><span className="tile-tag">Anchor</span></div>
             </div>
 
             <div className="tile-col">
