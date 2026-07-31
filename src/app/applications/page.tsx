@@ -1,47 +1,22 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import ApplicationsView from "@/components/views/ApplicationsView";
+
 export default function ApplicationsPage() {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <div className="applications-page">
-
-      <h1>My Applications</h1>
-
-      <p>Track every audition and casting application you've submitted.</p>
-
-      <div className="application-card">
-
-        <h3>Lead Female Actor</h3>
-
-        <p>Production House: Star Studios</p>
-
-        <p>Location: Mumbai</p>
-
-        <span className="status pending">Pending</span>
-
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--cream)', color: 'var(--ink)', transition: 'background-color 0.35s ease, color 0.35s ease', paddingTop: '140px', paddingBottom: '80px' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 4vw' }}>
+        <ApplicationsView />
       </div>
-
-      <div className="application-card">
-
-        <h3>Fashion Model</h3>
-
-        <p>Production House: Elite Fashion</p>
-
-        <p>Location: Delhi</p>
-
-        <span className="status accepted">Accepted</span>
-
-      </div>
-
-      <div className="application-card">
-
-        <h3>Music Video Dancer</h3>
-
-        <p>Production House: Rhythm Productions</p>
-
-        <p>Location: Bengaluru</p>
-
-        <span className="status rejected">Rejected</span>
-
-      </div>
-
     </div>
   );
 }
