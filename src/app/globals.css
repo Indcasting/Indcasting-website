@@ -5595,10 +5595,11 @@ padding:30px;
 =========================== */
 
 .dashboard-page{
-    padding:60px 10% 100px;
-    min-height:80vh;
+    min-height:100vh;
+    padding:130px 10% 60px;
+    background:var(--bg);
+    color:var(--text);
 }
-
 .profile-header{
     background:white;
     border-radius:24px;
@@ -5683,9 +5684,28 @@ padding:30px;
 }
 
 .dashboard-section{
-    margin-bottom:55px;
+    margin-top:40px;
 }
 
+.dashboard-section h2{
+    font-size:32px;
+    font-weight:700;
+    color:var(--text);
+    margin-bottom:25px;
+    position:relative;
+    display:inline-block;
+}
+
+.dashboard-section h2::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-8px;
+    width:70px;
+    height:4px;
+    background:var(--gold);
+    border-radius:999px;
+}
 .dashboard-section-title{
     display:flex;
     align-items:center;
@@ -6750,4 +6770,265 @@ body.dark-mode{
         background .35s ease,
         color .35s ease;
 }
+.dashboard-section .casting-card{
+    background:var(--surface);
+    border-radius:18px;
+    padding:24px 28px;
+    margin-bottom:18px;
 
+    border-left:5px solid var(--gold);
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+}
+
+.dashboard-section .casting-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 18px 35px rgba(0,0,0,.15);
+}
+
+.dashboard-section .casting-card h3{
+    font-size:22px;
+    color:var(--text);
+    margin-bottom:8px;
+}
+
+.dashboard-section .casting-card p{
+    color:var(--gold);
+    font-weight:600;
+    margin-bottom:12px;
+}
+
+.dashboard-section .casting-card span{
+    display:inline-block;
+    padding:6px 14px;
+
+    background:rgba(201,168,76,.12);
+    color:var(--gold);
+
+    border-radius:999px;
+
+    font-size:13px;
+    font-weight:600;
+}
+
+/* ===========================
+   PREMIUM DASHBOARD LAYOUT
+=========================== */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.dashboard-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow-x: hidden;
+    padding: 32px 40px;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* ===========================
+   PROFESSIONAL SIDEBAR
+=========================== */
+.dashboard-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background-color: #0f1117;
+    color: #94a3b8;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    border-right: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+    z-index: 50;
+    position: sticky;
+    top: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--gold, #d4af37), #f9e596);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0f1117;
+    font-weight: 700;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.logo-text h2 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.logo-text p {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 2px 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.sidebar-scrollable {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+.sidebar-scrollable::-webkit-scrollbar {
+    width: 4px;
+}
+.sidebar-scrollable::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+.sidebar-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-group-title {
+    padding: 0 16px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.link-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-icon {
+    color: #64748b;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+    color: #e2e8f0;
+}
+
+.sidebar-link:hover .sidebar-icon {
+    color: #cbd5e1;
+    transform: translateX(2px);
+}
+
+.sidebar-link.active {
+    background-color: rgba(212, 175, 55, 0.1);
+    color: var(--gold, #d4af37);
+}
+
+.sidebar-link.active .sidebar-icon {
+    color: var(--gold, #d4af37);
+}
+
+.active-chevron {
+    color: var(--gold, #d4af37);
+    opacity: 0.8;
+}
+
+.sidebar-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 0;
+    width: 3px;
+    background-color: var(--gold, #d4af37);
+    border-radius: 0 4px 4px 0;
+    transition: height 0.2s ease;
+}
+
+.sidebar-link.active::before {
+    height: 20px;
+}
+
+.sidebar-footer {
+    padding: 20px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background-color: #ef4444;
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.logout-btn:hover .logout-icon {
+    transform: translateX(-2px);
+}
