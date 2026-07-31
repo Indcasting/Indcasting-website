@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { loginUser } from "@/utils/auth";
+import { loginUser, getCurrentUser } from "@/utils/auth";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,20 +12,29 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  // Auto redirect if already logged in
+  useEffect(() => {
+    const user = getCurrentUser();
+    if (user) {
+      if (user.role === "talent") {
+        router.push("/dashboard/talent");
+      } else {
+        router.push("/dashboard/seeker");
+      }
+    }
+  }, [router]);
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
-    const user = loginUser(email, password);
+    const user = loginUser(email, password, rememberMe);
 
     if (!user) {
       setError("Invalid email or password.");
       return;
     }
-    localStorage.setItem(
-    "indcasting_current_user",
-    JSON.stringify(user)
-);
 
     if (user.role === "talent") {
       router.push("/dashboard/talent");
@@ -47,30 +56,32 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin}>
 
-          <label>Email</label>
+          <div className="auth-field">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e)=>setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e)=>setEmail(e.target.value)}
-            required
-          />
+          <div className="auth-field">
+            <label>Password</label>
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
+              value={password}
+              onChange={(e)=>setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-          <label>Password</label>
+          <div className="remember-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', fontSize: '14px' }}>
 
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter password"
-            value={password}
-            onChange={(e)=>setPassword(e.target.value)}
-            required
-          />
-
-          <div className="remember-row">
-
-            <label className="remember">
-              <input type="checkbox" />
+            <label className="remember" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, fontWeight: 'normal' }}>
+              <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
               Remember Me
             </label>
 

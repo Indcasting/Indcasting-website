@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   BriefcaseBusiness,
@@ -12,34 +12,46 @@ import {
   Bell,
   Crown,
   Settings,
+  HelpCircle,
   LogOut,
   ChevronRight
 } from "lucide-react";
+import { logoutUser } from "@/utils/auth";
 
 const menuItems = [
-  { name: "Dashboard", href: "/dashboard/talent", icon: Home },
+  { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Casting Calls", href: "/dashboard/casting-calls", icon: BriefcaseBusiness },
-  { name: "Applications", href: "/dashboard/applications", icon: FileText },
+  { name: "My Applications", href: "/dashboard/applications", icon: FileText },
   { name: "Portfolio", href: "/dashboard/portfolio", icon: User },
-  { name: "Saved", href: "/dashboard/saved", icon: Star },
-  { name: "Messages", href: "/messages", icon: MessageCircle },
-  { name: "Notifications", href: "/notifications", icon: Bell },
-  { name: "Membership", href: "/membership", icon: Crown },
+  { name: "Saved Jobs", href: "/dashboard/saved", icon: Star },
+  { name: "Messages", href: "/dashboard/messages", icon: MessageCircle },
+  { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
+  { name: "Membership", href: "/dashboard/membership", icon: Crown },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+  { name: "Help Center", href: "/dashboard/help", icon: HelpCircle },
 ];
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logoutUser();
+    router.push("/login");
+  };
 
   return (
     <aside className="dashboard-sidebar">
       <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <div className="logo-icon">IC</div>
-          <div className="logo-text">
-            <h2>IndCasting</h2>
-            <p>Talent Portal</p>
+        <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+          <div className="sidebar-logo">
+            <div className="logo-icon">IC</div>
+            <div className="logo-text">
+              <h2>IndCasting</h2>
+              <p>Talent Portal</p>
+            </div>
           </div>
-        </div>
+        </Link>
       </div>
 
       <div className="sidebar-scrollable">
@@ -86,23 +98,13 @@ export default function DashboardSidebar() {
                 </Link>
               );
             })}
-            
-            <Link
-              href="/dashboard/settings"
-              className={`sidebar-link ${pathname === "/dashboard/settings" ? "active" : ""}`}
-            >
-              <div className="link-content">
-                <Settings className="sidebar-icon" size={20} />
-                <span>Settings</span>
-              </div>
-            </Link>
           </nav>
         </div>
       </div>
 
       <div className="sidebar-footer">
-        <button className="logout-btn">
-          <LogOut size={18} className="logout-icon" />
+        <button className="logout-btn" onClick={handleLogout}>
+          <LogOut size={18} className="sidebar-icon" />
           <span>Logout</span>
         </button>
       </div>

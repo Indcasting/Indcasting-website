@@ -58,64 +58,64 @@ Join India's Premium Casting Platform
 
 <form onSubmit={handleSignup}>
 
-<label>Full Name</label>
+<div className="auth-field">
+  <label>Full Name</label>
+  <input
+    value={name}
+    onChange={(e)=>setName(e.target.value)}
+    required
+  />
+</div>
 
-<input
-value={name}
-onChange={(e)=>setName(e.target.value)}
-required
-/>
+<div className="auth-field">
+  <label>Email</label>
+  <input
+    type="email"
+    value={email}
+    onChange={(e)=>setEmail(e.target.value)}
+    required
+  />
+</div>
 
-<label>Email</label>
+<div className="auth-field">
+  <label>Phone</label>
+  <input
+    value={phone}
+    onChange={(e)=>setPhone(e.target.value)}
+    required
+  />
+</div>
 
-<input
-type="email"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-required
-/>
+<div className="auth-field">
+  <label>City</label>
+  <input
+    value={city}
+    onChange={(e)=>setCity(e.target.value)}
+    required
+  />
+</div>
 
-<label>Phone</label>
+<div className="auth-field">
+  <label>Password</label>
+  <input
+    type="password"
+    value={password}
+    onChange={(e)=>setPassword(e.target.value)}
+    required
+  />
+</div>
 
-<input
-value={phone}
-onChange={(e)=>setPhone(e.target.value)}
-required
-/>
-
-<label>City</label>
-
-<input
-value={city}
-onChange={(e)=>setCity(e.target.value)}
-required
-/>
-
-<label>Password</label>
-
-<input
-type="password"
-value={password}
-onChange={(e)=>setPassword(e.target.value)}
-required
-/>
-
-<label>Role</label>
-
-<select
-value={role}
-onChange={(e)=>setRole(e.target.value as "talent"|"seeker")}
->
-
-<option value="talent">
-Talent
-</option>
-
-<option value="seeker">
-Casting Director / Seeker
-</option>
-
-</select>
+<div className="auth-field">
+  <label>Role</label>
+  <select
+    value={role}
+    onChange={(e)=>setRole(e.target.value as "talent"|"seeker")}
+    style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #ddd', fontSize: '15px' }}
+  >
+    <option value="talent">Talent</option>
+    <option value="seeker">Casting Director / Seeker</option>
+  </select>
+</div>
 
 <button className="signup-btn-full">
 
