@@ -523,7 +523,7 @@ export default function Home() {
         .cat-card:hover .cat-card-arrow { background: var(--gold); color: #111; }
 
         /* ── TILES ── */
-        .tiles-section { padding: 40px 4vw 20px; overflow: hidden; }
+        .tiles-section { padding: 40px 4vw 2px; overflow: hidden; }
         .tiles-eyebrow { text-align: center; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); margin-bottom: 2.5rem; }
         .tiles-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; align-items: start; min-height: 1100px; }
         .tile-col { display: flex; flex-direction: column; gap: 16px; will-change: transform; }
@@ -545,7 +545,7 @@ export default function Home() {
         }
 
         /* ── HOW IT WORKS ── */
-        .how-section { padding: 40px 4vw 100px; }
+        .how-section { padding: 6px 4vw 100px; }
         .how-title { font-size: clamp(1.8rem,3.5vw,2.8rem); font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
         .how-sub { color: var(--mid); margin-bottom: 3.5rem; font-size: 1rem; }
         .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; border: 1.5px solid var(--mist); }
