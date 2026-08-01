@@ -50,7 +50,7 @@ export default function MessagesView() {
 
   return (
     <div className="messages-container dashboard-card-ui" style={{ padding: '24px', margin: 0 }}>
-      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '16px', color: 'var(--dash-text-main)' }}>Messages</h2>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0 0 16px 0', color: 'var(--dash-text-main)' }}>Messages</h2>
       
       <div className="chat-box" style={{ 
         height: '400px', 

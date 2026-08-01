@@ -6,4 +6,5 @@ export interface UserProfile {
   phone: string;
   city: string;
   role: "talent" | "seeker";
+  bio?: string;
 }

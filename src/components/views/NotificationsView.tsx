@@ -52,6 +52,10 @@ export default function NotificationsView() {
       read:true
     }));
     setNotifications(updated);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('hasUnreadNotifications', 'false');
+      window.dispatchEvent(new Event('notifications-read'));
+    }
   }
 
   return(

@@ -140,7 +140,7 @@ html.dark .auth-card {
 }
 
 html.dark .auth-card h1 {
-    color: #fff;
+    color: #111;
 }
 
 html.dark .auth-subtitle {
@@ -156,7 +156,7 @@ html.dark .auth-field input,
 html.dark .auth-field select {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
+    color: #111;
 }
 
 html.dark .auth-field input:focus,
@@ -1295,20 +1295,20 @@ html.dark .auth-switch {
 }
 
 .purple-btn{
-    background:#7B2CBF;
-    color:#fff;
+    background:var(--gold);
+    color:#111;
     padding:14px 30px;
     border-radius:12px;
     text-decoration:none;
     font-size:16px;
     font-weight:600;
     transition:all .3s ease;
-    border:2px solid #7B2CBF;
+    border:2px solid var(--gold);
 }
 
 .purple-btn:hover{
-    background:#5A189A;
-    border-color:#5A189A;
+    background:#c39c2d;
+    border-color:#c39c2d;
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(123,44,191,.35);
 }
@@ -1369,13 +1369,13 @@ html.dark .auth-switch {
 /* PURPLE SIGNUP */
 
 .signup-btn{
-    background:#7B2CBF;
-    color:#fff;
+    background:var(--gold);
+    color:#111;
     border:none;
 }
 
 .signup-btn:hover{
-    background:#5A189A;
+    background:#c39c2d;
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(123,44,191,.35);
 }
@@ -1506,7 +1506,7 @@ margin-top:10px;
 
 .signup-btn-full{
 
-background:#7B2CBF;
+background:var(--gold);
 
 color:white;
 
@@ -1534,7 +1534,7 @@ background:#E6C65A;
 
 .signup-btn-full:hover{
 
-background:#5A189A;
+background:#c39c2d;
 
 }
 
@@ -1844,7 +1844,7 @@ body.light-mode footer{
 
 .signup-btn{
 
-    background:#7B2CBF;
+    background:var(--gold);
 
     color:white;
 
@@ -1858,7 +1858,7 @@ body.light-mode footer{
 
 .signup-btn:hover{
 
-    background:#5A189A;
+    background:#c39c2d;
 
 }
 /* ===========================
@@ -1927,7 +1927,7 @@ body.light-mode footer{
 
 .own-message{
 
-    background:#7B2CBF;
+    background:var(--gold);
 
     color:white;
 
@@ -2051,7 +2051,7 @@ body.light-mode footer{
 
 .view-toggle button.active{
     background:var(--gold);
-    color:#fff;
+    color:#111;
 }
 
 /* ===========================
@@ -2198,7 +2198,7 @@ body.light-mode footer{
 
 .notification-header button{
 
-    background:#7B2CBF;
+    background:var(--gold);
 
     color:white;
 
@@ -2353,8 +2353,8 @@ body.light-mode footer{
 }
 
 .portfolio-next-btn:hover{
-    background:#7B2CBF;
-    color:#fff;
+    background:var(--gold);
+    color:#111;
 }.site-header{
     position: fixed;
     top: 0;
@@ -2556,7 +2556,7 @@ body{
 
 .reset-btn:hover{
     background:#d4af37;
-    color:#fff;
+    color:#111;
 }
 
 .filters-wrapper{
@@ -6191,20 +6191,20 @@ html.dark .site-header.scrolled{
 }
 
 .purple-btn{
-    background:#7B2CBF;
-    color:#fff;
+    background:var(--gold);
+    color:#111;
     padding:14px 30px;
     border-radius:12px;
     text-decoration:none;
     font-size:16px;
     font-weight:600;
     transition:all .3s ease;
-    border:2px solid #7B2CBF;
+    border:2px solid var(--gold);
 }
 
 .purple-btn:hover{
-    background:#5A189A;
-    border-color:#5A189A;
+    background:#c39c2d;
+    border-color:#c39c2d;
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(123,44,191,.35);
 }
@@ -6265,13 +6265,13 @@ html.dark .site-header.scrolled{
 /* PURPLE SIGNUP */
 
 .signup-btn{
-    background:#7B2CBF;
-    color:#fff;
+    background:var(--gold);
+    color:#111;
     border:none;
 }
 
 .signup-btn:hover{
-    background:#5A189A;
+    background:#c39c2d;
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(123,44,191,.35);
 }
@@ -6320,7 +6320,7 @@ html.dark .site-header.scrolled{
 
 .view-toggle button.active{
     background:var(--gold);
-    color:#fff;
+    color:#111;
 }
 
 /* ===========================
@@ -6576,7 +6576,7 @@ html.dark .site-header.scrolled{
 
 .reset-btn:hover{
     background:#d4af37;
-    color:#fff;
+    color:#111;
 }
 
 .filters-wrapper{
@@ -6784,7 +6784,7 @@ html.dark .site-header.scrolled{
     --home-border:#E8D7AF;
 
     --home-gold:#D4AF37;
-    --home-purple:#7B2CBF;
+    --home-purple:var(--gold);
 
     --home-shadow:0 20px 60px rgba(0,0,0,.08);
 }
@@ -6863,53 +6863,29 @@ body.dark-mode{
    PREMIUM DASHBOARD DESIGN SYSTEM
 =========================== */
 :root {
-  /* Light Theme Variables matching Home Page */
-  --dash-bg: #FFFDF7;
-  --dash-surface: #ffffff;
-  --dash-border: #f0ebe0;
-  --dash-text-main: #0f0e0d;
-  --dash-text-muted: #6b6560;
-  --dash-accent: #0f0e0d;
-  --dash-accent-hover: #c9a84c;
-  --dash-gold: #c9a84c;
-  --dash-shadow-sm: 0 12px 35px rgba(0,0,0,0.04);
-  --dash-shadow-md: 0 12px 35px rgba(0,0,0,0.08);
-  --dash-shadow-lg: 0 20px 52px rgba(201,168,76,0.18);
-  --dash-hover-bg: #f0ebe0;
+  /* Dashboard variables dynamically inheriting from homepage theme */
+  --dash-bg: var(--cream);
+  --dash-surface: var(--card-bg);
+  --dash-border: var(--input-border);
+  --dash-text-main: var(--ink);
+  --dash-text-muted: var(--mid);
+  --dash-accent: var(--ink);
+  --dash-accent-hover: var(--gold);
+  --dash-gold: var(--gold);
+  --dash-shadow-sm: var(--shadow);
+  --dash-shadow-md: var(--shadow);
+  --dash-shadow-lg: var(--shadow);
+  --dash-hover-bg: var(--subtle-bg);
 
-  /* Sidebar specifically stays dark in light mode as requested */
-  --sidebar-bg: #0f1117;
-  --sidebar-border: rgba(255,255,255,0.05);
-  --sidebar-text-main: #f1f5f9;
-  --sidebar-text-muted: #94a3b8;
-  --sidebar-hover-bg: rgba(255,255,255,0.05);
-}
-
-html.dark {
-  /* Dark Theme Variables matching Home Page */
-  --dash-bg: #0b0b0b;
-  --dash-surface: #161616;
-  --dash-border: #1c1c1c;
-  --dash-text-main: #f6f6f6;
-  --dash-text-muted: #b8b8b8;
-  --dash-accent: #f6f6f6;
-  --dash-accent-hover: #c9a84c;
-  --dash-gold: #c9a84c;
-  --dash-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
-  --dash-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --dash-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
-  --dash-hover-bg: #1c1c1c;
-
-  /* Sidebar in dark mode */
-  --sidebar-bg: #0f1117;
-  --sidebar-border: rgba(255,255,255,0.05);
-  --sidebar-text-main: #f1f5f9;
-  --sidebar-text-muted: #94a3b8;
-  --sidebar-hover-bg: rgba(255,255,255,0.05);
+  /* Sidebar perfectly matches the application theme */
+  --sidebar-bg: var(--cream);
+  --sidebar-border: var(--input-border);
+  --sidebar-text-main: var(--ink);
+  --sidebar-text-muted: var(--mid);
+  --sidebar-hover-bg: var(--subtle-bg);
 }
 
 /* Isolate Dashboard from Global Layouts */
-body:has(.is-dashboard) > header,
 body:has(.is-dashboard) > footer {
     display: none !important;
 }
@@ -6918,81 +6894,17 @@ body:has(.is-dashboard) > main {
     margin: 0 !important;
 }
 
+/* Dashboard Background & Layout */
 .dashboard-container {
     display: flex;
-    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 84px);
+    margin-top: 84px;
+    background: var(--cream);
     color: var(--dash-text-main);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dashboard-main-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    height: 100vh;
-}
-
-.dashboard-main {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 32px 40px;
-    background-color: transparent;
-}
-
-/* Header */
-.dashboard-header {
-    height: 72px;
-    background-color: rgba(255, 255, 255, 0.4);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--dash-border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 40px;
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-html.dark .dashboard-header {
-    background-color: rgba(15, 14, 13, 0.4);
-}
-
-.dashboard-header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.header-icon-btn {
-    background: transparent;
-    border: none;
-    color: var(--dash-text-muted);
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-}
-.header-icon-btn:hover {
-    background-color: var(--dash-hover-bg);
-    color: var(--dash-text-main);
-}
-
-/* Dashboard Background */
-.dashboard-container {
-    position: relative;
-    overflow: hidden;
-    background: var(--cream);
-    transition: background .35s ease, color .35s ease;
-    display: flex;
 }
 
 .dashboard-container::before {
@@ -7036,24 +6948,28 @@ html.dark .dashboard-container::after {
     z-index: 2;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+}
+
+.dashboard-main {
+    flex: 1;
+    padding: 32px 40px;
+    background-color: transparent;
 }
 
 /* Sidebar */
 .dashboard-sidebar {
     width: 280px;
     flex-shrink: 0;
-    background-color: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(16px);
+    background-color: var(--card-bg);
     border-right: 1px solid var(--sidebar-border);
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    position: sticky;
+    top: 84px;
+    height: calc(100vh - 84px);
     z-index: 50;
     transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-html.dark .dashboard-sidebar {
-    background-color: rgba(15, 14, 13, 0.65);
 }
 
 .sidebar-header {
@@ -7073,15 +6989,15 @@ html.dark .dashboard-sidebar {
 .logo-icon {
     width: 32px;
     height: 32px;
-    background: linear-gradient(135deg, var(--dash-gold), #f9e596);
+    background: linear-gradient(135deg, var(--gold), var(--darkGold, #9D7526));
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #0f1117;
+    color: white;
     font-weight: 700;
     font-size: 14px;
-    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 12px rgba(200, 155, 60, 0.2);
 }
 
 .logo-text h2 {
@@ -7164,11 +7080,11 @@ html.dark .dashboard-sidebar {
 
 .sidebar-link.active {
     background-color: var(--sidebar-hover-bg);
-    color: var(--sidebar-text-main);
+    color: var(--gold);
     font-weight: 600;
 }
 .sidebar-link.active .sidebar-icon {
-    color: var(--sidebar-text-main);
+    color: var(--gold);
 }
 
 .sidebar-footer {
@@ -7220,18 +7136,13 @@ html.dark .dashboard-sidebar {
 }
 
 .dashboard-card-ui {
-    background-color: rgba(255, 255, 255, 0.82);
+    background-color: var(--card-bg);
     border: none;
-    border-left: 4px solid var(--gold);
-    border-radius: 18px;
-    box-shadow: 0 12px 35px rgba(0,0,0,.08);
-    padding: 24px;
-    backdrop-filter: blur(14px);
-    transition: all 0.35s ease;
-}
-html.dark .dashboard-card-ui {
-    background-color: rgba(255, 255, 255, 0.06);
-    box-shadow: none;
+    border-top: 5px solid var(--gold);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    padding: 30px;
+    transition: all 0.3s ease;
 }
 
 .dashboard-card-header {
@@ -7253,17 +7164,12 @@ html.dark .dashboard-card-ui {
     display: flex;
     align-items: center;
     gap: 16px;
-    background: rgba(255,255,255,.82);
-    border-radius: 18px;
-    border-left: 4px solid var(--gold);
+    background-color: var(--card-bg);
+    border-radius: 24px;
+    border-top: 5px solid var(--gold);
     padding: 1.4rem 1.8rem;
-    backdrop-filter: blur(14px);
-    box-shadow: 0 12px 35px rgba(0,0,0,.08);
-    transition: .35s;
-}
-html.dark .dashboard-container .stat-card {
-    background: rgba(255,255,255,.06);
-    box-shadow: none;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
 }
 .stat-icon-wrapper {
     width: 48px;
@@ -7273,13 +7179,57 @@ html.dark .dashboard-container .stat-card {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--dash-text-main);
+    color: var(--gold);
 }
 .stat-content h3 {
     font-size: 28px;
     font-weight: 900;
     margin: 0;
     line-height: 1.2;
+}
+
+/* Dashboard Premium Buttons */
+.dash-btn-primary {
+    background: var(--gold);
+    color: var(--ink);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all .3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.dash-btn-primary:hover {
+    background: var(--gold2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(200, 155, 60, 0.35);
+}
+
+.dash-btn-outline {
+    background: transparent;
+    color: var(--dash-text-main);
+    border: 2px solid var(--gold);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all .3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.dash-btn-outline:hover {
+    background: var(--gold);
+    color: var(--ink);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(200, 155, 60, 0.35);
 }
 .stat-content p {
     font-size: 13px;
