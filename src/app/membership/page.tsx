@@ -3,23 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import MagicRings from "@/components/ui/MagicRings";
 
-declare global {
-  interface Window {
-    gsap: {
-      registerPlugin: (...args: unknown[]) => void;
-      from: (targets: unknown, vars: Record<string, unknown>) => void;
-      fromTo: (targets: unknown, fromVars: Record<string, unknown>, toVars: Record<string, unknown>) => void;
-      to: (targets: unknown, vars: Record<string, unknown>) => void;
-      set: (targets: unknown, vars: Record<string, unknown>) => void;
-      utils: { toArray: <T = Element>(targets: string) => T[] };
-      quickTo: (target: unknown, prop: string, vars: Record<string, unknown>) => (val: number) => void;
-    };
-    ScrollTrigger: {
-      getAll: () => Array<{ kill: () => void }>;
-      create: (vars: Record<string, unknown>) => void;
-    };
-  }
-}
 
 interface Plan {
   id: string; name: string; price: string; priceNum: number | null;

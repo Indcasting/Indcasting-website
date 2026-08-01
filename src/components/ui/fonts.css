@@ -1,0 +1,6 @@
+/* src/styles/fonts.css
+   Import this once at the top of your main entry (main.tsx or App.tsx)
+   e.g.  import './styles/fonts.css'
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&display=swap');
