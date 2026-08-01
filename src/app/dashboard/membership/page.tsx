@@ -21,7 +21,7 @@ export default function MembershipPage() {
           <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="var(--dash-text-muted)" /> Apply to 3 jobs/month</li>
           <li style={{ display: 'flex', alignItems: 'center', gap: '8px', opacity: 0.5 }}><CheckCircle2 size={18} /> No featured listing</li>
         </ul>
-        <button style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid var(--dash-border)', backgroundColor: 'transparent', color: 'var(--dash-text-main)', fontWeight: 600, cursor: 'not-allowed' }}>Current Plan</button>
+        <button className="dash-btn-outline" style={{ width: '100%', opacity: 0.7, cursor: 'not-allowed' }} disabled>Current Plan</button>
       </div>
 
       <div className="col-span-6 dashboard-card-ui" style={{ padding: '32px', border: '2px solid var(--gold)' }}>
@@ -34,7 +34,7 @@ export default function MembershipPage() {
           <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="var(--gold)" /> Unlimited applications</li>
           <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle2 size={18} color="var(--gold)" /> Featured listing in director searches</li>
         </ul>
-        <button style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--gold)', color: 'var(--ink)', fontWeight: 700, cursor: 'pointer' }}>Upgrade Now</button>
+        <button className="dash-btn-primary" style={{ width: '100%' }}>Upgrade Now</button>
       </div>
 
     </div>

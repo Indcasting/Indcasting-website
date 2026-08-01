@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import {
   Home,
   BriefcaseBusiness,
@@ -14,11 +15,15 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Video,
+  BarChart2,
+  Building
 } from "lucide-react";
-import { logoutUser } from "@/utils/auth";
+import { logoutUser, getCurrentUser } from "@/utils/auth";
+import { UserProfile } from "@/types/user";
 
-const menuItems = [
+const talentMenuItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Casting Calls", href: "/dashboard/casting-calls", icon: BriefcaseBusiness },
   { name: "My Applications", href: "/dashboard/applications", icon: FileText },
@@ -31,34 +36,49 @@ const menuItems = [
   { name: "Help Center", href: "/dashboard/help", icon: HelpCircle },
 ];
 
+const seekerMenuItems = [
+  { name: "Dashboard", href: "/dashboard/seeker", icon: Home },
+  { name: "My Casting Calls", href: "/dashboard/seeker/casting-calls", icon: BriefcaseBusiness },
+  { name: "Applications", href: "/dashboard/seeker/applications", icon: FileText },
+  { name: "Shortlisted Talent", href: "/dashboard/seeker/shortlisted", icon: Star },
+  { name: "Auditions", href: "/dashboard/seeker/auditions", icon: Video },
+  { name: "Messages", href: "/dashboard/seeker/messages", icon: MessageCircle },
+  { name: "Notifications", href: "/dashboard/seeker/notifications", icon: Bell },
+  { name: "Analytics", href: "/dashboard/seeker/analytics", icon: BarChart2 },
+  { name: "Membership", href: "/dashboard/seeker/membership", icon: Crown },
+  { name: "Company Profile", href: "/dashboard/seeker/company-profile", icon: Building },
+  { name: "Settings", href: "/dashboard/seeker/settings", icon: Settings },
+];
+
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, []);
 
   const handleLogout = () => {
     logoutUser();
     router.push("/login");
   };
 
+  const menuItems = user?.role === "seeker" ? seekerMenuItems : talentMenuItems;
+  
+  // Divide menu items into groups. For Seeker, we'll put the last 3 in "Account"
+  // For Talent, the last 5 in "Account"
+  const splitIndex = user?.role === "seeker" ? 8 : 5;
+  const mainItems = menuItems.slice(0, splitIndex);
+  const accountItems = menuItems.slice(splitIndex);
+
   return (
     <aside className="dashboard-sidebar">
-      <div className="sidebar-header">
-        <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <div className="sidebar-logo">
-            <div className="logo-icon">IC</div>
-            <div className="logo-text">
-              <h2>IndCasting</h2>
-              <p>Talent Portal</p>
-            </div>
-          </div>
-        </Link>
-      </div>
-
       <div className="sidebar-scrollable">
         <div className="sidebar-nav-group">
           <p className="nav-group-title">Main Menu</p>
           <nav className="sidebar-nav">
-            {menuItems.slice(0, 5).map((item) => {
+            {mainItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
               return (
@@ -81,7 +101,7 @@ export default function DashboardSidebar() {
         <div className="sidebar-nav-group">
           <p className="nav-group-title">Account</p>
           <nav className="sidebar-nav">
-            {menuItems.slice(5).map((item) => {
+            {accountItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
               return (

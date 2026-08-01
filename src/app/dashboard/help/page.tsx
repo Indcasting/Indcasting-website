@@ -35,7 +35,7 @@ export default function HelpCenterPage() {
           <Mail size={32} color="var(--gold)" style={{ margin: '0 auto 16px auto' }} />
           <h4 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 8px 0', color: 'var(--dash-text-main)' }}>Email Support</h4>
           <p style={{ color: 'var(--dash-text-muted)', fontSize: '0.9rem', margin: '0 0 16px 0' }}>Get a response within 24 hours.</p>
-          <button style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--gold)', backgroundColor: 'transparent', color: 'var(--gold)', fontWeight: 600, cursor: 'pointer' }}>Contact Us</button>
+          <button className="dash-btn-outline" style={{ width: '100%', padding: '10px' }}>Contact Us</button>
         </div>
         <div className="dashboard-card-ui" style={{ padding: '24px', textAlign: 'center' }}>
           <Phone size={32} color="var(--gold)" style={{ margin: '0 auto 16px auto' }} />

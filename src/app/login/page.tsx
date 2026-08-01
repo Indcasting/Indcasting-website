@@ -44,7 +44,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
+    <div className="auth-page" style={{ paddingTop: '100px', paddingBottom: '60px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
 
       <div className="auth-card">
 
@@ -114,14 +114,18 @@ export default function LoginPage() {
 
           Don't have an account?
 
-          <Link href="/signin">
+          <Link href="/signup">
             Sign Up
           </Link>
 
         </p>
 
       </div>
-
+      <style dangerouslySetInnerHTML={{__html: `
+        html.dark .auth-card h1 {
+          color: #ffffff !important;
+        }
+      `}} />
     </div>
   );
 }
