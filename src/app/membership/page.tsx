@@ -110,25 +110,23 @@ function PlanCard({ plan }: { plan: Plan }) {
       </button>
 
       <div className="plan-toggle">
-        <span>See what's included</span>
-
-        <span className="plan-chevron">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 16 16"
-            fill="none"
-          >
-            <path
-              d="M4 6l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </span>
-      </div>
+  <span className="plan-chevron">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <path
+        d="M4 6l4 4 4-4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </span>
+</div>
 
       <div className="plan-features-wrap">
         <ul className="plan-features">
@@ -321,26 +319,6 @@ export default function Membership() {
       <div style={{ position:"fixed", top:0, left:0, right:0, height:"2px", background:"rgba(201,168,76,0.15)", zIndex:200 }}>
         <div className="progress-bar" style={{ height:"100%", background:"var(--gold)", transformOrigin:"left", transform:"scaleX(0)" }} />
       </div>
-
-      {/* Dark mode toggle */}
-      <button
-        onClick={toggleDark}
-        aria-label="Toggle dark mode"
-        style={{
-          position: "fixed", top: "1rem", right: "1rem", zIndex: 300,
-          background: dark ? "rgba(255,255,255,0.08)" : "rgba(15,14,13,0.06)",
-          border: `1px solid ${dark ? "rgba(255,255,255,0.14)" : "rgba(15,14,13,0.12)"}`,
-          borderRadius: "100px", padding: "0.45rem 1rem",
-          display: "flex", alignItems: "center", gap: "0.5rem",
-          fontSize: "0.78rem", fontWeight: 600,
-          color: dark ? "#fff" : "var(--ink)",
-          cursor: "pointer", backdropFilter: "blur(10px)",
-          transition: "all .3s ease",
-        }}
-      >
-        <span style={{ fontSize: "1rem" }}>{dark ? "☀️" : "🌙"}</span>
-        {dark ? "Light" : "Dark"}
-      </button>
 
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -714,35 +692,43 @@ html:not(.dark) .m-hero{
         .plan-card.plan-featured .plan-cta:hover { background: var(--gold2); border-color: var(--gold2); }
 
         .plan-toggle{
-
     margin-top:auto;
 
     display:flex;
-
-    justify-content:space-between;
-
+    justify-content:center;
     align-items:center;
 
-    padding:1.25rem 2.4rem;
+    padding:1.25rem 0;
 
     border-top:1px solid var(--mist);
 
-    color:var(--mid);
-
-    font-weight:600;
-
+    transition:.3s;
 }
+
         html.dark .plan-toggle { border-top-color: #2a2a2a; }
         .plan-card.plan-featured .plan-toggle { border-top-color: rgba(255,255,255,0.1); color: rgba(255,255,255,0.45); }
         .plan-toggle:hover { background: rgba(201,168,76,0.06); color: var(--ink); }
         .plan-card.plan-featured .plan-toggle:hover { background: rgba(255,255,255,0.06); color: #fff; }
 
-        .plan-chevron {
-          display: inline-flex; align-items: center; justify-content: center;
-          width: 22px; height: 22px; border-radius: 50%;
-          background: var(--mist); color: var(--mid); flex-shrink: 0;
-          transition: transform .35s cubic-bezier(0.34,1.56,0.64,1), background .2s, color .2s;
-        }
+        .plan-chevron{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:46px;
+    height:46px;
+
+    border-radius:50%;
+
+    background:var(--mist);
+    color:var(--mid);
+
+    transition:
+        transform .35s cubic-bezier(.34,1.56,.64,1),
+        background .25s,
+        color .25s;
+}
+
         html.dark .plan-chevron { background: #2a2a2a; color: #888; }
         .plan-card.plan-featured .plan-chevron { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); }
         .plan-card:hover .plan-chevron{

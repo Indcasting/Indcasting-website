@@ -29,7 +29,7 @@ export default function Footer() {
 
           <Link href="/membership">Membership</Link>
 
-          <Link href="/host">Host</Link>
+          <Link href="/post">Post</Link>
 
         </div>
 
