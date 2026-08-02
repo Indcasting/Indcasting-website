@@ -1282,10 +1282,15 @@ html.dark .auth-switch {
     stroke:#D4AF37;
 }
 
-.nav-link:hover,
-.icon-btn:hover{
+.nav-link:hover {
     color:#F5C542;
     stroke:#F5C542;
+}
+
+.icon-btn:hover,
+.icon-btn:hover svg {
+    color:#111;
+    stroke:#111;
 }
 .hero-buttons{
     display:flex;

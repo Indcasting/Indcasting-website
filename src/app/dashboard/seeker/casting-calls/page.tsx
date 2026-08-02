@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PlusCircle, Search, Filter, MoreVertical, MapPin, Users, Calendar, Play, Pause, Copy, Edit2, Trash2 } from "lucide-react";
+import { PlusCircle, Search, Filter, MoreVertical, MapPin, Users, Calendar, Play, Pause, Copy, Edit2, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function SeekerCastingCalls() {
@@ -14,6 +14,37 @@ export default function SeekerCastingCalls() {
   ]);
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  
+  const [isCreating, setIsCreating] = useState(false);
+  const [newTitle, setNewTitle] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [newLocation, setNewLocation] = useState("");
+  const [newDeadline, setNewDeadline] = useState("");
+
+  const handleCreateNew = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle || !newCategory || !newLocation || !newDeadline) return;
+    
+    const newJob = {
+      id: calls.length + 1,
+      title: newTitle,
+      category: newCategory,
+      apps: 0,
+      deadline: newDeadline,
+      status: "Active",
+      location: newLocation,
+      date: "Just now"
+    };
+    
+    setCalls([newJob, ...calls]);
+    setIsCreating(false);
+    
+    // Reset form
+    setNewTitle("");
+    setNewCategory("");
+    setNewLocation("");
+    setNewDeadline("");
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -49,7 +80,11 @@ export default function SeekerCastingCalls() {
               }}
             />
           </div>
-          <button className="dash-btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px' }}>
+          <button 
+            className="dash-btn-primary" 
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 24px' }}
+            onClick={() => setIsCreating(true)}
+          >
             <PlusCircle size={18} /> Create New
           </button>
         </div>
@@ -108,6 +143,78 @@ export default function SeekerCastingCalls() {
           </div>
         );
       })}
+      {filteredCalls.length === 0 && (
+        <div className="col-span-12 dashboard-card-ui" style={{ padding: '40px', textAlign: 'center', color: 'var(--dash-text-muted)' }}>
+          <p>No casting calls match your search.</p>
+        </div>
+      )}
+
+      {/* Create New Modal */}
+      {isCreating && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+          zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px',
+          animation: 'fadeIn 0.2s ease-out'
+        }} onClick={() => setIsCreating(false)}>
+          <div style={{
+            backgroundColor: 'var(--dash-bg)', border: '1px solid var(--dash-border)', borderRadius: '24px',
+            width: '100%', maxWidth: '600px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column'
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ padding: '24px 32px', borderBottom: '1px solid var(--dash-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: 'var(--dash-text-main)' }}>Create New Casting Call</h2>
+              <button onClick={() => setIsCreating(false)} style={{ background: 'var(--dash-bg-card)', border: '1px solid var(--dash-border)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--dash-text-muted)', cursor: 'pointer', transition: 'all 0.2s ease' }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateNew} style={{ padding: '32px', flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--dash-text-main)', marginBottom: '8px' }}>Job Title</label>
+                  <input type="text" required placeholder="e.g. Lead Actor" value={newTitle} onChange={e => setNewTitle(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--dash-border)', backgroundColor: 'var(--dash-bg-card)', color: 'var(--dash-text-main)', outline: 'none' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--dash-text-main)', marginBottom: '8px' }}>Category</label>
+                  <select required value={newCategory} onChange={e => setNewCategory(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--dash-border)', backgroundColor: 'var(--dash-bg-card)', color: 'var(--dash-text-main)', outline: 'none', appearance: 'none' }}>
+                    <option value="" disabled>Select category</option>
+                    <option value="Film">Film</option>
+                    <option value="Music Video">Music Video</option>
+                    <option value="Advertising">Advertising</option>
+                    <option value="Animation">Animation</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--dash-text-main)', marginBottom: '8px' }}>Location</label>
+                  <input type="text" required placeholder="e.g. Mumbai or Remote" value={newLocation} onChange={e => setNewLocation(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--dash-border)', backgroundColor: 'var(--dash-bg-card)', color: 'var(--dash-text-main)', outline: 'none' }} />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--dash-text-main)', marginBottom: '8px' }}>Deadline</label>
+                  <input type="text" required placeholder="e.g. Nov 15" value={newDeadline} onChange={e => setNewDeadline(e.target.value)} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--dash-border)', backgroundColor: 'var(--dash-bg-card)', color: 'var(--dash-text-main)', outline: 'none' }} />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', fontWeight: 600, color: 'var(--dash-text-main)', marginBottom: '8px' }}>Role Description</label>
+                <textarea required placeholder="Describe the role requirements, project details, and any other relevant information..." style={{ width: '100%', minHeight: '120px', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--dash-border)', backgroundColor: 'var(--dash-bg-card)', color: 'var(--dash-text-main)', outline: 'none', resize: 'vertical', fontFamily: 'inherit' }} />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '12px' }}>
+                <button type="button" onClick={() => setIsCreating(false)} style={{ padding: '12px 24px', borderRadius: '999px', border: '1.5px solid var(--dash-border)', backgroundColor: 'transparent', color: 'var(--dash-text-main)', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+                <button type="submit" style={{ padding: '12px 32px', borderRadius: '999px', border: 'none', backgroundColor: 'var(--gold)', color: '#000', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(201, 168, 76, 0.3)' }}>Publish Call</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+      `}} />
     </div>
   );
 }

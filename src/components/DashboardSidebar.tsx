@@ -31,7 +31,7 @@ const talentMenuItems = [
   { name: "Saved Jobs", href: "/dashboard/saved", icon: Star },
   { name: "Messages", href: "/dashboard/messages", icon: MessageCircle },
   { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
-  { name: "Membership", href: "/dashboard/membership", icon: Crown },
+  { name: "Membership", href: "/membership", icon: Crown },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
   { name: "Help Center", href: "/dashboard/help", icon: HelpCircle },
 ];
@@ -45,7 +45,7 @@ const seekerMenuItems = [
   { name: "Messages", href: "/dashboard/seeker/messages", icon: MessageCircle },
   { name: "Notifications", href: "/dashboard/seeker/notifications", icon: Bell },
   { name: "Analytics", href: "/dashboard/seeker/analytics", icon: BarChart2 },
-  { name: "Membership", href: "/dashboard/seeker/membership", icon: Crown },
+  { name: "Membership", href: "/membership", icon: Crown },
   { name: "Company Profile", href: "/dashboard/seeker/company-profile", icon: Building },
   { name: "Settings", href: "/dashboard/seeker/settings", icon: Settings },
 ];
@@ -57,7 +57,7 @@ export default function DashboardSidebar() {
 
   useEffect(() => {
     setUser(getCurrentUser());
-  }, []);
+  }, [pathname]);
 
   const handleLogout = () => {
     logoutUser();

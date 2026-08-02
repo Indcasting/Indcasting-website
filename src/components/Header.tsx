@@ -12,6 +12,14 @@ export default function Header() {
   const pathname = usePathname() || "";
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<UserProfile | null>(null);
+  
+  // For the prototype: if no user is logged in but we are on a dashboard route, mock a user
+  const displayUser = user || (pathname.startsWith('/dashboard') ? {
+    name: pathname.includes('/seeker') ? "Casting Director" : "Abhiroop",
+    email: "demo@example.com",
+    password: "password",
+    role: pathname.includes('/seeker') ? "seeker" : "talent"
+  } as UserProfile : null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [createMenuOpen, setCreateMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
@@ -40,7 +48,7 @@ export default function Header() {
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -84,7 +92,7 @@ export default function Header() {
     router.push("/login");
   }
 
-  const initials = user?.name
+  const initials = displayUser?.name
     .split(" ")
     .filter(Boolean)
     .map((n) => n[0])
@@ -160,7 +168,7 @@ export default function Header() {
           </button>
 
           {/* Profile Dropdown */}
-          {user ? (
+          {displayUser ? (
             <div className="profile-menu-wrap" ref={menuRef}>
               <button className="header-avatar-btn" onClick={() => setMenuOpen((v) => !v)}>
                 <span className="header-avatar">{initials || "?"}</span>
@@ -169,9 +177,9 @@ export default function Header() {
               {menuOpen && (
                 <div className="profile-dropdown" style={{ minWidth: '200px', top: '120%' }}>
                   <div style={{ padding: '0 16px 12px 16px', borderBottom: '1px solid rgba(200,155,60,0.2)', marginBottom: '8px' }}>
-                    <p className="dropdown-name" style={{ margin: '0 0 4px 0', color: '#111' }}>{user.name}</p>
+                    <p className="dropdown-name" style={{ margin: '0 0 4px 0', color: '#111' }}>{displayUser.name}</p>
                   </div>
-                  <Link href={user.role === "talent" ? "/dashboard/talent" : "/dashboard/seeker"} className="dropdown-link" onClick={() => setMenuOpen(false)}>
+                  <Link href={displayUser.role === "talent" ? "/dashboard/talent" : "/dashboard/seeker"} className="dropdown-link" onClick={() => setMenuOpen(false)}>
                     Dashboard
                   </Link>
                   <button className="dropdown-link dropdown-logout" onClick={handleLogout}>
