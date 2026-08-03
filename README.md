@@ -120,3 +120,306 @@ The platform relies on a sophisticated, variable-based vanilla CSS architecture 
 
 ## License
 This project is proprietary and confidential. All rights reserved by IndCasting.
+
+
+---
+
+# Indcasting Comprehensive Architecture & Documentation
+
+## 1. Project Overview
+- **Project Name:** Indcasting
+- **One-line Description:** A premium networking platform connecting actors, models, dancers, and creators with casting directors and production houses.
+- **Purpose:** To facilitate high-end talent discovery, casting call management, and professional portfolio showcasing tailored for both talents and seekers.
+- **Tech Stack:** Next.js (App Router), React 19, TypeScript, Vanilla CSS, GSAP, Three.js, Lucide React.
+- **Main Features:** Dual-role dashboards (Talent vs. Seeker), dynamic portfolio management, seamless casting call posting/filtering, interactive multi-view modes, real-time application tracking, and an intelligent local storage-based session synchronization.
+
+---
+
+## 2. Directory Structure
+```text
+src/
+├── app/
+│   ├── create-portfolio/
+│   ├── dashboard/
+│   │   ├── applications/
+│   │   ├── casting-calls/
+│   │   ├── help/
+│   │   ├── membership/
+│   │   ├── messages/
+│   │   ├── notifications/
+│   │   ├── portfolio/
+│   │   ├── saved/
+│   │   ├── seeker/
+│   │   │   ├── analytics/
+│   │   │   ├── applications/
+│   │   │   ├── auditions/
+│   │   │   ├── casting-calls/
+│   │   │   ├── company-profile/
+│   │   │   ├── membership/
+│   │   │   ├── messages/
+│   │   │   ├── notifications/
+│   │   │   ├── settings/
+│   │   │   └── shortlisted/
+│   │   ├── settings/
+│   │   └── talent/
+│   ├── explore-talent/
+│   ├── login/
+│   ├── membership/
+│   ├── messages/
+│   ├── notifications/
+│   ├── portfolios/
+│   ├── post/
+│   ├── privacy/
+│   ├── signup/
+│   ├── talents/
+│   ├── terms/
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.module.css
+│   └── page.tsx
+├── components/
+│   ├── ui/
+│   │   ├── fonts.css
+│   │   ├── Herocarousel.tsx
+│   │   ├── MagicRings.tsx
+│   │   ├── ScrollStack.tsx
+│   │   ├── SplitText.tsx
+│   │   └── theme.css
+│   ├── views/
+│   │   ├── ApplicationsView.tsx
+│   │   ├── MessagesView.tsx
+│   │   └── NotificationsView.tsx
+│   ├── DashboardCard.tsx
+│   ├── DashboardHeader.tsx
+│   ├── DashboardLayout.tsx
+│   ├── DashboardSidebar.tsx
+│   ├── FilterBar.tsx
+│   ├── Footer.tsx
+│   ├── Header.tsx
+│   ├── Navbar.tsx
+│   ├── Portfolioform.tsx
+│   ├── ProfileCompletion.tsx
+│   ├── QuickActions.tsx
+│   ├── RecentApplications.tsx
+│   ├── RecommendedCasting.tsx
+│   └── UpcomingAuditions.tsx
+├── constants/
+│   └── categories.ts
+├── types/
+│   ├── casting.ts
+│   ├── lenis.d.ts
+│   └── user.ts
+└── utils/
+    ├── auth.ts
+    └── storage.ts
+```
+
+---
+
+## 3. Core Foundation Files
+
+### `utils/auth.ts`
+- **Purpose:** Manages user authentication, registration, session state, and session synchronization leveraging Local Storage.
+- **Exports:** `getUsers`, `registerUser`, `loginUser`, `getCurrentUser`, `logoutUser`, `updateUser`
+- **Used by:** Dashboards, Layouts, Login/Signup, Header, Messages, Settings.
+- **Dependencies:** `@/types/user`
+
+### `utils/storage.ts`
+- **Purpose:** Acts as a mock backend for casting calls and posts, handling persistence via Local Storage.
+- **Exports:** `getPosts`, `savePosts`, `addPost`, `deletePost`, `updatePost`
+- **Used by:** Casting Call pages, Post pages, Dashboard Seeker views.
+- **Dependencies:** `@/types/casting`
+
+### `types/user.ts`
+- **Purpose:** Defines the data structure for users.
+- **Exports:** `UserProfile` interface
+- **Used by:** `utils/auth.ts`, Dashboards, Settings, Sidebar, Header.
+
+### `types/casting.ts`
+- **Purpose:** Defines the data structure for casting posts and roles.
+- **Exports:** `CastingPost` interface
+- **Used by:** `utils/storage.ts`, Casting Calls components.
+
+### `constants/categories.ts`
+- **Purpose:** Centralized repository for casting and talent categories (e.g., Actor, Model, Dancer).
+- **Exports:** `CATEGORIES`
+- **Used by:** `FilterBar`, Post creation.
+
+### `app/globals.css`
+- **Purpose:** Establishes the global design system, CSS variables (colors, fonts, radii), utility classes, and light/dark mode theming logic.
+- **Used by:** Global `layout.tsx`
+
+---
+
+## 4. Layout Architecture
+
+### `app/layout.tsx` (Root Layout)
+- **Wraps:** The entire application.
+- **Components Included:** `Header`, `Footer`, Next.js Fonts.
+- **Purpose:** Injects global styles, global navigation, and core document structure.
+
+### `app/dashboard/layout.tsx` (Dashboard Layout)
+- **Wraps:** All routes under `/dashboard/*`.
+- **Components Included:** `DashboardSidebar`.
+- **Purpose:** Provides a persistent, dual-role sidebar and nested navigation layout specific to logged-in users. 
+- **Note:** Individual dashboards often incorporate `DashboardHeader` manually or through nested wrappers.
+
+---
+
+## 5. Routing
+
+- **`/` (Home):** Main landing page showcasing platform value, using GSAP/Three.js components.
+- **`/login` & `/signup`:** Authentication routes relying on `auth.ts`.
+- **`/dashboard`:** Smart redirect route routing to either `/dashboard/talent` or `/dashboard/seeker` based on the user's role.
+- **`/dashboard/talent`:** Hub for actors/models featuring `ProfileCompletion`, `RecentApplications`, and `RecommendedCasting`.
+- **`/dashboard/seeker`:** Hub for casting directors featuring analytics, `QuickActions`, and active casting call metrics.
+- **`/dashboard/applications` & `/dashboard/seeker/applications`:** Injects the highly encapsulated `ApplicationsView`.
+- **`/dashboard/messages` & `/dashboard/seeker/messages`:** Injects the `MessagesView`.
+- **`/dashboard/notifications` & `/dashboard/seeker/notifications`:** Injects the `NotificationsView`.
+- **`/dashboard/casting-calls` & `/dashboard/seeker/casting-calls`:** Browsing and management of jobs.
+- **`/dashboard/portfolio` & `/dashboard/seeker/company-profile`:** User profile settings and portfolio display.
+- **`/membership` & `/dashboard/membership`:** Tiered subscription plan displays.
+- **`/post`:** Page for seekers to create new casting calls dynamically.
+
+---
+
+## 6. Components
+
+### Shared UI Components
+- **`Header.tsx`:** Global top navigation, handles user session state dynamically, provides theme toggling and search.
+- **`Footer.tsx`:** Standard platform footer links.
+- **`DashboardSidebar.tsx`:** Responsive, role-aware sidebar navigation for the dashboard.
+- **`DashboardHeader.tsx`:** Page-level header inside dashboards displaying breadcrumbs and quick actions.
+- **`DashboardCard.tsx`:** A highly reusable wrapper for statistical cards and widgets.
+
+### Specialized Views
+- **`ApplicationsView.tsx`:** Handles complex multi-layout viewing (Tile, Grid, List) for job applications. 
+- **`MessagesView.tsx`:** Interface for direct user-to-user communication.
+- **`NotificationsView.tsx`:** Aggregated alert center for user activity.
+
+### Premium Visual Components (`components/ui/`)
+- **`Herocarousel.tsx`:** High-end hero slider component.
+- **`MagicRings.tsx`:** Three.js powered interactive background graphic.
+- **`ScrollStack.tsx`:** Lenis-powered smooth scrolling stack effect.
+- **`SplitText.tsx`:** GSAP-based advanced typography animation component.
+
+---
+
+## 7. Feature Modules
+
+- **Authentication Module:** Powered by `login/page.tsx`, `signup/page.tsx`, and `utils/auth.ts`. Handles role selection (Talent vs Seeker) and localStorage persistence.
+- **Talent Dashboard:** Encompasses `/dashboard/talent/*`. Focuses on application tracking, saved jobs, and profile completion.
+- **Seeker Dashboard:** Encompasses `/dashboard/seeker/*`. Focuses on analytics, shortlisted talents, audition scheduling, and company profiling.
+- **Casting Management:** Powered by `utils/storage.ts` and `/post/page.tsx`. Allows seekers to draft and publish casting calls.
+- **Membership:** Reusable visually distinct pricing tiers displayed both globally (`/membership`) and internally (`/dashboard/membership`).
+
+---
+
+## 8. Utilities
+
+- **`auth.ts`:**
+  - *Helper Methods:* `getCurrentUser()` reads current session; `loginUser()` validates and stores active session; `logoutUser()` purges session.
+  - *Storage Keys:* Relies on `'users'` and `'currentUser'` inside `localStorage`.
+- **`storage.ts`:**
+  - *Helper Methods:* CRUD operations for casting calls (`getPosts`, `addPost`, etc.)
+  - *Storage Keys:* Relies on `'casting_posts'`.
+
+---
+
+## 9. Types & Interfaces
+
+- **`UserProfile` (`types/user.ts`):** Defines `id`, `name`, `email`, `role`, `avatar`, and nested stats/preferences. Imported globally across views and utils.
+- **`CastingPost` (`types/casting.ts`):** Defines `id`, `title`, `roleType`, `location`, `description`. Used by seeker dashboards and storage utils.
+- **`Lenis` (`types/lenis.d.ts`):** TypeScript ambient declaration for the Lenis smooth scroll library.
+
+---
+
+## 10. Constants
+
+- **`CATEGORIES` (`constants/categories.ts`):** An array of standard industry roles (Actor, Director, Model, Dancer, Voice Artist) to standardize filtering and job posting.
+
+---
+
+## 11. API Layer
+
+- **Current Implementation:** There is no traditional backend API route (e.g., Node.js/Express) currently implemented.
+- **Data Flow:** All "API" interactions are heavily mocked using `localStorage` through `utils/auth.ts` and `utils/storage.ts`. Data is retrieved client-side on component mount using React `useEffect`.
+
+---
+
+## 12. State Management
+
+- **React State (`useState` & `useEffect`):** Primarily handles UI toggles, modal visibility, layout view modes (grid vs list), and form inputs.
+- **Local Storage:** Acts as the primary database for persistence across reloads. Both User sessions and Casting Post data flow directly from local storage into React state upon component hydration.
+
+---
+
+## 13. Dependency Graph (Core Flow)
+
+```text
+app/layout.tsx
+ ├── globals.css
+ ├── components/Header.tsx
+ │    └── utils/auth.ts (Session Fetching)
+ ├── (Pages / App Router)
+ │    ├── app/dashboard/layout.tsx
+ │    │    └── components/DashboardSidebar.tsx
+ │    └── app/dashboard/talent/page.tsx
+ │         ├── components/DashboardCard.tsx
+ │         ├── components/ProfileCompletion.tsx
+ │         └── utils/auth.ts
+ └── components/Footer.tsx
+```
+
+---
+
+## 14. Reusable Components Map
+
+| Component | Used In |
+| --- | --- |
+| `DashboardCard` | Seeker Analytics, Talent Dashboard, Company Profile |
+| `ApplicationsView`| `/talents`, `/dashboard/applications`, `/dashboard/seeker/applications` |
+| `MessagesView` | `/messages`, `/dashboard/messages`, `/dashboard/seeker/messages` |
+| `NotificationsView`| `/notifications`, `/dashboard/notifications`, `/dashboard/seeker/notifications`|
+
+---
+
+## 15. Empty / Placeholder Files
+
+The following files were detected as currently empty, unfinished, or acting as placeholders:
+- `src/components/Navbar.tsx` (Empty wrapper)
+- `src/components/Portfolioform.tsx` (Empty wrapper)
+- `src/components/QuickActions.tsx` (Empty wrapper)
+- `src/app/portfolios/page.tsx` (Placeholder route)
+
+---
+
+## 16. Architecture Notes
+
+- **Routing Logic:** Heavily utilizes Next.js 13+ App Router features. Dashboards are split logically by role (`/seeker/` vs standard dashboard paths).
+- **Authentication Flow:** Client-side heavy. The application trusts the `currentUser` object in local storage. Protected routes do not currently use Next.js Middleware; they rely on client-side redirection via `useEffect` and `next/navigation` hooks.
+- **Reusable UI Strategy:** The project successfully encapsulates distinct functional views (like Messages and Applications) into `components/views/` so they can be injected into multiple different routing contexts without code duplication.
+
+---
+
+## 17. Technologies
+
+| Category | Technology |
+| --- | --- |
+| **Framework** | Next.js 16.2.10 (App Router) |
+| **Language** | TypeScript |
+| **UI Library** | React 19.2.4 |
+| **Styling** | Vanilla CSS (Variables, Flexbox, Grid) |
+| **Icons** | lucide-react |
+| **Animations** | GSAP, Three.js, Lenis |
+| **State Management**| React Hooks + LocalStorage |
+| **Package Manager** | npm |
+
+---
+
+## 18. Future Improvements
+
+1. **Next.js Middleware:** Implement server-side route protection using `middleware.ts` to prevent layout flashing on protected routes before client-side hydration kicks in.
+2. **Backend Integration:** Replace `utils/auth.ts` and `utils/storage.ts` with real API routes (`/api/auth`, `/api/posts`) interacting with a database (e.g., PostgreSQL/Prisma).
+3. **Global State Manager:** As the app scales, local storage fetching inside multiple components (Header, Sidebar, Dashboard) may cause de-sync issues. Introducing Zustand or React Context for a global `UserSessionContext` would drastically simplify data flow.
+4. **Cleanup Placeholders:** Remove or implement the empty files (`Navbar.tsx`, `QuickActions.tsx`) to keep the codebase clean.
