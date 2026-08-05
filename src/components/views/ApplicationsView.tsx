@@ -66,7 +66,7 @@ export default function ApplicationsView() {
             Talents
           </h2>
           <p style={{ color: 'var(--dash-text-muted)', marginTop: '8px', fontSize: '1.05rem' }}>
-            Review incoming applications and discover the right talent for your projects.
+            Review incoming talents and discover the right fit for your projects.
           </p>
         </div>
         
@@ -107,7 +107,7 @@ export default function ApplicationsView() {
             <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--dash-text-muted)' }} />
             <input 
               type="text" 
-              placeholder="Search applications..." 
+              placeholder="Search talents..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{

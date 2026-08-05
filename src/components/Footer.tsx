@@ -25,7 +25,7 @@ export default function Footer() {
 
           <Link href="/">Home</Link>
 
-          <Link href="/portfolios">Portfolios</Link>
+          <Link href="/signup">Portfolios</Link>
 
           <Link href="/membership">Membership</Link>
 

@@ -35,22 +35,13 @@ export default function DashboardHeader() {
 
   return (
     <header className="dashboard-header">
-      <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <Search size={18} style={{ position: 'absolute', left: '12px', color: 'var(--dash-text-muted)' }} />
+      <div className="dashboard-header-left">
+        <div className="dashboard-search-wrapper">
+          <Search size={18} className="dashboard-search-icon" />
           <input 
             type="text" 
             placeholder="Search casting calls, talent..." 
-            style={{
-              padding: '10px 16px 10px 40px',
-              borderRadius: '99px',
-              border: '1px solid var(--dash-border)',
-              backgroundColor: 'var(--dash-bg)',
-              color: 'var(--dash-text-main)',
-              fontSize: '14px',
-              width: '320px',
-              outline: 'none'
-            }}
+            className="dashboard-search-input"
           />
         </div>
       </div>
@@ -71,44 +62,24 @@ export default function DashboardHeader() {
         <div style={{ height: '32px', width: '1px', backgroundColor: 'var(--dash-border)', margin: '0 8px' }}></div>
         
         {user ? (
-          <Link href="/dashboard/portfolio" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--dash-text-main)' }}>{user.name || "User Profile"}</p>
-              <p style={{ margin: 0, fontSize: '12px', color: 'var(--dash-text-muted)', textTransform: 'capitalize' }}>
+          <Link href="/dashboard/portfolio" className="dashboard-header-profile">
+            <div className="profile-text-wrap">
+              <p className="profile-name">{user.name || "User Profile"}</p>
+              <p className="profile-role">
                 {user.role === 'talent' ? 'Actor / Model' : 'Casting Director'}
               </p>
             </div>
-            <div style={{ 
-              width: '40px', 
-              height: '40px', 
-              borderRadius: '50%', 
-              backgroundColor: 'var(--dash-hover-bg)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              color: 'var(--dash-text-main)',
-              border: '2px solid var(--dash-border)'
-            }}>
+            <div className="dashboard-header-avatar">
               <UserIcon size={20} />
             </div>
           </Link>
         ) : (
-          <Link href="/login" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--dash-text-main)' }}>Log In / Sign Up</p>
-              <p style={{ margin: 0, fontSize: '12px', color: 'var(--dash-text-muted)' }}>Join IndCasting</p>
+          <Link href="/login" className="dashboard-header-profile">
+            <div className="profile-text-wrap">
+              <p className="profile-name">Log In / Sign Up</p>
+              <p className="profile-role">Join IndCasting</p>
             </div>
-            <div style={{ 
-              width: '40px', 
-              height: '40px', 
-              borderRadius: '50%', 
-              backgroundColor: 'var(--dash-hover-bg)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              color: 'var(--dash-text-main)',
-              border: '2px solid var(--dash-border)'
-            }}>
+            <div className="dashboard-header-avatar">
               <LogIn size={20} />
             </div>
           </Link>

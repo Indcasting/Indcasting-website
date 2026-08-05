@@ -146,6 +146,12 @@ export default function Header() {
             )}
           </div>
 
+          <Link href="/talents" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
+            Talents
+          </Link>
+          <Link href="/membership" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
+            Membership
+          </Link>
 
           <Link href="/messages" className="icon-btn" aria-label="Messages">
             <MessageSquare size={20} />
@@ -154,13 +160,6 @@ export default function Header() {
           <Link href="/notifications" className="icon-btn" aria-label="Notifications" style={{ position: 'relative' }}>
             <Bell size={20} />
             {hasUnreadNotifications && <span className="icon-dot" style={{ position: 'absolute', top: '2px', right: '2px', width: '8px', height: '8px', backgroundColor: '#ef4444', borderRadius: '50%' }}></span>}
-          </Link>
-          
-          <Link href="/talents" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
-            Talents
-          </Link>
-          <Link href="/membership" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
-            Membership
           </Link>
 
           <button className="theme-toggle" aria-label="Toggle Theme" onClick={() => setDarkMode(!darkMode)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -190,7 +189,7 @@ export default function Header() {
             </div>
           ) : (
             <div className="auth-buttons">
-              <Link href="/login" className="outline-btn header-btn">Log In</Link>
+              <Link href="/login" className="signup-btn header-btn">Log In</Link>
               <Link href="/signup" className="signup-btn header-btn">Sign Up</Link>
             </div>
           )}

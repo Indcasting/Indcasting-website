@@ -18,18 +18,21 @@ import {
   ChevronRight,
   Video,
   BarChart2,
-  Building
+  Building,
+  Calendar as CalendarIcon,
+  ChevronDown
 } from "lucide-react";
 import { logoutUser, getCurrentUser } from "@/utils/auth";
 import { UserProfile } from "@/types/user";
+import DashboardCalendar from "./DashboardCalendar";
 
 const talentMenuItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Casting Calls", href: "/dashboard/casting-calls", icon: BriefcaseBusiness },
-  { name: "My Applications", href: "/dashboard/applications", icon: FileText },
+  { name: "My Applications", href: "/talents", icon: FileText },
   { name: "Portfolio", href: "/dashboard/portfolio", icon: User },
   { name: "Saved Jobs", href: "/dashboard/saved", icon: Star },
-  { name: "Messages", href: "/dashboard/messages", icon: MessageCircle },
+  { name: "Messages", href: "/messages", icon: MessageCircle },
   { name: "Notifications", href: "/dashboard/notifications", icon: Bell },
   { name: "Membership", href: "/membership", icon: Crown },
   { name: "Settings", href: "/dashboard/settings", icon: Settings },
@@ -39,10 +42,10 @@ const talentMenuItems = [
 const seekerMenuItems = [
   { name: "Dashboard", href: "/dashboard/seeker", icon: Home },
   { name: "My Casting Calls", href: "/dashboard/seeker/casting-calls", icon: BriefcaseBusiness },
-  { name: "Applications", href: "/dashboard/seeker/applications", icon: FileText },
+  { name: "Applications", href: "/talents", icon: FileText },
   { name: "Shortlisted Talent", href: "/dashboard/seeker/shortlisted", icon: Star },
   { name: "Auditions", href: "/dashboard/seeker/auditions", icon: Video },
-  { name: "Messages", href: "/dashboard/seeker/messages", icon: MessageCircle },
+  { name: "Messages", href: "/messages", icon: MessageCircle },
   { name: "Notifications", href: "/dashboard/seeker/notifications", icon: Bell },
   { name: "Analytics", href: "/dashboard/seeker/analytics", icon: BarChart2 },
   { name: "Membership", href: "/membership", icon: Crown },
@@ -54,6 +57,7 @@ export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -81,7 +85,7 @@ export default function DashboardSidebar() {
             {mainItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-              return (
+              const linkNode = (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -94,6 +98,38 @@ export default function DashboardSidebar() {
                   {isActive && <ChevronRight className="active-chevron" size={16} />}
                 </Link>
               );
+              
+              if (item.name === "Dashboard") {
+                return (
+                  <div key={item.href} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    {linkNode}
+                    
+                    <button 
+                      className={`sidebar-link ${isCalendarOpen ? "active" : ""}`}
+                      onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+                      style={{ border: 'none', background: 'transparent', cursor: 'pointer', textAlign: 'left', width: '100%', fontFamily: 'inherit' }}
+                    >
+                      <div className="link-content">
+                        <CalendarIcon className="sidebar-icon" size={20} />
+                        <span>Calendar</span>
+                      </div>
+                      {isCalendarOpen ? (
+                        <ChevronDown className="active-chevron" size={16} />
+                      ) : (
+                        <ChevronRight className="active-chevron" size={16} />
+                      )}
+                    </button>
+                    
+                    {isCalendarOpen && (
+                      <div className="sidebar-calendar-wrapper" style={{ marginTop: '4px' }}>
+                        <DashboardCalendar />
+                      </div>
+                    )}
+                  </div>
+                );
+              }
+              
+              return linkNode;
             })}
           </nav>
         </div>
