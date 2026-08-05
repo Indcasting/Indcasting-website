@@ -115,8 +115,5 @@ The platform relies on a sophisticated, variable-based vanilla CSS architecture 
 - Advanced media uploading (video compression and streaming) for talent showreels.
 - AI-driven talent matching and recommendations for Casting Directors.
 
-## Contributors
-- Abhiroop - Lead Developer & UI/UX Designer
-
 ## License
 This project is proprietary and confidential. All rights reserved by IndCasting.

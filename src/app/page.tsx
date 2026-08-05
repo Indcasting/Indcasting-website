@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Link from "next/link";
 import "../components/ui/fonts.css";
 import "../components/ui/theme.css";
 
@@ -711,8 +712,8 @@ export default function Home() {
               secure, professional platform.
             </p>
             <div className="hero-btns aethera-fade-rise-delay-2">
-              <button className="btn-primary">Explore Talent</button>
-              <button className="btn-outline">Join as Talent</button>
+              <Link href="/signup" className="btn-primary" style={{ textDecoration: 'none' }}>Explore Talent</Link>
+              <Link href="/signup" className="btn-outline" style={{ textDecoration: 'none' }}>Join as Talent</Link>
             </div>
           </div>
         </section>

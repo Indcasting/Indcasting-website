@@ -154,15 +154,15 @@ html.dark .remember-row {
 
 html.dark .auth-field input,
 html.dark .auth-field select {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #ffffff;
+    border: 1px solid #ddd;
     color: #111;
 }
 
 html.dark .auth-field input:focus,
 html.dark .auth-field select:focus {
     border-color: var(--gold);
-    background: rgba(255, 255, 255, 0.08);
+    background: #ffffff;
 }
 
 html.dark .auth-switch {
@@ -1267,13 +1267,7 @@ html.dark .auth-switch {
   text-decoration: none;
 }
 
-.outline-btn {
-  border: 1px solid white;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 8px;
-  text-decoration: none;
-}
+
 .logo-indcasting,
 .nav-link,
 .icon-btn,
@@ -1317,22 +1311,7 @@ html.dark .auth-switch {
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(123,44,191,.35);
 }
-.outline-btn{
-    background: transparent;
-    color: #D4AF37;              /* Gold text */
-    border: 2px solid #D4AF37;   /* Gold border */
-    padding: 10px 22px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
 
-.outline-btn:hover{
-    background: #D4AF37;
-    color: #111;                 /* Dark text on gold background */
-    border-color: #D4AF37;
-}
 .auth-buttons{
     display:flex;
     gap:14px;
@@ -2407,16 +2386,23 @@ body{
 }
 
 .application-card{
-    background:var(--surface);
+    background:var(--card-bg);
     border-radius:16px;
     padding:25px;
     margin-bottom:20px;
     box-shadow:var(--shadow);
-    transition:.3s;
+    transition:all .35s ease;
+    border: 1px solid var(--input-border);
 }
 
 .application-card:hover{
-    transform:translateY(-5px);
+    transform:translateY(-4px);
+    border-color:var(--gold);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+html.dark .application-card:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
 }
 
 .status{
@@ -5867,7 +5853,7 @@ html.dark .site-header.scrolled{
     align-items:center;
     justify-content:space-between;
     gap:30px;
-    padding:26px 6%;
+    padding:19px 6%;
     transition:padding .35s ease;
 }
 
@@ -6115,20 +6101,7 @@ html.dark .site-header.scrolled{
         display:none;
     }
 }
-.site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding: 18px 50px;
-  z-index: 999;
-}
 
-.header-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 
 .logo-indcasting {
   color: #d4af37;
@@ -6168,13 +6141,7 @@ html.dark .site-header.scrolled{
   text-decoration: none;
 }
 
-.outline-btn {
-  border: 1px solid white;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 8px;
-  text-decoration: none;
-}
+
 .logo-indcasting,
 .nav-link,
 .icon-btn,
@@ -6213,22 +6180,7 @@ html.dark .site-header.scrolled{
     transform:translateY(-2px);
     box-shadow:0 8px 20px rgba(123,44,191,.35);
 }
-.outline-btn{
-    background: transparent;
-    color: #D4AF37;              /* Gold text */
-    border: 2px solid #D4AF37;   /* Gold border */
-    padding: 10px 22px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
 
-.outline-btn:hover{
-    background: #D4AF37;
-    color: #111;                 /* Dark text on gold background */
-    border-color: #D4AF37;
-}
 .auth-buttons{
     display:flex;
     gap:14px;
@@ -6903,13 +6855,11 @@ body:has(.is-dashboard) > main {
 .dashboard-container {
     display: flex;
     position: relative;
-    overflow: hidden;
     min-height: calc(100vh - 84px);
-    margin-top: 84px;
     background: var(--cream);
     color: var(--dash-text-main);
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: var(--font-poppins), 'Poppins', sans-serif;
+    transition: background-color 0.35s ease, color 0.35s ease;
 }
 
 .dashboard-container::before {
@@ -6960,6 +6910,113 @@ html.dark .dashboard-container::after {
     flex: 1;
     padding: 32px 40px;
     background-color: transparent;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+    height: 84px;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--sidebar-border);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    transition: background-color 0.35s ease, border-color 0.35s ease;
+}
+
+.dashboard-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dashboard-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-search-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--sidebar-text-muted);
+}
+
+.dashboard-search-input {
+    padding: 12px 16px 12px 42px;
+    border-radius: 99px;
+    border: 1px solid var(--sidebar-border);
+    background-color: var(--subtle-bg);
+    color: var(--sidebar-text-main);
+    font-size: 14px;
+    width: 340px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.dashboard-search-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.15);
+    background-color: var(--card-bg);
+}
+
+.dashboard-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.dashboard-header-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    padding: 6px;
+    border-radius: 99px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-header-profile:hover {
+    background-color: var(--subtle-bg);
+}
+
+.profile-text-wrap {
+    text-align: right;
+}
+
+.profile-text-wrap .profile-name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--sidebar-text-main);
+}
+
+.profile-text-wrap .profile-role {
+    margin: 0;
+    font-size: 12px;
+    color: var(--sidebar-text-muted);
+    text-transform: capitalize;
+}
+
+.dashboard-header-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: var(--subtle-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--sidebar-text-main);
+    border: 2px solid var(--sidebar-border);
+    transition: all 0.3s ease;
+}
+
+.dashboard-header-profile:hover .dashboard-header-avatar {
+    border-color: var(--gold);
+    color: var(--gold);
 }
 
 /* Sidebar */
@@ -7091,6 +7148,9 @@ html.dark .dashboard-container::after {
 .sidebar-link.active .sidebar-icon {
     color: var(--gold);
 }
+.sidebar-link:hover .sidebar-icon {
+    transform: scale(1.1);
+}
 
 .sidebar-footer {
     padding: 20px 24px;
@@ -7147,7 +7207,16 @@ html.dark .dashboard-container::after {
     border-radius: 24px;
     box-shadow: var(--shadow);
     padding: 30px;
-    transition: all 0.3s ease;
+    transition: all 0.35s ease;
+}
+
+.dashboard-card-ui:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+html.dark .dashboard-card-ui:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
 }
 
 .dashboard-card-header {
@@ -7174,7 +7243,16 @@ html.dark .dashboard-container::after {
     border-top: 5px solid var(--gold);
     padding: 1.4rem 1.8rem;
     box-shadow: var(--shadow);
-    transition: all 0.3s ease;
+    transition: all 0.35s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+html.dark .stat-card:hover {
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
 }
 .stat-icon-wrapper {
     width: 48px;
@@ -7240,4 +7318,104 @@ html.dark .dashboard-container::after {
     font-size: 13px;
     color: var(--dash-text-muted);
     margin: 4px 0 0 0;
+}
+
+/* Sidebar Calendar */
+.sidebar-calendar-wrapper {
+  margin: 8px 16px 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.sidebar-calendar {
+  padding: 16px;
+  font-family: inherit;
+  color: var(--sidebar-text-main);
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.calendar-month-year {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sidebar-text-main);
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  color: var(--sidebar-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--sidebar-hover-bg);
+  color: var(--gold);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  text-align: center;
+}
+
+.calendar-weekday {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--sidebar-text-muted);
+  margin-bottom: 6px;
+}
+
+.calendar-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--sidebar-text-main);
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.calendar-cell.empty {
+  cursor: default;
+}
+
+.calendar-cell.day:hover {
+  background: var(--sidebar-hover-bg);
+  color: var(--gold);
+}
+
+.calendar-cell.day.today {
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  font-weight: 700;
+}
+
+.calendar-cell.day.selected {
+  background: var(--gold);
+  color: #111;
+  border-color: var(--gold);
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(200, 155, 60, 0.3);
 }
