@@ -51,7 +51,7 @@ const STEPS: StepItem[] = [
   { n: "03", h: "Connect and work",     p: "Message directly, schedule auditions and lock in projects across film, OTT, ads and music videos." },
 ];
 
-const VIDEO_URL = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4";
+const VIDEO_URL = "/home.mp4";
 const VIDEO_FADE = 0.5;
 
 function loadScript(src: string): Promise<void> {
@@ -237,11 +237,8 @@ export default function Home() {
             trigger: card,
             start: `top ${CARD_PIN_TOP}px`,
             end: isLast
-              ? `+=${card.offsetHeight + 400}`
-              : () => {
-                  const next = pillarCards[i + 1];
-                  return `+=${next.offsetHeight + 60}`;
-                },
+  ? `+=${card.offsetHeight * 0.4}`
+  : `+=180`,
             pin: true,
             pinSpacing: !isLast,
             anticipatePin: 1,
@@ -380,23 +377,21 @@ export default function Home() {
         }
 
         /* Dark overlay so text is readable */
-        .hero-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          z-index: 1;
-          background:
-            linear-gradient(to bottom,
-              rgba(0,0,0,0.50) 0%,
-              rgba(0,0,0,0.25) 35%,
-              rgba(0,0,0,0.25) 65%,
-              rgba(0,0,0,0.65) 100%
-            ),
-            radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.50) 100%);
-          pointer-events: none;
-        }
+        .hero-overlay{
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,.68) 0%,
+      rgba(0,0,0,.48) 35%,
+      rgba(0,0,0,.48) 65%,
+      rgba(0,0,0,.78) 100%
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 35%,
+      rgba(0,0,0,.45) 100%
+    );
+}
 
         /* Content sits above video + overlay */
         .hero-content {
@@ -503,7 +498,7 @@ export default function Home() {
         .cat-track:hover { animation-play-state: paused; }
         @keyframes catMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         .cat-card {
-          width: 380px; min-width: 380px; min-height: 250px; padding: 34px;
+          width: 420px; min-width: 420px; min-height: 290px; padding: 42px;
           display: flex; flex-direction: column; justify-content: space-between;
           border-radius: 26px; background: var(--white); border: 1px solid var(--mist);
           position: relative; overflow: hidden; flex-shrink: 0; cursor: pointer;
@@ -511,9 +506,9 @@ export default function Home() {
         }
         .cat-card:hover { transform: translateY(-8px); border-color: var(--gold); box-shadow: 0 18px 40px rgba(201,168,76,.18); }
         .cat-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-        .cat-card-label { font-size: 1.55rem; font-weight: 800; color: var(--ink); margin-bottom: 10px; }
-        .cat-card-count { font-size: .9rem; color: var(--gold); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 18px; }
-        .cat-card-desc { color: var(--mid); line-height: 1.7; font-size: .95rem; flex: 1; }
+        .cat-card-label { font-size: 2.2rem; font-weight: 800; line-height:1.05; letter-spacing:-0.04em; color: var(--ink); margin-bottom: 10px;transition:.3s; }
+        .cat-card-count { font-size: 1rem; color: var(--gold); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px; }
+        .cat-card-desc { color: var(--mid); line-height: 1.85; font-size: 1rem; flex: 1; }
         .cat-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
         .cat-card-arrow {
           width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
@@ -575,7 +570,7 @@ export default function Home() {
         .pillars-headline em { display: block; color: var(--gold); font-style: normal; }
         html.dark .pillars-headline { color: #fff; }
         .pillars-sub { max-width: 640px; margin: 0 auto; text-align: center; font-size: 1.1rem; line-height: 1.75; color: var(--mid); }
-        .pillars-cards { width: min(1100px,90vw); margin: 0 auto; padding-bottom: 130vh; }
+        .pillars-cards { width: min(1100px,90vw); margin: 0 auto; padding-bottom: 40vh; }
         .pillar-row {
           min-height: 520px; padding: 60px;
           border-radius: 28px; background: var(--white); border: 1px solid var(--mist);

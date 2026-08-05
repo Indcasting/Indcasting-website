@@ -419,9 +419,9 @@ html:not(.dark) .hero-overlay{
 
             circle at center,
 
-            rgba(255,255,255,.15),
+            rgba(255,255,255,.05),
 
-            rgba(255,253,247,.55)
+            rgba(255,253,247,.2)
 
         );
 
@@ -437,9 +437,9 @@ html.dark .hero-overlay{
 
             circle at center,
 
-            rgba(0,0,0,.18),
+            rgba(0,0,0,.05),
 
-            rgba(0,0,0,.78)
+            rgba(0,0,0,.35)
 
         );
 
@@ -479,11 +479,17 @@ html:not(.dark) .m-hero{
 
         .m-hero-badge {
           display: inline-flex; align-items: center; gap: 0.5rem;
-          background: rgba(201,168,76,0.12); color: var(--gold);
-          border: 1px solid rgba(201,168,76,0.3); border-radius: 100px;
+          background: rgba(201,168,76,0.14); color: var(--gold);
+          border: 1px solid rgba(201,168,76,0.45); border-radius: 100px;
           padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 700;
           letter-spacing: 0.08em; text-transform: uppercase;
           margin-bottom: 1.5rem; width: fit-content;
+        }
+
+        html.dark .m-hero-badge {
+          background: rgba(201,168,76,0.18);
+          border-color: rgba(201,168,76,0.6);
+          color: #f0c84a;
         }
         .m-hero-title{
 
@@ -499,7 +505,7 @@ html:not(.dark) .m-hero{
 
     max-width:1100px;
 
-    color:var(--ink);
+    color:#0d0d0d;
 
     text-align:center;
 
@@ -508,6 +514,17 @@ html:not(.dark) .m-hero{
     transition:color .35s;
 
 }
+
+html.dark .m-hero-title{
+
+    color:#ffffff;
+
+    text-shadow:
+        0 0 60px rgba(255,255,255,.12),
+        0 2px 0 rgba(255,255,255,.08);
+
+}
+
         .m-hero-title em{
 
     color:var(--gold);
@@ -515,7 +532,8 @@ html:not(.dark) .m-hero{
     font-style:normal;
 
     text-shadow:
-        0 0 18px rgba(201,168,76,.18);
+        0 0 32px rgba(201,168,76,.55),
+        0 0 60px rgba(201,168,76,.25);
 
 }
         .m-hero-word { display: inline-block; }
@@ -531,9 +549,17 @@ html:not(.dark) .m-hero{
 
     font-weight:400;
 
-    color:var(--mid);
+    color:#4a4540;
 
-    opacity:.92;
+    opacity:1;
+
+}
+
+html.dark .m-hero-sub{
+
+    color:#d4cfc8;
+
+    opacity:1;
 
 }
         .m-hero-btns{
