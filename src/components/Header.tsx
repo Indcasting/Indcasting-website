@@ -211,7 +211,7 @@ export default function Header() {
             </div>
           ) : (
             <div className="auth-buttons" style={{ display: 'flex', gap: '16px' }}>
-              <Link href="/login" className="signup-btn header-btn" style={{ background: 'transparent', border: '1px solid var(--gold)', color: 'var(--gold)' }}>Log In</Link>
+              <Link href="/login" className="signup-btn header-btn">Log In</Link>
               <Link href="/signup" className="signup-btn header-btn">Sign Up</Link>
             </div>
           )}
