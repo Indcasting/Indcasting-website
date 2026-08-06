@@ -274,14 +274,14 @@ export default function SavedJobsPage() {
         }
         .search-input::placeholder { color: rgba(255,255,255,0.3); }
 
-        .view-toggle {
+        .cine-view-toggle {
           display: flex;
           background: rgba(0,0,0,0.4);
           border-radius: 12px;
           padding: 4px;
           border: 1px solid rgba(255,255,255,0.05);
         }
-        .view-btn {
+        .cine-view-btn {
           padding: 8px 16px;
           border-radius: 8px;
           border: none;
@@ -293,7 +293,7 @@ export default function SavedJobsPage() {
           display: flex; align-items: center; gap: 8px;
           transition: all 0.3s ease;
         }
-        .view-btn.active {
+        .cine-view-btn.active {
           background: rgba(255,255,255,0.1);
           color: #fff;
           box-shadow: 0 2px 10px rgba(0,0,0,0.2);
@@ -614,15 +614,15 @@ export default function SavedJobsPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="view-toggle">
+          <div className="cine-view-toggle">
             <button 
-              className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+              className={`cine-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
               onClick={() => setViewMode('grid')}
             >
               <LayoutGrid size={18} /> Grid
             </button>
             <button 
-              className={`view-btn ${viewMode === 'timeline' ? 'active' : ''}`}
+              className={`cine-view-btn ${viewMode === 'timeline' ? 'active' : ''}`}
               onClick={() => setViewMode('timeline')}
             >
               <List size={18} /> Timeline
