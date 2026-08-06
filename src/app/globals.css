@@ -1556,6 +1556,8 @@ font-size:14px;
 
 margin-top:-5px;
 
+color:var(--text, #333);
+
 }
 
 .remember{
@@ -1565,8 +1567,6 @@ display:flex;
 align-items:center;
 
 gap:8px;
-
-color:white;
 
 }
 

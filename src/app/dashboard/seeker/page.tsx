@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BriefcaseBusiness, Users, Star, Video, MessageSquare, TrendingUp, ChevronRight, Activity, PlusCircle, Calendar } from "lucide-react";
+import { BriefcaseBusiness, Users, Star, Video, MessageSquare, TrendingUp, ChevronRight, Activity, PlusCircle, Calendar, X } from "lucide-react";
 import DashboardCard from "@/components/DashboardCard";
 import { getCurrentUser } from "@/utils/auth";
 import { UserProfile } from "@/types/user";
@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 export default function SeekerDashboard() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const router = useRouter();
+  
+  const [selectedAppModal, setSelectedAppModal] = useState<{name: string, role: string, time: string, status: string, color: string, bg: string} | null>(null);
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -151,7 +153,7 @@ export default function SeekerDashboard() {
                 { name: "Rahul Verma", role: "Supporting Role", time: "5 hours ago", status: "Reviewed", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)" },
                 { name: "Neha Singh", role: "Fashion Model", time: "1 day ago", status: "Shortlisted", color: "#10b981", bg: "rgba(16, 185, 129, 0.1)" }
               ].map((app, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--dash-border)', borderRadius: '12px', cursor: 'pointer', transition: 'background 0.2s ease' }} className="hover-bg-card">
+                <div key={i} onClick={() => setSelectedAppModal(app)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--dash-border)', borderRadius: '12px', cursor: 'pointer', transition: 'background 0.2s ease' }} className="hover-bg-card">
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--dash-hover-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                       <UserPlaceholder size={24} />
@@ -266,6 +268,114 @@ export default function SeekerDashboard() {
         </DashboardCard>
 
       </div>
+
+      {/* Application Review Modal */}
+      {selectedAppModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          animation: 'fadeIn 0.2s ease-out'
+        }}
+        onClick={() => setSelectedAppModal(null)}
+        >
+          <div style={{
+            backgroundColor: 'var(--dash-bg)',
+            border: '1px solid var(--dash-border)',
+            borderRadius: '24px',
+            width: '100%',
+            maxWidth: '500px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+          onClick={e => e.stopPropagation()}
+          >
+            <div style={{ padding: '32px 32px 24px 32px', borderBottom: '1px solid var(--dash-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <span style={{ padding: '6px 12px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 600, backgroundColor: selectedAppModal.bg, color: selectedAppModal.color, display: 'inline-block', marginBottom: '12px' }}>
+                  {selectedAppModal.status}
+                </span>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)' }}>{selectedAppModal.name}</h2>
+                <p style={{ color: 'var(--dash-text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>
+                  Applied for: <strong style={{ color: 'var(--dash-text-main)' }}>{selectedAppModal.role}</strong>
+                </p>
+              </div>
+              <button 
+                onClick={() => setSelectedAppModal(null)}
+                style={{ background: 'var(--dash-bg-card)', border: '1px solid var(--dash-border)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--dash-text-muted)', cursor: 'pointer', transition: 'all 0.2s ease' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <div style={{ padding: '32px' }}>
+              <div style={{ position: 'relative', paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                {/* Timeline Line */}
+                <div style={{ position: 'absolute', left: '5px', top: '8px', bottom: '8px', width: '2px', backgroundColor: 'var(--dash-border)', zIndex: 0 }}></div>
+                
+                {/* Step 1 */}
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--gold)', marginTop: '4px', border: '3px solid var(--dash-bg)', marginLeft: '-5px' }}></div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: 'var(--dash-text-main)' }}>Application Received</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--dash-text-muted)' }}>{selectedAppModal.time}</p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: selectedAppModal.status === 'Reviewed' || selectedAppModal.status === 'Shortlisted' ? 'var(--gold)' : 'var(--dash-border)', marginTop: '4px', border: '3px solid var(--dash-bg)', marginLeft: '-5px' }}></div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: selectedAppModal.status === 'Reviewed' || selectedAppModal.status === 'Shortlisted' ? 'var(--dash-text-main)' : 'var(--dash-text-muted)' }}>Review in Progress</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--dash-text-muted)' }}>{selectedAppModal.status === 'Reviewed' || selectedAppModal.status === 'Shortlisted' ? 'You have reviewed this profile.' : 'Pending review.'}</p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: selectedAppModal.status === 'Shortlisted' ? '#10b981' : 'var(--dash-border)', marginTop: '4px', border: '3px solid var(--dash-bg)', marginLeft: '-5px' }}></div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: selectedAppModal.status === 'Shortlisted' ? 'var(--dash-text-main)' : 'var(--dash-text-muted)' }}>
+                      Shortlisted
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--dash-text-muted)' }}>
+                      {selectedAppModal.status === 'Shortlisted' ? 'Candidate added to shortlist.' : 'No final decision yet.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ padding: '24px 32px', borderTop: '1px solid var(--dash-border)', display: 'flex', justifyContent: 'flex-end', gap: '12px', backgroundColor: 'var(--dash-bg-card)' }}>
+              <button 
+                style={{ padding: '10px 24px', borderRadius: '999px', border: '1px solid var(--dash-border)', backgroundColor: 'transparent', color: 'var(--dash-text-main)', fontWeight: 600, cursor: 'pointer' }}
+              >
+                View Full Profile
+              </button>
+              <button 
+                onClick={() => setSelectedAppModal(null)}
+                style={{ padding: '10px 24px', borderRadius: '999px', border: 'none', backgroundColor: 'var(--gold)', color: '#000', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(201, 168, 76, 0.3)' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes fadeIn {
           from { opacity: 0; }

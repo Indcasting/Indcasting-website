@@ -80,7 +80,7 @@ export default function LoginPage() {
 
           <div className="remember-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', fontSize: '14px' }}>
 
-            <label className="remember" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, fontWeight: 'normal' }}>
+            <label className="remember text-black dark:text-white" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, fontWeight: 'normal' }}>
               <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
               Remember Me
             </label>
@@ -124,6 +124,12 @@ export default function LoginPage() {
       <style dangerouslySetInnerHTML={{__html: `
         html.dark .auth-card h1 {
           color: #ffffff !important;
+        }
+        .remember {
+          color: #333 !important;
+        }
+        html.dark .remember {
+          color: #e0e0e0 !important;
         }
       `}} />
     </div>
