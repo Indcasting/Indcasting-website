@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MapPin, Calendar, Clock, ChevronRight, X, Briefcase, Film, Flame, Star, Sparkles, Filter, IndianRupee, LayoutGrid, List, Bookmark, Users, Globe, PlayCircle, Share2, Trash2, CheckCircle, Info } from "lucide-react";
+import { Search, MapPin, Calendar, Clock, ChevronRight, X, Briefcase, Film, Flame, Star, Sparkles, Filter, IndianRupee, LayoutGrid, List, Bookmark, Users, Globe, PlayCircle, Share2, Trash2, CheckCircle, Info, Languages } from "lucide-react";
 import Link from "next/link";
 
 export default function SavedJobsPage() {
