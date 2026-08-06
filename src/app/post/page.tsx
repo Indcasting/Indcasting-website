@@ -48,7 +48,7 @@ function loadScript(src: string): Promise<void> {
 }
 
 /* ─────────────────────────────────────────
-   SEED DATA (demo posts)
+   SEED DATA
 ───────────────────────────────────────── */
 const SEED: CastingPost[] = [
   {
@@ -125,7 +125,7 @@ function fmt(iso: string) {
 }
 
 /* ─────────────────────────────────────────
-   CUSTOM DROPDOWN COMPONENT
+   CUSTOM DROPDOWN
 ───────────────────────────────────────── */
 function CustomSelect({
   value, onChange, options, placeholder
@@ -257,7 +257,9 @@ function LanguageMultiSelect({
 }
 
 /* ─────────────────────────────────────────
-   CASTING DETAILS MODAL
+   CASTING DETAILS MODAL — neobrutalist
+   No category badge. Info cells match card
+   black-block style. Hard border + shadow.
 ───────────────────────────────────────── */
 function DetailsModal({ post, onClose }: { post: CastingPost; onClose: () => void }) {
   useEffect(() => {
@@ -267,32 +269,45 @@ function DetailsModal({ post, onClose }: { post: CastingPost; onClose: () => voi
     return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", esc); };
   }, [onClose]);
 
+  const infoItems: [string, string][] = [
+    ["Location",   post.location],
+    ["Age Range",  post.age],
+    ["Gender",     post.gender ?? "Any"],
+    ["Experience", post.experience ?? "Any"],
+    ["Languages",  post.languages ?? "—"],
+    ["Budget",     `₹${Number(post.budget).toLocaleString("en-IN")}`],
+    ...(post.deadline ? [["Deadline", fmt(post.deadline)] as [string, string]] : []),
+    ["Posted",     fmt(post.createdAt)],
+  ];
+
   return (
     <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="casting-modal">
         <button className="close-btn" onClick={onClose}>×</button>
-        <span className="modal-badge">{post.category}</span>
-        <h2 style={{ margin:"1rem 0 0.4rem", fontSize:"clamp(1.4rem,3vw,1.9rem)", fontWeight:900, color:"var(--ink)" }}>{post.title}</h2>
-        <p style={{ marginBottom:"1.8rem", color:"var(--gold)", fontWeight:600 }}>{post.company}</p>
+
+        {/* Status badge — top right, matching card style */}
+        <div style={{ display:"flex", justifyContent:"flex-end", marginBottom:"1rem" }}>
+          <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
+            {post.status}
+          </span>
+        </div>
+
+        <h2 className="modal-title">{post.title}</h2>
+        <p className="modal-company">{post.company}</p>
+
+        {/* Info grid — black cells matching casting-info */}
         <div className="modal-info">
-          {[
-            ["Location", post.location],
-["Age Range", post.age],
-["Gender", post.gender ?? "Any"],
-["Experience", post.experience ?? "Any"],
-["Languages", post.languages ?? "—"],
-["Budget", `₹${Number(post.budget).toLocaleString("en-IN")}`],
-...(post.deadline ? [["Deadline", fmt(post.deadline)]] : []),
-["Posted", fmt(post.createdAt)],
-          ].map(([k, v]) => (
+          {infoItems.map(([k, v]) => (
             <div className="modal-info-item" key={k}>
-              <strong style={{ fontSize:"0.72rem", textTransform:"uppercase", letterSpacing:"0.08em", color:"var(--mid)", display:"block", marginBottom:"4px" }}>{k}</strong>
-              <span style={{ fontWeight:600, color:"var(--ink)" }}>{v}</span>
+              <strong>{k}</strong>
+              <p>{v}</p>
             </div>
           ))}
         </div>
-        <h3 style={{ marginBottom:"0.6rem", fontSize:"0.9rem", fontWeight:700, color:"var(--ink)" }}>About this role</h3>
-        <div className="description">{post.description}</div>
+
+        <h3 className="modal-desc-heading">About this role</h3>
+        <div className="modal-description">{post.description}</div>
+
         <div style={{ display:"flex", gap:"1rem", marginTop:"2rem", flexWrap:"wrap" }}>
           <button className="btn-gold">Apply Now</button>
           <button className="btn-outline-sm" onClick={onClose}>Close</button>
@@ -518,7 +533,7 @@ function FilterBar({ f, set, total, onReset }: {
 }
 
 /* ─────────────────────────────────────────
-   CASTING CARD (grid)
+   CASTING CARD (grid) — neobrutalist
 ───────────────────────────────────────── */
 function CastingCard({
   post, isOwn, onEdit, onDelete, onView
@@ -529,62 +544,42 @@ function CastingCard({
   onView: (p: CastingPost) => void;
 }) {
   return (
-    <div className="casting-post-card" onClick={() => onView(post)} style={{ cursor:"pointer" }}>
+    <div className="casting-post-card" onClick={() => onView(post)}>
       <div className="post-top">
-  <div className="post-meta">
-    <span className="post-category">
-      {post.category}
-    </span>
+        <div className="post-meta">
+          <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
+            {post.status}
+          </span>
+        </div>
+        <div style={{ marginTop: "14px" }}>
+          <h3 style={{ fontSize:"1.35rem", fontWeight:900, color:"var(--ink)", lineHeight:1.2, marginBottom:"6px" }}>
+            {post.title}
+          </h3>
+          <p className="company-name">{post.company}</p>
+        </div>
+      </div>
 
-    <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
-      {post.status}
-    </span>
-  </div>
-
-  <div style={{ marginTop: "14px" }}>
-    <h3
-      style={{
-        fontSize: "1.85rem",
-        fontWeight: 800,
-        color: "var(--ink)",
-        lineHeight: 1.2,
-        marginBottom: "6px",
-      }}
-    >
-      {post.title}
-    </h3>
-
-    <p className="company-name">
-      {post.company}
-    </p>
-  </div>
-</div>
       <div className="casting-info">
         <div><strong>Location</strong><p>{post.location}</p></div>
         <div><strong>Age</strong><p>{post.age || "—"}</p></div>
         <div><strong>Budget</strong><p>₹{Number(post.budget || 0).toLocaleString("en-IN")}</p></div>
       </div>
-      <p className="description-preview" style={{ WebkitLineClamp:2, display:"-webkit-box", WebkitBoxOrient:"vertical", overflow:"hidden" }}>
-        {post.description}
-      </p>
-      <small>Posted {fmt(post.createdAt)}{post.deadline ? ` · Deadline ${fmt(post.deadline)}` : ""}</small>
-      {isOwn && (
-  <div className="post-actions" onClick={e => e.stopPropagation()}>
-    <button onClick={() => onEdit(post)}>
-      Edit
-    </button>
 
-    <button onClick={() => onDelete(post.id)}>
-      Delete
-    </button>
-  </div>
-)}
+      <p className="description-preview">{post.description}</p>
+      <small>Posted {fmt(post.createdAt)}{post.deadline ? ` · Deadline ${fmt(post.deadline)}` : ""}</small>
+
+      {isOwn && (
+        <div className="post-actions" onClick={e => e.stopPropagation()}>
+          <button onClick={() => onEdit(post)}>Edit</button>
+          <button onClick={() => onDelete(post.id)}>Delete</button>
+        </div>
+      )}
     </div>
   );
 }
 
 /* ─────────────────────────────────────────
-   CASTING LIST ROW
+   CASTING LIST ROW — neobrutalist
 ───────────────────────────────────────── */
 function CastingListRow({
   post, isOwn, onEdit, onDelete, onView
@@ -597,32 +592,29 @@ function CastingListRow({
   return (
     <div className="list-row" onClick={() => onView(post)}>
       <div className="list-row-left">
-        <span className="card-category-tag">{post.category}</span>
-        <div style={{ marginTop:"0.4rem" }}>
+        <div>
           <span style={{ fontWeight:800, color:"var(--ink)", fontSize:"1rem" }}>{post.title}</span>
           <span style={{ color:"var(--mid)", fontSize:"0.85rem", marginLeft:"0.6rem" }}>{post.company}</span>
         </div>
         <div style={{ display:"flex", gap:"1rem", marginTop:"0.3rem", fontSize:"0.8rem", color:"var(--mid)", flexWrap:"wrap" }}>
-          <span> {post.location}</span>
+          <span>{post.location}</span>
           <span>{post.age || "—"}</span>
-          <span> ₹{Number(post.budget||0).toLocaleString("en-IN")}</span>
+          <span>₹{Number(post.budget||0).toLocaleString("en-IN")}</span>
           <span>{fmt(post.createdAt)}</span>
         </div>
       </div>
-      <div className="list-row-right" onClick={e=>e.stopPropagation()}>
-        <span className={`status ${post.status==="Open"?"open":"closed"}`}>{post.status}</span>
-        {isOwn && (
-  <div className="post-actions">
-    <button onClick={() => onEdit(post)}>
-      Edit
-    </button>
 
-    <button onClick={() => onDelete(post.id)}>
-      Delete
-    </button>
-  </div>
-)}
-        <button className="btn-outline-sm" onClick={()=>onView(post)}>View</button>
+      <div className="list-row-right" onClick={e => e.stopPropagation()}>
+        <span className={`status ${post.status === "Open" ? "open" : "closed"}`}>{post.status}</span>
+        <div className="post-actions">
+          <button className="row-view-btn" onClick={() => onView(post)}>View</button>
+          {isOwn && (
+            <>
+              <button onClick={() => onEdit(post)}>Edit</button>
+              <button onClick={() => onDelete(post.id)}>Delete</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -758,7 +750,6 @@ export default function PostPage() {
 
   return (
     <>
-      {/* Scroll progress */}
       <div style={{ position:"fixed", top:0, left:0, right:0, height:"2px", background:"rgba(201,168,76,0.15)", zIndex:300 }}>
         <div className="progress-bar" style={{ height:"100%", background:"var(--gold)", transformOrigin:"left", transform:"scaleX(0)" }} />
       </div>
@@ -771,12 +762,14 @@ export default function PostPage() {
           --card-bg: #ffffff; --input-bg: #ffffff; --input-border: #e0dbd0;
           --subtle-bg: #fafaf7; --shadow: 0 8px 32px rgba(0,0,0,0.07);
           --rad-md: 14px; --rad-lg: 22px;
+          --nb-border: #0f0e0d;
         }
         html.dark {
           --ink: #f0eeea; --cream: #0b0b0b; --gold: #c9a84c; --gold2: #f1d472;
           --mist: #1e1e1e; --mid: #a8a29e; --white: #161616;
           --card-bg: #1a1a1a; --input-bg: #1a1a1a; --input-border: #2e2e2e;
           --subtle-bg: #111111; --shadow: 0 8px 32px rgba(0,0,0,0.35);
+          --nb-border: #f0eeea;
         }
         body {
           background: var(--cream); color: var(--ink); overflow-x: hidden;
@@ -789,12 +782,8 @@ export default function PostPage() {
         .btn-gold::after { content:""; position:absolute; inset:0; background:rgba(255,255,255,0.22); transform:translateX(-100%); transition:transform 0.3s; }
         .btn-gold:hover::after { transform:translateX(0); }
         .btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
-        .btn-gold-sm { background: var(--gold); color: #111; border: none; border-radius: 100px; padding: 0.42rem 1rem; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-        .btn-gold-sm:hover { background: var(--gold2); }
         .btn-outline-sm { background: transparent; color: var(--ink); border: 1.5px solid var(--mist); border-radius: 100px; padding: 0.42rem 1rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
         .btn-outline-sm:hover { border-color: var(--gold); background: rgba(201,168,76,0.07); }
-        .btn-danger-sm { background: transparent; color: #c62828; border: 1.5px solid rgba(198,40,40,0.3); border-radius: 100px; padding: 0.42rem 1rem; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background 0.2s, border-color 0.2s; }
-        .btn-danger-sm:hover { background: rgba(198,40,40,0.1); border-color: #c62828; }
 
         /* ─── BASE INPUT ─── */
         .hf-inp { width: 100%; padding: 13px 16px; border: 1.5px solid var(--input-border); border-radius: var(--rad-md); font-size: 0.92rem; font-family: inherit; outline: none; background: var(--input-bg); color: var(--ink); transition: border-color 0.25s, box-shadow 0.25s; appearance: none; -webkit-appearance: none; }
@@ -804,7 +793,7 @@ export default function PostPage() {
         /* ─── CUSTOM SELECT ─── */
         .csd-wrap { position: relative; width: 100%; }
         .csd-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 13px 16px; background: var(--input-bg); border: 1.5px solid var(--input-border); border-radius: var(--rad-md); color: var(--ink); font-size: 0.92rem; font-family: inherit; cursor: pointer; transition: border-color 0.25s, box-shadow 0.25s, background 0.2s; text-align: left; }
-        .csd-trigger:hover { border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.03); }
+        .csd-trigger:hover { border-color: rgba(201,168,76,0.5); background: rgba(201,168,76,0.06); }
         .csd-trigger.open { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; }
         .csd-placeholder { color: var(--mid); }
         .csd-val { color: var(--ink); font-weight: 600; }
@@ -812,11 +801,14 @@ export default function PostPage() {
         .csd-arrow.up { transform: rotate(180deg); }
         .csd-count { background: var(--gold); color: #111; border-radius: 100px; padding: 1px 7px; font-size: 0.68rem; font-weight: 800; line-height: 1.6; }
         .csd-menu { position: absolute; top: calc(100% + 10px); left: 0; right: 0; background: var(--card-bg); border: 2px solid var(--gold); border-radius: 22px; z-index: 9999; max-height: 200px; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--gold) transparent; }
-        @keyframes csdIn { from { opacity: 0; transform: translateY(-6px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .csd-option { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; background: transparent; border: none; color: var(--ink); font-size: 0.88rem; font-family: inherit; cursor: pointer; transition: background 0.15s; text-align: left; border-bottom: 1px solid var(--mist); }
+        .csd-option { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; background: transparent; border: none; color: var(--ink); font-size: 0.88rem; font-family: inherit; cursor: pointer; transition: background 0.15s, color 0.15s; text-align: left; border-bottom: 1px solid var(--mist); }
         .csd-option:last-child { border-bottom: none; }
-        .csd-option:hover { background: rgba(201,168,76,0.08); }
-        .csd-option.selected { background: rgba(201,168,76,0.12); color: var(--gold); font-weight: 700; }
+        /* Dark mode: explicit white text so hover bg doesn't swallow it */
+        html.dark .csd-option { color: var(--ink); }
+        .csd-option:hover { background: rgba(201,168,76,0.18); color: var(--ink); }
+        html.dark .csd-option:hover { background: rgba(201,168,76,0.25); color: #f0eeea; }
+        .csd-option.selected { background: rgba(201,168,76,0.15); color: var(--gold); font-weight: 700; }
+        html.dark .csd-option.selected { background: rgba(201,168,76,0.2); color: var(--gold); }
         .csd-check { color: var(--gold); font-weight: 900; font-size: 0.85rem; }
 
         /* ─── LANGUAGE MULTI-SELECT ─── */
@@ -827,23 +819,65 @@ export default function PostPage() {
         .lang-clear:hover { background: rgba(201,168,76,0.1); }
         .lang-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px; }
         .lang-chip { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1.5px solid var(--input-border); border-radius: 8px; background: var(--subtle-bg); color: var(--ink); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: border-color 0.15s, background 0.15s, color 0.15s; font-family: inherit; text-align: left; }
-        .lang-chip:hover { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+        .lang-chip:hover { border-color: var(--gold); background: rgba(201,168,76,0.1); color: var(--ink); }
+        html.dark .lang-chip:hover { color: #f0eeea; }
         .lang-chip.checked { border-color: var(--gold); background: rgba(201,168,76,0.14); color: #8b6914; }
         html.dark .lang-chip.checked { color: var(--gold); }
         .lang-tick { color: var(--gold); font-weight: 900; font-size: 0.78rem; }
 
-        /* ─── OVERVIEW STRIP (below hero) ─── */
-        .overview-strip {
-          padding: 2.5rem 6vw;
-          background: var(--cream);
-          border-bottom: 1px solid var(--mist);
-          transition: background 0.35s;
-        }
+        /* ─── OVERVIEW STRIP ─── */
+        .overview-strip { padding: 2.5rem 6vw; background: var(--cream); border-bottom: 1px solid var(--mist); transition: background 0.35s; }
+        .overview-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:1.6rem;
+}
+
+.overview-header h2{
+    font-size:1.8rem;
+    font-weight:800;
+    color:var(--ink);
+    margin:0;
+}
+
+.overview-header p{
+    margin-top:.3rem;
+    color:var(--mid);
+    font-size:.9rem;
+}
+
+.overview-meta{
+    display:flex;
+    align-items:center;
+    gap:.75rem;
+    margin-bottom:1rem;
+}
+
+.overview-meta span{
+    width:3px;
+    height:18px;
+    background:var(--gold);
+    border-radius:999px;
+    flex-shrink:0;
+}
+
+.overview-meta small{
+    font-size:.72rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.18em;
+    color:var(--mid);
+}
         .dashboard-overview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
         .overview-card { background: var(--card-bg); border-radius: var(--rad-lg); border: 1.5px solid var(--mist); padding: 1.6rem 1.8rem; box-shadow: var(--shadow); will-change: transform; transition: background 0.35s, border-color 0.3s, box-shadow 0.3s; }
         .overview-card:hover { border-color: rgba(201,168,76,0.5); box-shadow: 0 16px 40px rgba(201,168,76,0.12); }
         .overview-card h2 { font-size: clamp(2rem,3.5vw,2.6rem); font-weight: 900; letter-spacing: -0.04em; color: var(--gold); line-height: 1; margin-bottom: 0.4rem; }
-        .overview-card p { color: var(--mid); font-size: 0.85rem; font-weight: 500; }
+        .overview-card p{
+    color:var(--mid);
+    font-size:.92rem;
+    line-height:1.5;
+}
 
         /* ─── TOOLBAR ─── */
         .post-toolbar { padding: 2rem 6vw 0; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: space-between; }
@@ -855,7 +889,17 @@ export default function PostPage() {
         .search-input::placeholder { color: var(--mid); }
         .search-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); width: 400px; }
         .filter-btn { display: flex; align-items: center; gap: 0.5rem; background: var(--card-bg); color: var(--ink); border: 1.5px solid var(--mist); border-radius: 100px; padding: 0.55rem 1.2rem; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
-        .filter-btn:hover, .filter-btn.active { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+        .filter-btn:hover,
+.filter-btn.active {
+  border-color: var(--gold);
+  background: rgba(201,168,76,0.08);
+  color: var(--ink);
+}
+
+html.dark .filter-btn:hover,
+html.dark .filter-btn.active {
+  color: #f0eeea;
+}
         .view-btn { width: 36px; height: 36px; border: 1.5px solid var(--mist); border-radius: 8px; background: var(--card-bg); color: var(--mid); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, color 0.2s, background 0.2s; }
         .view-btn.active, .view-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.07); }
 
@@ -874,138 +918,94 @@ export default function PostPage() {
         .section-heading { margin-bottom: 2rem; }
         .section-heading h2 { font-size: clamp(1.4rem,2.5vw,1.9rem); font-weight: 800; color: var(--ink); }
         .section-heading p { color: var(--mid); margin-top: 0.3rem; }
-        .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
+        .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+
+        /* ─── NEOBRUTALIST SHARED ─── */
+        .post-status {
+          font-size: 0.62rem; font-weight: 900; letter-spacing: 0.12em;
+          text-transform: uppercase; padding: 3px 10px;
+          border: 1.5px solid var(--nb-border);
+        }
+        .post-status.open { background: #d1fae5; color: #065f46; }
+        .post-status.closed { background: #fee2e2; color: #991b1b; }
+        html.dark .post-status.open { background: rgba(46,125,50,0.2); color: #6fcf87; }
+        html.dark .post-status.closed { background: rgba(198,40,40,0.2); color: #f28b82; }
 
         /* ─── CASTING CARD ─── */
-        .casting-post-card { background: var(--card-bg); border-radius: var(--rad-lg); border: 1.5px solid var(--mist); padding: 1.6rem; box-shadow: var(--shadow); transition: background 0.3s, border-color 0.3s, transform 0.25s, box-shadow 0.25s; }
-        .casting-post-card:hover { border-color: rgba(201,168,76,0.45); transform: translateY(-4px); box-shadow: 0 20px 48px rgba(201,168,76,0.1); }
-        .card-category-tag{
-    background: rgba(201,168,76,0.12);
-    color: var(--gold);
-    border-radius:100px;
-    padding:3px 10px;
-    font-size:.68rem;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-}
+        .casting-post-card {
+          background: var(--card-bg);
+          border: 2.5px solid var(--nb-border);
+          border-radius: 0;
+          padding: 1.5rem;
+          box-shadow: 4px 4px 0px var(--nb-border);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+          cursor: pointer;
+        }
+        .casting-post-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--nb-border); }
 
-.status{
-    padding:5px 14px;
-    border-radius:100px;
-    font-size:.72rem;
-    font-weight:700;
-    letter-spacing:.04em;
-}
+        .post-meta {
+          display: flex; align-items: center; justify-content: flex-end;
+          padding-bottom: 1rem; margin-bottom: 0;
+          border-bottom: 2px solid var(--nb-border);
+        }
+        .post-top { display: block; margin-bottom: 1rem; }
+        .company-name { color: var(--gold); font-weight: 700; font-size: 0.85rem; margin-top: 3px; }
 
-.post-meta{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
+        .casting-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 1rem 0; }
+        .casting-info div { background: #0f0e0d; border-radius: 0; padding: 8px 10px; }
+        html.dark .casting-info div { background: #f0eeea; }
+        .casting-info strong { display: block; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 3px; font-weight: 900; }
+        html.dark .casting-info strong { color: rgba(15,14,13,0.5); }
+        .casting-info p { font-size: 0.82rem; font-weight: 800; color: #fff; margin: 0; }
+        html.dark .casting-info p { color: #0f0e0d; }
 
-    padding-bottom:14px;
-    margin-bottom:16px;
+        .description-preview { color: var(--mid); font-size: 0.85rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        small { display: block; margin-top: 0.6rem; margin-bottom: 1rem; color: var(--mid); font-size: 0.72rem; font-weight: 600; }
 
-    border-bottom:1px solid var(--mist);
-}
-
-.post-category{
-    font-size:.74rem;
-    font-weight:700;
-
-    letter-spacing:.18em;
-    text-transform:uppercase;
-
-    color:var(--gold);
-}
-
-.post-status{
-    font-size:.74rem;
-    font-weight:700;
-
-    letter-spacing:.16em;
-    text-transform:uppercase;
-}
-
-.post-status.open{
-    color:#2E7D32;
-}
-
-.post-status.closed{
-    color:#C62828;
-}
-        .post-top{
-    display:block;
-    margin-bottom:1.5rem;
-}
-        .company-name { color: var(--gold); font-weight: 600; font-size: 0.88rem; margin-top: 3px; }
-        .casting-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
-        .casting-info div { background: var(--subtle-bg); border-radius: 10px; padding: 10px 12px; border: 1px solid var(--mist); }
-        .casting-info strong { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid); margin-bottom: 4px; }
-        .casting-info p { font-size: 0.85rem; font-weight: 600; color: var(--ink); margin: 0; }
-        .description-preview { color: var(--mid); font-size: 0.88rem; line-height: 1.6; }
-        small { display: block; margin-top: 1rem; color: var(--mid); font-size: 0.75rem; opacity: 0.8; }
-        .post-actions{
-    display:flex;
-    width:max-content;
-
-    border:1px solid var(--mist);
-    border-radius:14px;
-
-    overflow:hidden;
-
-    margin-top:1.2rem;
-
-    background:var(--card-bg);
-
-    transition:.25s;
-}
-
-.post-actions:hover{
-    border-color:rgba(201,168,76,.45);
-    box-shadow:0 8px 24px rgba(201,168,76,.12);
-}
-
-.post-actions button{
-
-    border:none;
-    background:transparent;
-
-    padding:.75rem 1.25rem;
-
-    cursor:pointer;
-
-    font-size:.82rem;
-    font-weight:600;
-
-    color:var(--ink);
-
-    transition:.25s;
-}
-
-.post-actions button:first-child{
-
-    border-right:1px solid var(--mist);
-
-}
-
-.post-actions button:hover{
-
-    background:rgba(201,168,76,.08);
-    color:var(--gold);
-
-}
-        .status { padding: 5px 14px; border-radius: 100px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0; }
-        .status.open { background: rgba(46,125,50,0.1); color: #2E7D32; }
-        .status.closed { background: rgba(198,40,40,0.1); color: #C62828; }
-        html.dark .status.open { background: rgba(46,125,50,0.18); color: #6fcf87; }
-        html.dark .status.closed { background: rgba(198,40,40,0.18); color: #f28b82; }
+        /* ─── ACTION BUTTONS ─── */
+        .post-actions {
+          display: flex; width: max-content;
+          border: 2px solid var(--nb-border);
+          border-radius: 0; background: transparent; overflow: hidden;
+        }
+        .post-actions button {
+          border: none; background: transparent;
+          padding: 7px 16px; cursor: pointer;
+          font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em;
+          text-transform: uppercase; font-family: inherit;
+          transition: background 0.15s, color 0.15s;
+          border-right: 2px solid var(--nb-border);
+          color: var(--ink);
+        }
+        .post-actions button:last-child { border-right: none; }
+        .post-actions .row-view-btn { background: #fef3c7; color: #92400e; }
+        html.dark .post-actions .row-view-btn { background: rgba(201,168,76,0.15); color: var(--gold); }
+        .post-actions .row-view-btn:hover { background: var(--gold); color: #111; }
+        .post-actions button:not(.row-view-btn):not(:last-child) { color: var(--ink); }
+        .post-actions button:not(.row-view-btn):not(:last-child):hover { background: var(--gold); color: #111; }
+        .post-actions button:last-child:not(.row-view-btn) { color: #991b1b; }
+        html.dark .post-actions button:last-child:not(.row-view-btn) { color: #f28b82; }
+        .post-actions button:last-child:not(.row-view-btn):hover { background: #fee2e2; }
 
         /* ─── LIST ROW ─── */
-        .list-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem 1.6rem; background: var(--card-bg); border: 1.5px solid var(--mist); border-radius: var(--rad-md); margin-bottom: 0.75rem; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
-        .list-row:hover { border-color: rgba(201,168,76,0.4); transform: translateX(4px); }
+        .list-row {
+          display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+          padding: 1.2rem 1.6rem;
+          background: var(--card-bg);
+          border: 2.5px solid var(--nb-border);
+          border-radius: 0; margin-bottom: 0.6rem; cursor: pointer;
+          box-shadow: 3px 3px 0px var(--nb-border);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .list-row:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0px var(--nb-border); }
         .list-row-left { flex: 1; min-width: 0; }
-        .list-row-right { display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+        .list-row-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+
+        .status { padding: 4px 12px; border-radius: 0; border: 1.5px solid var(--nb-border); font-size: 0.62rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+        .status.open { background: #d1fae5; color: #065f46; }
+        .status.closed { background: #fee2e2; color: #991b1b; }
+        html.dark .status.open { background: rgba(46,125,50,0.2); color: #6fcf87; }
+        html.dark .status.closed { background: rgba(198,40,40,0.2); color: #f28b82; }
 
         /* ─── EMPTY STATE ─── */
         .empty-state { text-align: center; padding: 5rem 2rem; background: var(--card-bg); border-radius: var(--rad-lg); border: 1.5px solid var(--mist); }
@@ -1022,27 +1022,57 @@ export default function PostPage() {
         .form-full { grid-column: 1 / 3; }
         .form-actions { display: flex; gap: 1rem; align-items: center; justify-content: flex-start; padding-top: 0.5rem; }
 
-        /* ─── MODAL ─── */
+        /* ─── MODAL — neobrutalist ─── */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 24px; }
         html.dark .modal-overlay { background: rgba(0,0,0,0.75); }
-        .casting-modal { background: var(--card-bg); color: var(--ink); width: 100%; max-width: 820px; max-height: 88vh; overflow-y: auto; border-radius: var(--rad-lg); padding: 2.5rem; position: relative; border: 1.5px solid var(--mist); box-shadow: 0 32px 80px rgba(0,0,0,0.18); animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.88) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .close-btn { position: absolute; right: 20px; top: 18px; border: none; background: var(--mist); color: var(--mid); width: 32px; height: 32px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s, color 0.2s; }
-        .close-btn:hover { background: var(--gold); color: #111; }
-        .modal-badge { background: rgba(201,168,76,0.12); color: var(--gold); border-radius: 100px; padding: 4px 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-        .modal-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1.5rem 0; }
-        .modal-info-item { background: var(--subtle-bg); border-radius: 10px; padding: 12px 14px; border: 1px solid var(--mist); }
-        .description { background: var(--subtle-bg); border-radius: var(--rad-md); padding: 1.2rem 1.4rem; border: 1px solid var(--mist); color: var(--mid); font-size: 0.92rem; line-height: 1.75; }
+        .casting-modal {
+          background: var(--card-bg); color: var(--ink);
+          width: 100%; max-width: 820px; max-height: 88vh; overflow-y: auto;
+          border-radius: 0;
+          padding: 2.5rem; position: relative;
+          padding-top: 4.5rem;
+          border: 2.5px solid var(--nb-border);
+          box-shadow: 8px 8px 0px var(--nb-border);
+          animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.93) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+        .close-btn {
+          position: absolute; right: 20px; top: 18px; border: 2px solid var(--nb-border);
+          background: transparent; color: var(--ink); width: 32px; height: 32px;
+          border-radius: 0; font-size: 1.1rem; cursor: pointer;
+          display: flex; align-items: center; justify-content: center;
+          transition: background 0.15s, color 0.15s;
+        }
+        .close-btn:hover { background: var(--gold); color: #111; border-color: var(--nb-border); }
+
+        /* Modal title + company — matches card style */
+        .modal-title {
+          font-size: clamp(1.4rem,3vw,1.9rem); font-weight: 900;
+          color: var(--ink); line-height: 1.2; margin-bottom: 6px;
+        }
+        .modal-company { color: var(--gold); font-weight: 700; font-size: 0.95rem; margin-bottom: 1.5rem; }
+
+        /* Modal info cells — same black blocks as casting-info */
+        .modal-info { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 1.5rem 0; }
+        .modal-info-item { background: #0f0e0d; border-radius: 0; padding: 10px 12px; }
+        html.dark .modal-info-item { background: #f0eeea; }
+        .modal-info-item strong { display: block; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 4px; font-weight: 900; }
+        html.dark .modal-info-item strong { color: rgba(15,14,13,0.5); }
+        .modal-info-item p { font-size: 0.85rem; font-weight: 800; color: #fff; margin: 0; }
+        html.dark .modal-info-item p { color: #0f0e0d; }
+
+        .modal-desc-heading { font-size: 0.82rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mid); margin-bottom: 0.6rem; border-top: 2px solid var(--nb-border); padding-top: 1.2rem; }
+        .modal-description { color: var(--mid); font-size: 0.92rem; line-height: 1.75; }
 
         /* ─── RESPONSIVE ─── */
-        @media (max-width: 1000px) { .dashboard-overview { grid-template-columns: repeat(2, 1fr); } .filter-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1000px) { .dashboard-overview { grid-template-columns: repeat(2, 1fr); } .filter-grid { grid-template-columns: repeat(3, 1fr); } .modal-info { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 768px) {
           .post-toolbar { flex-direction: column; align-items: flex-start; }
           .post-form { grid-template-columns: 1fr; padding: 1.6rem; }
           .form-full { grid-column: auto; }
           .form-actions { flex-direction: column; }
           .casting-info { grid-template-columns: repeat(2, 1fr); }
-          .modal-info { grid-template-columns: repeat(2, 1fr); }
           .filter-grid { grid-template-columns: 1fr 1fr; }
           .posts-grid { grid-template-columns: 1fr; }
           .list-row { flex-direction: column; align-items: flex-start; }
@@ -1061,25 +1091,52 @@ export default function PostPage() {
       `}</style>
 
       <main>
-
-        {/* ── HERO CAROUSEL (full-viewport) ── */}
         <HeroCarousel />
 
-        {/* ── OVERVIEW STATS STRIP ── */}
         <div className="overview-strip">
-          <div className="dashboard-overview">
-            {[
-              { n: totalPosts,  label: "Total Posts"  },
-              { n: openPosts,   label: "Open"         },
-              { n: closedPosts, label: "Closed"       },
-              { n: thisMonth,   label: "This Month"   },
-            ].map(({ n, label }) => (
-              <div className="overview-card" key={label}><h2>{n}</h2><p>{label}</p></div>
-            ))}
+  <div className="dashboard-overview">
+            <div className="overview-card">
+  <div className="overview-meta">
+  <span></span>
+  <small>THIS MONTH</small>
+</div>
+
+<h2>3</h2>
+<p>New casting calls</p>
+</div>
+
+<div className="overview-card">
+  <div className="overview-meta">
+  <span></span>
+  <small>THIS MONTH</small>
+</div>
+
+<h2>4</h2>
+<p>Currently accepting applications</p>
+</div>
+
+<div className="overview-card">
+  <div className="overview-meta">
+  <span></span>
+  <small>THIS MONTH</small>
+</div>
+
+<h2>1</h2>
+<p>Closed opportunities</p>
+</div>
+
+<div className="overview-card">
+  <div className="overview-meta">
+  <span></span>
+  <small>THIS MONTH</small>
+</div>
+
+<h2>5</h2>
+<p>All-time casting calls</p>
+</div>
           </div>
         </div>
 
-        {/* ── TOOLBAR ── */}
         <div className="post-toolbar">
           <div className="toolbar-left">
             <div className="search-input-wrap">
@@ -1102,12 +1159,10 @@ export default function PostPage() {
           </div>
         </div>
 
-        {/* ── FILTER COLLAPSE ── */}
         <div className={`filters-collapse${showFilters ? " open" : ""}`}>
           <FilterBar f={filters} set={setFilter} total={filtered.length} onReset={resetFilters} />
         </div>
 
-        {/* ── ALL CASTING CALLS ── */}
         <section className="all-posts">
           <div className="section-heading reveal">
             <h2>All Casting Calls</h2>
@@ -1141,11 +1196,9 @@ export default function PostPage() {
           )}
         </section>
 
-        {/* ── INLINE EDIT FORM ── */}
         {editing && (
           <CastingFormSection editing={editing} onSave={handleSave} onCancel={() => setEditing(null)} />
         )}
-
       </main>
 
       {selectedPost && (
