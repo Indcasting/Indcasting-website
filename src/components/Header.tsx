@@ -210,9 +210,9 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <div className="auth-buttons" style={{ display: 'flex', gap: '16px' }}>
-              <Link href="/login" className="signup-btn header-btn">Log In</Link>
-              <Link href="/signup" className="signup-btn header-btn">Sign Up</Link>
+            <div className="auth-buttons" style={{ display: 'flex', gap: '12px', marginLeft: '8px', marginRight: '-8px' }}>
+              <Link href="/login" className="signup-btn header-btn" style={{ padding: '0 16px', height: '36px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>Log In</Link>
+              <Link href="/signup" className="signup-btn header-btn" style={{ padding: '0 16px', height: '36px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>Sign Up</Link>
             </div>
           )}
 
