@@ -132,7 +132,7 @@ export default function Header() {
 
 
         {/* Right Section: Actions */}
-        <div className="header-actions" style={{ gap: '16px', flexShrink: 0 }}>
+        <div className="header-actions" style={{ gap: '10px', flexShrink: 0, marginRight: '-20px' }}>
           
           <Link href="/talents" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
             Talents
@@ -188,7 +188,7 @@ export default function Header() {
 
           {/* Quick Create Dropdown */}
           <div className="profile-menu-wrap" ref={createMenuRef}>
-            <button className="signup-btn header-btn" onClick={() => setCreateMenuOpen(!createMenuOpen)} style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button className="signup-btn header-btn" onClick={() => setCreateMenuOpen(!createMenuOpen)} style={{ padding: '6px 14px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Plus size={16} /> <span className="hide-on-mobile">Create</span> <ChevronDown size={14} style={{ transition: 'transform 0.2s', transform: createMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
             </button>
             {createMenuOpen && (
