@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BriefcaseBusiness, Users, Star, Video, MessageSquare, TrendingUp, ChevronRight, Activity, PlusCircle, Calendar } from "lucide-react";
+import { BriefcaseBusiness, Users, Star, Video, MessageSquare, TrendingUp, ChevronRight, Activity, PlusCircle, Calendar, X } from "lucide-react";
 import DashboardCard from "@/components/DashboardCard";
+import SpotlightCard from "@/components/SpotlightCard";
 import { getCurrentUser } from "@/utils/auth";
 import { UserProfile } from "@/types/user";
 import { useRouter } from "next/navigation";
@@ -10,6 +11,8 @@ import { useRouter } from "next/navigation";
 export default function SeekerDashboard() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const router = useRouter();
+  
+  const [selectedAppModal, setSelectedAppModal] = useState<{name: string, role: string, time: string, status: string, color: string, bg: string} | null>(null);
 
   useEffect(() => {
     setUser(getCurrentUser());
@@ -40,7 +43,7 @@ export default function SeekerDashboard() {
 
       {/* Mini Stats Row - First 4 */}
       <div className="col-span-3" onClick={() => router.push('/dashboard/seeker/casting-calls')}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
             <BriefcaseBusiness size={24} />
           </div>
@@ -48,11 +51,11 @@ export default function SeekerDashboard() {
             <h3>8</h3>
             <p>Active Calls</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/talents')}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
             <Users size={24} />
           </div>
@@ -60,11 +63,11 @@ export default function SeekerDashboard() {
             <h3>142</h3>
             <p>Total Applications</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/seeker/shortlisted')}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: 'var(--dash-gold)', backgroundColor: 'rgba(212, 175, 55, 0.1)' }}>
             <Star size={24} />
           </div>
@@ -72,11 +75,11 @@ export default function SeekerDashboard() {
             <h3>24</h3>
             <p>Shortlisted</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/seeker/auditions')}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
             <Video size={24} />
           </div>
@@ -84,7 +87,7 @@ export default function SeekerDashboard() {
             <h3>12</h3>
             <p>Scheduled Auditions</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       {/* Main Content Area */}
@@ -151,7 +154,7 @@ export default function SeekerDashboard() {
                 { name: "Rahul Verma", role: "Supporting Role", time: "5 hours ago", status: "Reviewed", color: "#f59e0b", bg: "rgba(245, 158, 11, 0.1)" },
                 { name: "Neha Singh", role: "Fashion Model", time: "1 day ago", status: "Shortlisted", color: "#10b981", bg: "rgba(16, 185, 129, 0.1)" }
               ].map((app, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--dash-border)', borderRadius: '12px', cursor: 'pointer', transition: 'background 0.2s ease' }} className="hover-bg-card">
+                <SpotlightCard key={i} onClick={() => setSelectedAppModal(app)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--dash-border)', borderRadius: '12px', cursor: 'pointer' }}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--dash-hover-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                       <UserPlaceholder size={24} />
@@ -169,7 +172,7 @@ export default function SeekerDashboard() {
                       <ChevronRight size={18} />
                     </button>
                   </div>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
             <button 
@@ -194,7 +197,7 @@ export default function SeekerDashboard() {
               { role: "Fashion Shoot", candidate: "Neha Singh", time: "Tomorrow, 10:30 AM" },
               { role: "Supporting Actor", candidate: "Rahul Verma", time: "Thursday, 4:00 PM" }
             ].map((aud, i) => (
-              <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', paddingBottom: i !== 2 ? '16px' : '0', borderBottom: i !== 2 ? '1px solid var(--dash-border)' : 'none' }}>
+              <SpotlightCard key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '12px', borderBottom: i !== 2 ? '1px solid var(--dash-border)' : 'none', borderRadius: '12px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'rgba(212, 175, 55, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Calendar size={18} color="var(--dash-gold)" />
                 </div>
@@ -203,7 +206,7 @@ export default function SeekerDashboard() {
                   <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--dash-text-main)' }}>with {aud.candidate}</p>
                   <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--dash-text-muted)' }}>{aud.time}</p>
                 </div>
-              </div>
+              </SpotlightCard>
             ))}
           </div>
           <button 
@@ -218,54 +221,142 @@ export default function SeekerDashboard() {
 
         <DashboardCard title="Quick Actions">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <button 
-              onClick={() => router.push('/dashboard/seeker/casting-calls')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer', transition: 'all 0.2s ease' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.background = 'var(--dash-hover-bg)'; e.currentTarget.style.borderColor = '#3b82f6'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.background = 'var(--dash-surface)'; e.currentTarget.style.borderColor = 'var(--dash-border)'; }}
-            >
+            <SpotlightCard className="dash-quick-action" onClick={() => router.push('/dashboard/seeker/casting-calls')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer' }}>
               <div style={{ padding: '10px', borderRadius: '50%', backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
                 <PlusCircle size={20} />
               </div>
               <span style={{ fontSize: '13px', fontWeight: 600 }}>Post Job</span>
-            </button>
-            <button 
-              onClick={() => router.push('/messages')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer', transition: 'all 0.2s ease' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.background = 'var(--dash-hover-bg)'; e.currentTarget.style.borderColor = '#8b5cf6'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.background = 'var(--dash-surface)'; e.currentTarget.style.borderColor = 'var(--dash-border)'; }}
-            >
+            </SpotlightCard>
+            <SpotlightCard className="dash-quick-action" onClick={() => router.push('/messages')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer' }}>
               <div style={{ padding: '10px', borderRadius: '50%', backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
                 <MessageSquare size={20} />
               </div>
               <span style={{ fontSize: '13px', fontWeight: 600 }}>Messages (3)</span>
-            </button>
-            <button 
-              onClick={() => router.push('/dashboard/seeker/company-profile')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer', transition: 'all 0.2s ease' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.background = 'var(--dash-hover-bg)'; e.currentTarget.style.borderColor = '#10b981'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.background = 'var(--dash-surface)'; e.currentTarget.style.borderColor = 'var(--dash-border)'; }}
-            >
+            </SpotlightCard>
+            <SpotlightCard className="dash-quick-action" onClick={() => router.push('/dashboard/seeker/company-profile')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer' }}>
               <div style={{ padding: '10px', borderRadius: '50%', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
                 <Activity size={20} />
               </div>
               <span style={{ fontSize: '13px', fontWeight: 600 }}>Update Profile</span>
-            </button>
-            <button 
-              onClick={() => router.push('/dashboard/seeker/shortlisted')}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer', transition: 'all 0.2s ease' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.background = 'var(--dash-hover-bg)'; e.currentTarget.style.borderColor = 'var(--dash-gold)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.background = 'var(--dash-surface)'; e.currentTarget.style.borderColor = 'var(--dash-border)'; }}
-            >
+            </SpotlightCard>
+            <SpotlightCard className="dash-quick-action" onClick={() => router.push('/dashboard/seeker/shortlisted')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer' }}>
               <div style={{ padding: '10px', borderRadius: '50%', backgroundColor: 'rgba(212, 175, 55, 0.1)', color: 'var(--dash-gold)' }}>
                 <Star size={20} />
               </div>
               <span style={{ fontSize: '13px', fontWeight: 600 }}>Shortlisted</span>
-            </button>
+            </SpotlightCard>
           </div>
         </DashboardCard>
 
       </div>
+
+      {/* Application Review Modal */}
+      {selectedAppModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          animation: 'fadeIn 0.2s ease-out'
+        }}
+        onClick={() => setSelectedAppModal(null)}
+        >
+          <div style={{
+            backgroundColor: 'var(--dash-bg)',
+            border: '1px solid var(--dash-border)',
+            borderRadius: '24px',
+            width: '100%',
+            maxWidth: '500px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            position: 'relative',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+          onClick={e => e.stopPropagation()}
+          >
+            <div style={{ padding: '32px 32px 24px 32px', borderBottom: '1px solid var(--dash-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <span style={{ padding: '6px 12px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 600, backgroundColor: selectedAppModal.bg, color: selectedAppModal.color, display: 'inline-block', marginBottom: '12px' }}>
+                  {selectedAppModal.status}
+                </span>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)' }}>{selectedAppModal.name}</h2>
+                <p style={{ color: 'var(--dash-text-muted)', margin: 0, fontSize: '0.95rem', fontWeight: 500 }}>
+                  Applied for: <strong style={{ color: 'var(--dash-text-main)' }}>{selectedAppModal.role}</strong>
+                </p>
+              </div>
+              <button 
+                onClick={() => setSelectedAppModal(null)}
+                style={{ background: 'var(--dash-bg-card)', border: '1px solid var(--dash-border)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--dash-text-muted)', cursor: 'pointer', transition: 'all 0.2s ease' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <div style={{ padding: '32px' }}>
+              <div style={{ position: 'relative', paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                {/* Timeline Line */}
+                <div style={{ position: 'absolute', left: '5px', top: '8px', bottom: '8px', width: '2px', backgroundColor: 'var(--dash-border)', zIndex: 0 }}></div>
+                
+                {/* Step 1 */}
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: 'var(--gold)', marginTop: '4px', border: '3px solid var(--dash-bg)', marginLeft: '-5px' }}></div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: 'var(--dash-text-main)' }}>Application Received</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--dash-text-muted)' }}>{selectedAppModal.time}</p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: selectedAppModal.status === 'Reviewed' || selectedAppModal.status === 'Shortlisted' ? 'var(--gold)' : 'var(--dash-border)', marginTop: '4px', border: '3px solid var(--dash-bg)', marginLeft: '-5px' }}></div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: selectedAppModal.status === 'Reviewed' || selectedAppModal.status === 'Shortlisted' ? 'var(--dash-text-main)' : 'var(--dash-text-muted)' }}>Review in Progress</h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--dash-text-muted)' }}>{selectedAppModal.status === 'Reviewed' || selectedAppModal.status === 'Shortlisted' ? 'You have reviewed this profile.' : 'Pending review.'}</p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: selectedAppModal.status === 'Shortlisted' ? '#10b981' : 'var(--dash-border)', marginTop: '4px', border: '3px solid var(--dash-bg)', marginLeft: '-5px' }}></div>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 700, color: selectedAppModal.status === 'Shortlisted' ? 'var(--dash-text-main)' : 'var(--dash-text-muted)' }}>
+                      Shortlisted
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--dash-text-muted)' }}>
+                      {selectedAppModal.status === 'Shortlisted' ? 'Candidate added to shortlist.' : 'No final decision yet.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ padding: '24px 32px', borderTop: '1px solid var(--dash-border)', display: 'flex', justifyContent: 'flex-end', gap: '12px', backgroundColor: 'var(--dash-bg-card)' }}>
+              <button 
+                style={{ padding: '10px 24px', borderRadius: '999px', border: '1px solid var(--dash-border)', backgroundColor: 'transparent', color: 'var(--dash-text-main)', fontWeight: 600, cursor: 'pointer' }}
+              >
+                View Full Profile
+              </button>
+              <button 
+                onClick={() => setSelectedAppModal(null)}
+                style={{ padding: '10px 24px', borderRadius: '999px', border: 'none', backgroundColor: 'var(--gold)', color: '#000', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(201, 168, 76, 0.3)' }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes fadeIn {
           from { opacity: 0; }

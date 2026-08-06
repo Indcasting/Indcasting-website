@@ -2,6 +2,7 @@
 
 import { FileText, Calendar, Video, MessageSquare, TrendingUp, ChevronRight, X, BarChart2, Users, Eye } from "lucide-react";
 import DashboardCard from "@/components/DashboardCard";
+import SpotlightCard from "@/components/SpotlightCard";
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "@/utils/auth";
 import { UserProfile } from "@/types/user";
@@ -35,7 +36,7 @@ export default function TalentDashboard() {
 
       {/* Mini Stats Row */}
       <div className="col-span-3" onClick={() => router.push('/dashboard/applications')}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
             <FileText size={24} />
           </div>
@@ -43,11 +44,11 @@ export default function TalentDashboard() {
             <h3>12</h3>
             <p>Applications</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       <div className="col-span-3" onClick={() => setIsAuditionsModalOpen(true)}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
             <Video size={24} />
           </div>
@@ -55,11 +56,11 @@ export default function TalentDashboard() {
             <h3>4</h3>
             <p>Upcoming Auditions</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/messages')}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
             <MessageSquare size={24} />
           </div>
@@ -67,11 +68,11 @@ export default function TalentDashboard() {
             <h3>5</h3>
             <p>New Messages</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/portfolio')}>
-        <div className="stat-card" style={{ cursor: 'pointer' }}>
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
           <div className="stat-icon-wrapper" style={{ color: 'var(--dash-gold)', backgroundColor: 'rgba(212, 175, 55, 0.1)' }}>
             <TrendingUp size={24} />
           </div>
@@ -79,7 +80,7 @@ export default function TalentDashboard() {
             <h3>89%</h3>
             <p>Profile Strength</p>
           </div>
-        </div>
+        </SpotlightCard>
       </div>
 
       {/* Main Content Area */}
@@ -144,7 +145,7 @@ export default function TalentDashboard() {
                 { role: "Fashion Model", prod: "Elite Models", status: "Shortlisted", color: "#10b981", bg: "rgba(16, 185, 129, 0.1)" },
                 { role: "Background Dancer", prod: "Rhythm Productions", status: "Rejected", color: "#ef4444", bg: "rgba(239, 68, 68, 0.1)" }
               ].map((app, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--dash-border)', borderRadius: '12px' }}>
+                <SpotlightCard key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', border: '1px solid var(--dash-border)', borderRadius: '12px' }}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={{ width: '48px', height: '48px', borderRadius: '10px', backgroundColor: 'var(--dash-hover-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Video size={20} color="var(--dash-text-muted)" />
@@ -165,7 +166,7 @@ export default function TalentDashboard() {
                       <ChevronRight size={18} />
                     </button>
                   </div>
-                </div>
+                </SpotlightCard>
               ))}
             </div>
           </DashboardCard>
@@ -199,7 +200,7 @@ export default function TalentDashboard() {
               { role: "Commercial Lead", time: "Tomorrow, 10:00 AM" },
               { role: "Fashion Shoot", time: "Friday, 2:30 PM" }
             ].map((aud, i) => (
-              <div key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <SpotlightCard key={i} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '12px', borderRadius: '12px' }}>
                 <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: 'rgba(212, 175, 55, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Calendar size={18} color="var(--dash-gold)" />
                 </div>
@@ -207,7 +208,7 @@ export default function TalentDashboard() {
                   <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--dash-text-main)' }}>{aud.role}</h4>
                   <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: 'var(--dash-text-muted)' }}>{aud.time}</p>
                 </div>
-              </div>
+              </SpotlightCard>
             ))}
           </div>
         </DashboardCard>
