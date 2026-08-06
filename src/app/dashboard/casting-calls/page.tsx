@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MapPin, Calendar, Clock, ChevronRight, X, Briefcase, FileText, CheckCircle, Info, Bookmark, Eye, Users, Film, Languages, Flame, Star, Sparkles, Filter, IndianRupee } from "lucide-react";
+import { Search, MapPin, Calendar, Clock, ChevronRight, X, Briefcase, FileText, CheckCircle, Info, Bookmark, Eye, Users, Film, Languages, Flame, Star, Sparkles, Filter, IndianRupee, Plus } from "lucide-react";
 
 export default function CastingCallsPage() {
   const filterOptions = ["All", "Actors", "Models", "Voice Artists", "Dancers", "Singers", "Photographers", "Directors"];
@@ -175,8 +175,8 @@ export default function CastingCallsPage() {
     return matchesSearch && matchesFilter;
   });
 
-  const featuredJob = filteredJobs.find(j => j.cardType === 'featured') || filteredJobs[0];
-  const masonryJobs = filteredJobs.filter(j => j?.id !== featuredJob?.id);
+  const featuredJob = filteredJobs.find(j => j.cardType === 'featured');
+  const masonryJobs = featuredJob ? filteredJobs.filter(j => j.id !== featuredJob.id) : filteredJobs;
 
   const renderBadge = (text: string, icon?: React.ReactNode) => (
     <div className="cine-badge">
@@ -497,8 +497,8 @@ export default function CastingCallsPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <div style={{ height: '24px', width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-        <button style={{ background: 'none', border: 'none', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 500 }}>
-          <Filter size={18} /> Filters
+        <button style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '10px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s ease' }}>
+          <Plus size={18} /> Add Casting Call
         </button>
       </div>
 
