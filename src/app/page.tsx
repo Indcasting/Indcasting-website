@@ -574,7 +574,7 @@ export default function Home() {
         .pillars-cards { width: min(1100px,90vw); margin: 0 auto; padding-bottom: 40vh; }
         .pillar-row {
           min-height: 520px; padding: 60px;
-          border-radius: 28px; background: var(--white); border: 1px solid var(--mist);
+          border-radius: 28px; overflow: hidden; background: var(--white); border: 1px solid var(--mist);
           display: flex; flex-direction: column; justify-content: center; gap: 18px;
           box-shadow: 0 20px 50px rgba(0,0,0,.08); position: relative;
           transform-origin: top center; will-change: transform, opacity;
@@ -582,11 +582,17 @@ export default function Home() {
         }
         .pillar-row:last-child { margin-bottom: 0; }
         .pillar-row:hover { background: rgba(201,168,76,0.04); }
-        .pillar-row::after {
-          content: ""; position: absolute; left: 0; right: 0;
-          height: 1px; background: linear-gradient(to right, var(--gold), transparent);
-          opacity: 0; top: 0; transition: opacity .3s;
-        }
+        .pillar-row::after{
+    content:"";
+    position:absolute;
+    left:28px;
+    right:28px;
+    top:0;
+    height:1px;
+    background:linear-gradient(to right,var(--gold),transparent);
+    opacity:0;
+    transition:.3s;
+}
         .pillar-row:hover::after { opacity: 0.6; }
         html.dark .pillars-section .pillar-row { border-color: #2a2a2a; }
         .pillar-bar { position: absolute; top: 0; left: 0; width: 2px; height: 100%; background: var(--gold); transform-origin: top center; transform: scaleY(0); }

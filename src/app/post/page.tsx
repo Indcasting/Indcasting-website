@@ -276,14 +276,14 @@ function DetailsModal({ post, onClose }: { post: CastingPost; onClose: () => voi
         <p style={{ marginBottom:"1.8rem", color:"var(--gold)", fontWeight:600 }}>{post.company}</p>
         <div className="modal-info">
           {[
-            ["📍 Location", post.location],
-            ["🎂 Age Range", post.age],
-            ["⚧ Gender",    post.gender ?? "Any"],
-            ["🎬 Experience",post.experience ?? "Any"],
-            ["🗣 Languages", post.languages ?? "—"],
-            ["💰 Budget",    `₹${Number(post.budget).toLocaleString("en-IN")}`],
-            ...(post.deadline ? [["📅 Deadline", fmt(post.deadline)]] : []),
-            ["🗓 Posted",    fmt(post.createdAt)],
+            ["Location", post.location],
+["Age Range", post.age],
+["Gender", post.gender ?? "Any"],
+["Experience", post.experience ?? "Any"],
+["Languages", post.languages ?? "—"],
+["Budget", `₹${Number(post.budget).toLocaleString("en-IN")}`],
+...(post.deadline ? [["Deadline", fmt(post.deadline)]] : []),
+["Posted", fmt(post.createdAt)],
           ].map(([k, v]) => (
             <div className="modal-info-item" key={k}>
               <strong style={{ fontSize:"0.72rem", textTransform:"uppercase", letterSpacing:"0.08em", color:"var(--mid)", display:"block", marginBottom:"4px" }}>{k}</strong>
@@ -358,7 +358,7 @@ function CastingFormSection({
     <section className="post-form-section">
       <div className="post-form-header">
         <h2 style={{ fontSize:"clamp(1.4rem,2.5vw,1.8rem)", fontWeight:800, color:"var(--ink)" }}>
-          {editing ? "✏️ Edit Casting Call" : "✦ Post a Casting Call"}
+          {editing ? "Edit Casting Call" : "✦ Post a Casting Call"}
         </h2>
         <p style={{ color:"var(--mid)", marginTop:"0.4rem" }}>
           {editing ? "Update the details below." : "Fill in the details to reach the right talent."}
@@ -498,7 +498,7 @@ function FilterBar({ f, set, total, onReset }: {
           options={BUDGET_OPTS} placeholder="Any Budget" />
 
         <CustomSelect value={f.status} onChange={v=>set("status",v)}
-          options={[{v:"",l:"Any Status"},{v:"Open",l:"🟢 Open"},{v:"Closed",l:"🔴 Closed"}]}
+          options={[{v:"",l:"Any Status"},{v:"Open",l:"Open"},{v:"Closed",l:"Closed"}]}
           placeholder="Any Status" />
 
         <CustomSelect value={f.sort} onChange={v=>set("sort",v)}
@@ -531,28 +531,54 @@ function CastingCard({
   return (
     <div className="casting-post-card" onClick={() => onView(post)} style={{ cursor:"pointer" }}>
       <div className="post-top">
-        <div style={{ flex:1, minWidth:0 }}>
-          <span className="card-category-tag">{post.category}</span>
-          <h3 style={{ margin:"0.5rem 0 0.25rem", fontSize:"1.1rem", fontWeight:800, color:"var(--ink)" }}>{post.title}</h3>
-          <p className="company-name">{post.company}</p>
-        </div>
-        <span className={`status ${post.status === "Open" ? "open" : "closed"}`}>{post.status}</span>
-      </div>
+  <div className="post-meta">
+    <span className="post-category">
+      {post.category}
+    </span>
+
+    <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
+      {post.status}
+    </span>
+  </div>
+
+  <div style={{ marginTop: "14px" }}>
+    <h3
+      style={{
+        fontSize: "1.85rem",
+        fontWeight: 800,
+        color: "var(--ink)",
+        lineHeight: 1.2,
+        marginBottom: "6px",
+      }}
+    >
+      {post.title}
+    </h3>
+
+    <p className="company-name">
+      {post.company}
+    </p>
+  </div>
+</div>
       <div className="casting-info">
-        <div><strong>📍 Location</strong><p>{post.location}</p></div>
-        <div><strong>🎂 Age</strong><p>{post.age || "—"}</p></div>
-        <div><strong>💰 Budget</strong><p>₹{Number(post.budget || 0).toLocaleString("en-IN")}</p></div>
+        <div><strong>Location</strong><p>{post.location}</p></div>
+        <div><strong>Age</strong><p>{post.age || "—"}</p></div>
+        <div><strong>Budget</strong><p>₹{Number(post.budget || 0).toLocaleString("en-IN")}</p></div>
       </div>
       <p className="description-preview" style={{ WebkitLineClamp:2, display:"-webkit-box", WebkitBoxOrient:"vertical", overflow:"hidden" }}>
         {post.description}
       </p>
       <small>Posted {fmt(post.createdAt)}{post.deadline ? ` · Deadline ${fmt(post.deadline)}` : ""}</small>
       {isOwn && (
-        <div className="post-buttons" onClick={e => e.stopPropagation()}>
-          <button className="btn-gold-sm" onClick={() => onEdit(post)}>Edit</button>
-          <button className="btn-danger-sm" onClick={() => onDelete(post.id)}>Delete</button>
-        </div>
-      )}
+  <div className="post-actions" onClick={e => e.stopPropagation()}>
+    <button onClick={() => onEdit(post)}>
+      Edit
+    </button>
+
+    <button onClick={() => onDelete(post.id)}>
+      Delete
+    </button>
+  </div>
+)}
     </div>
   );
 }
@@ -577,18 +603,25 @@ function CastingListRow({
           <span style={{ color:"var(--mid)", fontSize:"0.85rem", marginLeft:"0.6rem" }}>{post.company}</span>
         </div>
         <div style={{ display:"flex", gap:"1rem", marginTop:"0.3rem", fontSize:"0.8rem", color:"var(--mid)", flexWrap:"wrap" }}>
-          <span>📍 {post.location}</span>
-          <span>🎂 {post.age || "—"}</span>
-          <span>💰 ₹{Number(post.budget||0).toLocaleString("en-IN")}</span>
-          <span>🗓 {fmt(post.createdAt)}</span>
+          <span> {post.location}</span>
+          <span>{post.age || "—"}</span>
+          <span> ₹{Number(post.budget||0).toLocaleString("en-IN")}</span>
+          <span>{fmt(post.createdAt)}</span>
         </div>
       </div>
       <div className="list-row-right" onClick={e=>e.stopPropagation()}>
         <span className={`status ${post.status==="Open"?"open":"closed"}`}>{post.status}</span>
-        {isOwn && <>
-          <button className="btn-gold-sm" onClick={()=>onEdit(post)}>Edit</button>
-          <button className="btn-danger-sm" onClick={()=>onDelete(post.id)}>Delete</button>
-        </>}
+        {isOwn && (
+  <div className="post-actions">
+    <button onClick={() => onEdit(post)}>
+      Edit
+    </button>
+
+    <button onClick={() => onDelete(post.id)}>
+      Delete
+    </button>
+  </div>
+)}
         <button className="btn-outline-sm" onClick={()=>onView(post)}>View</button>
       </div>
     </div>
@@ -846,8 +879,65 @@ export default function PostPage() {
         /* ─── CASTING CARD ─── */
         .casting-post-card { background: var(--card-bg); border-radius: var(--rad-lg); border: 1.5px solid var(--mist); padding: 1.6rem; box-shadow: var(--shadow); transition: background 0.3s, border-color 0.3s, transform 0.25s, box-shadow 0.25s; }
         .casting-post-card:hover { border-color: rgba(201,168,76,0.45); transform: translateY(-4px); box-shadow: 0 20px 48px rgba(201,168,76,0.1); }
-        .card-category-tag { background: rgba(201,168,76,0.12); color: var(--gold); border-radius: 100px; padding: 3px 10px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-        .post-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+        .card-category-tag{
+    background: rgba(201,168,76,0.12);
+    color: var(--gold);
+    border-radius:100px;
+    padding:3px 10px;
+    font-size:.68rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+}
+
+.status{
+    padding:5px 14px;
+    border-radius:100px;
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.04em;
+}
+
+.post-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding-bottom:14px;
+    margin-bottom:16px;
+
+    border-bottom:1px solid var(--mist);
+}
+
+.post-category{
+    font-size:.74rem;
+    font-weight:700;
+
+    letter-spacing:.18em;
+    text-transform:uppercase;
+
+    color:var(--gold);
+}
+
+.post-status{
+    font-size:.74rem;
+    font-weight:700;
+
+    letter-spacing:.16em;
+    text-transform:uppercase;
+}
+
+.post-status.open{
+    color:#2E7D32;
+}
+
+.post-status.closed{
+    color:#C62828;
+}
+        .post-top{
+    display:block;
+    margin-bottom:1.5rem;
+}
         .company-name { color: var(--gold); font-weight: 600; font-size: 0.88rem; margin-top: 3px; }
         .casting-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin: 1rem 0; }
         .casting-info div { background: var(--subtle-bg); border-radius: 10px; padding: 10px 12px; border: 1px solid var(--mist); }
@@ -855,7 +945,56 @@ export default function PostPage() {
         .casting-info p { font-size: 0.85rem; font-weight: 600; color: var(--ink); margin: 0; }
         .description-preview { color: var(--mid); font-size: 0.88rem; line-height: 1.6; }
         small { display: block; margin-top: 1rem; color: var(--mid); font-size: 0.75rem; opacity: 0.8; }
-        .post-buttons { display: flex; gap: 0.6rem; margin-top: 1.2rem; }
+        .post-actions{
+    display:flex;
+    width:max-content;
+
+    border:1px solid var(--mist);
+    border-radius:14px;
+
+    overflow:hidden;
+
+    margin-top:1.2rem;
+
+    background:var(--card-bg);
+
+    transition:.25s;
+}
+
+.post-actions:hover{
+    border-color:rgba(201,168,76,.45);
+    box-shadow:0 8px 24px rgba(201,168,76,.12);
+}
+
+.post-actions button{
+
+    border:none;
+    background:transparent;
+
+    padding:.75rem 1.25rem;
+
+    cursor:pointer;
+
+    font-size:.82rem;
+    font-weight:600;
+
+    color:var(--ink);
+
+    transition:.25s;
+}
+
+.post-actions button:first-child{
+
+    border-right:1px solid var(--mist);
+
+}
+
+.post-actions button:hover{
+
+    background:rgba(201,168,76,.08);
+    color:var(--gold);
+
+}
         .status { padding: 5px 14px; border-radius: 100px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0; }
         .status.open { background: rgba(46,125,50,0.1); color: #2E7D32; }
         .status.closed { background: rgba(198,40,40,0.1); color: #C62828; }
