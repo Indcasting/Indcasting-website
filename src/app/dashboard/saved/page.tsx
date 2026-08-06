@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Search, MapPin, Calendar, Trash2, ChevronRight, Star, X, CheckCircle } from "lucide-react";
+import ElectricBorder from "@/components/ui/ElectricBorder";
 
 export default function SavedJobsPage() {
   const [jobs, setJobs] = useState([
@@ -34,66 +35,128 @@ export default function SavedJobsPage() {
   };
 
   return (
-    <div className="dashboard-grid" style={{ paddingBottom: '40px' }}>
+    <div className="dashboard-grid" style={{ paddingBottom: '60px' }}>
       
-      <div className="col-span-12 dashboard-card-ui" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)' }}>Saved Jobs</h2>
-          <p style={{ color: 'var(--dash-text-muted)', margin: 0 }}>Casting calls you've bookmarked for later.</p>
-        </div>
+      {/* Premium Header */}
+      <div className="col-span-12" style={{ padding: '32px 0 16px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '32px' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)', letterSpacing: '-1px' }}>Saved Jobs</h2>
+        <p style={{ color: 'var(--dash-text-muted)', margin: 0, fontSize: '1.1rem' }}>Manage the casting calls you've bookmarked for later.</p>
       </div>
 
-      {jobs.length === 0 && (
-        <div className="col-span-12 dashboard-card-ui" style={{ padding: '48px', textAlign: 'center' }}>
-          <Star size={48} color="var(--dash-border)" style={{ margin: '0 auto 16px auto', opacity: 0.5 }} />
-          <h3 style={{ color: 'var(--dash-text-main)', fontSize: '1.2rem', marginBottom: '8px' }}>No saved jobs</h3>
-          <p style={{ color: 'var(--dash-text-muted)' }}>You haven't bookmarked any casting calls yet.</p>
-        </div>
-      )}
-
-      {jobs.map((job) => (
-        <div key={job.id} className="col-span-12 dashboard-card-ui" style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'all 0.3s ease' }}>
-          <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(232, 169, 58, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Star size={24} color="var(--gold)" fill="var(--gold)" />
-            </div>
-            <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: '0 0 4px 0', color: 'var(--dash-text-main)' }}>{job.title}</h3>
-              <p style={{ color: 'var(--dash-text-muted)', margin: 0, fontSize: '0.9rem', display: 'flex', gap: '16px' }}>
-                <span>{job.company}</span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MapPin size={14} /> {job.location}</span>
-              </p>
-            </div>
+      {/* Unified List Container */}
+      <div className="col-span-12 dashboard-card-ui" style={{ overflow: 'hidden', padding: 0, border: '1px solid rgba(255,255,255,0.1)', background: 'linear-gradient(145deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.9) 100%)', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+        {jobs.length === 0 ? (
+          <div style={{ padding: '64px', textAlign: 'center' }}>
+            <Star size={64} color="var(--dash-border)" style={{ margin: '0 auto 24px auto', opacity: 0.3 }} />
+            <h3 style={{ color: 'var(--dash-text-main)', fontSize: '1.4rem', marginBottom: '8px', fontWeight: 700 }}>No saved jobs</h3>
+            <p style={{ color: 'var(--dash-text-muted)', fontSize: '1.05rem' }}>You haven't bookmarked any casting calls yet.</p>
           </div>
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <span style={{ color: 'var(--dash-text-muted)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '4px' }}><Calendar size={14} /> {job.date}</span>
-            <button 
-              className="dash-btn-primary" 
-              style={{ padding: '8px 24px' }}
-              onClick={() => handleApplyClick(job)}
-            >
-              Apply
-            </button>
-            <button 
-              className="dash-btn-outline" 
-              style={{ padding: '8px', cursor: 'pointer', transition: 'all 0.2s ease' }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-                e.currentTarget.style.color = '#ef4444';
-                e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'inherit';
-                e.currentTarget.style.borderColor = 'var(--dash-border)';
-              }}
-              onClick={() => handleDelete(job.id)}
-            >
-              <Trash2 size={18} />
-            </button>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {jobs.map((job, index) => (
+              <ElectricBorder
+                key={job.id}
+                color="var(--gold)"
+                speed={2}
+                chaos={0.2}
+                borderRadius={0}
+                className="hover-only"
+                style={{ display: 'block' }}
+              >
+              <div 
+                style={{ 
+                  padding: '28px 32px', 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  transition: 'all 0.3s ease',
+                  borderBottom: index < jobs.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none',
+                  backgroundColor: 'rgba(255,255,255,0)',
+                  position: 'relative'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+                  e.currentTarget.style.paddingLeft = '36px';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0)';
+                  e.currentTarget.style.paddingLeft = '32px';
+                }}
+              >
+                <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }}>
+                  <div style={{ 
+                    width: '56px', height: '56px', borderRadius: '16px', 
+                    background: 'linear-gradient(135deg, rgba(232, 169, 58, 0.2) 0%, rgba(232, 169, 58, 0.05) 100%)',
+                    border: '1px solid rgba(232, 169, 58, 0.2)',
+                    boxShadow: '0 0 20px rgba(232, 169, 58, 0.1)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                  }}>
+                    <Star size={26} color="var(--gold)" fill="var(--gold)" />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '1.3rem', fontWeight: 700, margin: '0 0 6px 0', color: 'var(--dash-text-main)', letterSpacing: '-0.3px' }}>{job.title}</h3>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <span style={{ color: 'var(--gold)', fontWeight: 600, fontSize: '0.95rem' }}>{job.company}</span>
+                      <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--dash-border)' }}></span>
+                      <span style={{ color: 'var(--dash-text-muted)', margin: 0, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <MapPin size={14} /> {job.location}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                    <span style={{ color: 'var(--dash-text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Added</span>
+                    <span style={{ color: 'var(--dash-text-main)', fontSize: '1.05rem', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Calendar size={16} color="var(--gold)" /> {job.date}
+                    </span>
+                  </div>
+                  
+                  <div style={{ width: '1px', height: '40px', backgroundColor: 'rgba(255,255,255,0.08)' }}></div>
+                  
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <button 
+                      className="dash-btn-primary" 
+                      style={{ padding: '10px 28px', fontSize: '0.95rem', boxShadow: '0 8px 16px rgba(201,168,76,0.2)' }}
+                      onClick={() => handleApplyClick(job)}
+                    >
+                      Apply
+                    </button>
+                    <button 
+                      className="dash-btn-outline" 
+                      style={{ 
+                        padding: '10px', 
+                        cursor: 'pointer', 
+                        transition: 'all 0.2s ease',
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '12px',
+                        color: 'var(--dash-text-muted)',
+                        backgroundColor: 'rgba(255,255,255,0.02)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+                        e.currentTarget.style.color = '#ef4444';
+                        e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)';
+                        e.currentTarget.style.color = 'var(--dash-text-muted)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                      }}
+                      onClick={() => handleDelete(job.id)}
+                      title="Remove from Saved"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+              </ElectricBorder>
+            ))}
           </div>
-        </div>
-      ))}
+        )}
+      </div>
 
       {/* Apply Modal */}
       {selectedJob && (

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronRight, FileText, CheckCircle, Clock, XCircle, Search, Filter, Grid, LayoutList, Maximize, LayoutGrid, X, Calendar, MapPin, Briefcase } from "lucide-react";
+import ElectricBorder from "@/components/ui/ElectricBorder";
 
 type ViewMode = "tile" | "extra_large" | "details" | "small_icons";
 
@@ -60,12 +61,12 @@ export default function ApplicationsView() {
   return (
     <div style={{ width: '100%' }}>
       {/* Header Area */}
-      <div style={{ position: 'relative', zIndex: 20, marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '20px' }}>
+      <div style={{ padding: '32px 0 16px 0', borderBottom: '1px solid rgba(255,255,255,0.05)', marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '20px' }}>
         <div>
-          <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, letterSpacing: '-0.03em', color: 'var(--dash-text-main)' }}>
+          <h2 style={{ fontSize: '2.5rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)', letterSpacing: '-1px' }}>
             Talents
           </h2>
-          <p style={{ color: 'var(--dash-text-muted)', marginTop: '8px', fontSize: '1.05rem' }}>
+          <p style={{ color: 'var(--dash-text-muted)', margin: 0, fontSize: '1.1rem' }}>
             Review incoming talents and discover the right fit for your projects.
           </p>
         </div>
@@ -161,29 +162,71 @@ export default function ApplicationsView() {
           
           if (viewMode === 'details') {
             return (
-              <div key={app.id} className="cat-card dashboard-card-ui" style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flex: 1 }}>
-                  <div style={{ width: '40px', height: '40px', borderRadius: '10px', backgroundColor: 'rgba(201,168,76,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <FileText size={20} color="var(--gold)" />
+              <ElectricBorder
+                key={app.id}
+                color={colors.text}
+                speed={2}
+                chaos={0.2}
+                borderRadius={16}
+                className="hover-only"
+                style={{ display: 'block' }}
+              >
+                <div 
+                  style={{ 
+                    padding: '24px 32px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px',
+                    background: 'linear-gradient(145deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.9) 100%)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '16px',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flex: 1 }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: `linear-gradient(135deg, ${colors.bg.replace('0.1', '0.2')} 0%, ${colors.bg.replace('0.1', '0.05')} 100%)`, border: `1px solid ${colors.bg.replace('0.1', '0.2')}`, boxShadow: `0 0 15px ${colors.bg.replace('0.1', '0.1')}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <FileText size={22} color={colors.text} />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 6px 0', color: 'var(--dash-text-main)', letterSpacing: '-0.3px' }}>{app.title}</h3>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <span style={{ color: 'var(--gold)', fontWeight: 600, fontSize: '0.95rem' }}>{app.studio}</span>
+                        <span style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--dash-border)' }}></span>
+                        <span style={{ color: 'var(--dash-text-muted)', margin: 0, fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <MapPin size={14} /> {app.location}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '1.1rem', fontWeight: 800, margin: '0 0 4px 0', color: 'var(--dash-text-main)' }}>{app.title}</h3>
-                    <p style={{ color: 'var(--dash-text-muted)', fontSize: '0.9rem', margin: 0, fontWeight: 500 }}>{app.studio} <span style={{ opacity: 0.6, marginLeft: '8px' }}>📍 {app.location}</span></p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                      <span style={{ color: 'var(--dash-text-muted)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Time</span>
+                      <span style={{ color: 'var(--dash-text-main)', fontSize: '1.05rem', fontWeight: 500 }}>{app.time}</span>
+                    </div>
+                    
+                    <div style={{ width: '1px', height: '40px', backgroundColor: 'rgba(255,255,255,0.08)' }}></div>
+                    
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '100px', fontSize: '0.8rem', fontWeight: 700, backgroundColor: colors.bg, color: colors.text, textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: '110px', justifyContent: 'center' }}>
+                      {getStatusIcon(app.status)} {app.status}
+                    </span>
+                    <button 
+                      onClick={() => setSelectedApp(app)}
+                      style={{ background: 'none', border: 'none', color: 'var(--gold)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', fontSize: '0.95rem', padding: '8px', transition: 'transform 0.2s ease' }}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateX(4px)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateX(0)'}
+                    >
+                      View <ChevronRight size={18} />
+                    </button>
                   </div>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--dash-text-muted)', minWidth: '130px' }}>{app.time}</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 700, backgroundColor: colors.bg, color: colors.text, textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: '100px', justifyContent: 'center' }}>
-                    {getStatusIcon(app.status)} {app.status}
-                  </span>
-                  <button 
-                    onClick={() => setSelectedApp(app)}
-                    style={{ background: 'none', border: 'none', color: 'var(--gold)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', fontSize: '0.9rem' }}
-                  >
-                    View <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
+              </ElectricBorder>
             );
           }
 
@@ -191,34 +234,90 @@ export default function ApplicationsView() {
           const isLarge = viewMode === 'extra_large';
 
           return (
-            <div key={app.id} className="cat-card dashboard-card-ui" style={{ padding: isLarge ? '32px' : isSmall ? '16px' : '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isSmall ? '12px' : '20px' }}>
-                <div style={{ width: isLarge ? '64px' : isSmall ? '36px' : '48px', height: isLarge ? '64px' : isSmall ? '36px' : '48px', borderRadius: '12px', backgroundColor: 'rgba(201,168,76,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <FileText size={isLarge ? 32 : isSmall ? 18 : 24} color="var(--gold)" />
+            <ElectricBorder
+              key={app.id}
+              color={colors.text}
+              speed={2}
+              chaos={0.2}
+              borderRadius={24}
+              className="hover-only"
+              style={{ display: 'block', height: '100%' }}
+            >
+              <div 
+                style={{ 
+                  padding: isLarge ? '40px' : isSmall ? '20px' : '32px',
+                  background: 'linear-gradient(145deg, rgba(20,20,20,0.8) 0%, rgba(10,10,10,0.9) 100%)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '24px',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'all 0.3s ease',
+                  position: 'relative'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isSmall ? '16px' : '28px' }}>
+                  <div style={{ 
+                    width: isLarge ? '72px' : isSmall ? '40px' : '56px', 
+                    height: isLarge ? '72px' : isSmall ? '40px' : '56px', 
+                    borderRadius: isSmall ? '10px' : '16px', 
+                    background: `linear-gradient(135deg, ${colors.bg.replace('0.1', '0.2')} 0%, ${colors.bg.replace('0.1', '0.05')} 100%)`, 
+                    border: `1px solid ${colors.bg.replace('0.1', '0.2')}`, 
+                    boxShadow: `0 0 15px ${colors.bg.replace('0.1', '0.1')}`, 
+                    display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                  }}>
+                    <FileText size={isLarge ? 32 : isSmall ? 18 : 26} color={colors.text} />
+                  </div>
+                  <span style={{ 
+                    display: 'flex', alignItems: 'center', gap: '6px', 
+                    padding: isSmall ? '4px 10px' : '8px 16px', borderRadius: '100px', fontSize: isSmall ? '0.7rem' : '0.8rem', 
+                    fontWeight: 700, backgroundColor: colors.bg, color: colors.text,
+                    textTransform: 'uppercase', letterSpacing: '0.06em'
+                  }}>
+                    {getStatusIcon(app.status)} {!isSmall && app.status}
+                  </span>
                 </div>
-                <span style={{ 
-                  display: 'flex', alignItems: 'center', gap: '6px', 
-                  padding: isSmall ? '4px 8px' : '6px 12px', borderRadius: '100px', fontSize: isSmall ? '0.65rem' : '0.75rem', 
-                  fontWeight: 700, backgroundColor: colors.bg, color: colors.text,
-                  textTransform: 'uppercase', letterSpacing: '0.06em'
-                }}>
-                  {getStatusIcon(app.status)} {!isSmall && app.status}
-                </span>
+                
+                <h3 style={{ fontSize: isLarge ? '1.75rem' : isSmall ? '1.15rem' : '1.35rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)', letterSpacing: '-0.3px' }}>{app.title}</h3>
+                
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ color: 'var(--gold)', fontWeight: 600, fontSize: isSmall ? '0.9rem' : '1rem' }}>{app.studio}</span>
+                </div>
+                
+                {!isSmall && (
+                  <p style={{ color: 'var(--dash-text-muted)', fontSize: '0.95rem', margin: '0 0 32px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <MapPin size={14} /> {app.location}
+                  </p>
+                )}
+                
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px', marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  {!isSmall && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ color: 'var(--dash-text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600 }}>Applied</span>
+                      <span style={{ color: 'var(--dash-text-main)', fontSize: '1rem', fontWeight: 500 }}>{app.time.replace('Applied ', '')}</span>
+                    </div>
+                  )}
+                  <button 
+                    onClick={() => setSelectedApp(app)}
+                    style={{ background: 'none', border: 'none', color: 'var(--gold)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', fontSize: '0.95rem', marginLeft: isSmall ? 'auto' : 0, transition: 'transform 0.2s ease' }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateX(4px)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateX(0)'}
+                  >
+                    View <ChevronRight size={18} />
+                  </button>
+                </div>
               </div>
-              <h3 style={{ fontSize: isLarge ? '1.5rem' : isSmall ? '1.05rem' : '1.2rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)' }}>{app.title}</h3>
-              <p style={{ color: 'var(--dash-text-muted)', fontSize: isSmall ? '0.85rem' : '0.95rem', margin: '0 0 4px 0', fontWeight: 500 }}>{app.studio}</p>
-              {!isSmall && <p style={{ color: 'var(--dash-text-muted)', fontSize: '0.85rem', margin: '0 0 24px 0', opacity: 0.8 }}>📍 {app.location}</p>}
-              
-              <div style={{ borderTop: '1px solid var(--dash-border)', paddingTop: '16px', marginTop: isSmall ? '16px' : 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                {!isSmall && <span style={{ fontSize: '0.85rem', color: 'var(--dash-text-muted)' }}>{app.time}</span>}
-                <button 
-                  onClick={() => setSelectedApp(app)}
-                  style={{ background: 'none', border: 'none', color: 'var(--gold)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', fontSize: '0.9rem', marginLeft: isSmall ? 'auto' : 0 }}
-                >
-                  View <ChevronRight size={16} />
-                </button>
-              </div>
-            </div>
+            </ElectricBorder>
           );
         })}
       </div>
