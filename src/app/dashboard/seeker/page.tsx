@@ -43,11 +43,8 @@ export default function SeekerDashboard() {
 
       {/* Mini Stats Row - First 4 */}
       <div className="col-span-3" onClick={() => router.push('/dashboard/seeker/casting-calls')}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
-            <BriefcaseBusiness size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>8</h3>
             <p>Active Calls</p>
           </div>
@@ -55,11 +52,8 @@ export default function SeekerDashboard() {
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/talents')}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
-            <Users size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>142</h3>
             <p>Total Applications</p>
           </div>
@@ -67,11 +61,8 @@ export default function SeekerDashboard() {
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/seeker/shortlisted')}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: 'var(--dash-gold)', backgroundColor: 'rgba(212, 175, 55, 0.1)' }}>
-            <Star size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>24</h3>
             <p>Shortlisted</p>
           </div>
@@ -79,11 +70,8 @@ export default function SeekerDashboard() {
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/seeker/auditions')}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
-            <Video size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>12</h3>
             <p>Scheduled Auditions</p>
           </div>

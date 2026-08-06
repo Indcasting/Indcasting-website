@@ -36,11 +36,8 @@ export default function TalentDashboard() {
 
       {/* Mini Stats Row */}
       <div className="col-span-3" onClick={() => router.push('/dashboard/applications')}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
-            <FileText size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>12</h3>
             <p>Applications</p>
           </div>
@@ -48,11 +45,8 @@ export default function TalentDashboard() {
       </div>
 
       <div className="col-span-3" onClick={() => setIsAuditionsModalOpen(true)}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
-            <Video size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>4</h3>
             <p>Upcoming Auditions</p>
           </div>
@@ -60,11 +54,8 @@ export default function TalentDashboard() {
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/messages')}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)' }}>
-            <MessageSquare size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>5</h3>
             <p>New Messages</p>
           </div>
@@ -72,11 +63,8 @@ export default function TalentDashboard() {
       </div>
 
       <div className="col-span-3" onClick={() => router.push('/dashboard/portfolio')}>
-        <SpotlightCard className="stat-card" style={{ cursor: 'pointer' }}>
-          <div className="stat-icon-wrapper" style={{ color: 'var(--dash-gold)', backgroundColor: 'rgba(212, 175, 55, 0.1)' }}>
-            <TrendingUp size={24} />
-          </div>
-          <div className="stat-content">
+        <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
+          <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>89%</h3>
             <p>Profile Strength</p>
           </div>
