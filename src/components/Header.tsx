@@ -160,7 +160,7 @@ export default function Header() {
 
           {/* Profile Dropdown */}
           {displayUser ? (
-            <div className="profile-menu-wrap" ref={menuRef}>
+            <div className="profile-menu-wrap" ref={menuRef} style={{ order: 2 }}>
               <button className="header-avatar-btn" onClick={() => setMenuOpen((v) => !v)}>
                 <span className="header-avatar">{initials || "?"}</span>
                 <ChevronDown size={14} style={{ transition: 'transform 0.2s', transform: menuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />

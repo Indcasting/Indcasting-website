@@ -49,19 +49,44 @@ export default function SeekerAnalytics() {
 
       <div className="col-span-8">
         <DashboardCard title="Applications Over Time">
-          <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', gap: '16px', paddingTop: '20px' }}>
-            {[30, 45, 60, 40, 80, 55, 90, 75, 65, 85, 50, 70].map((h, i) => (
-              <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <div style={{ 
-                  width: '100%', 
-                  height: `${h}%`, 
-                  backgroundColor: i === 6 ? 'var(--dash-gold)' : 'var(--dash-border)',
-                  borderRadius: '4px 4px 0 0',
-                  transition: 'height 0.3s ease'
-                }}></div>
-                <span style={{ fontSize: '10px', color: 'var(--dash-text-muted)' }}>{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i]}</span>
-              </div>
-            ))}
+          <div style={{ height: '300px', display: 'flex', alignItems: 'flex-end', gap: '16px', paddingTop: '40px', position: 'relative' }}>
+            {/* Background grid lines */}
+            <div style={{ position: 'absolute', top: '40px', left: 0, right: 0, bottom: '28px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', zIndex: 0 }}>
+              {[100, 75, 50, 25, 0].map(line => (
+                <div key={line} style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--dash-text-muted)', width: '30px', textAlign: 'right' }}>{line * 20}</span>
+                  <div style={{ flex: 1, height: '1px', backgroundColor: 'var(--dash-border)', opacity: 0.5 }}></div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Mock Chart */}
+            <div style={{ display: 'flex', flex: 1, gap: '12px', height: '100%', paddingLeft: '42px', zIndex: 1 }}>
+              {[30, 45, 60, 40, 80, 55, 90, 75, 65, 85, 50, 70].map((h, i) => (
+                <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', height: '100%', justifyContent: 'flex-end' }} className="chart-col">
+                  <div className="chart-bar" style={{ 
+                    width: '100%', 
+                    maxWidth: '40px',
+                    height: `${h}%`, 
+                    background: i === 6 ? 'linear-gradient(180deg, var(--gold) 0%, rgba(200, 155, 60, 0.1) 100%)' : 'linear-gradient(180deg, rgba(200, 155, 60, 0.4) 0%, rgba(200, 155, 60, 0.05) 100%)',
+                    borderRadius: '4px 4px 0 0',
+                    transition: 'all 0.3s ease',
+                    position: 'relative',
+                    cursor: 'pointer'
+                  }}>
+                    <div className="chart-tooltip" style={{
+                      position: 'absolute', top: '-34px', left: '50%', transform: 'translateX(-50%)',
+                      background: 'var(--dash-text-main)', color: 'var(--dash-bg)', padding: '4px 10px', borderRadius: '6px',
+                      fontSize: '12px', fontWeight: 700, opacity: 0, transition: 'all 0.2s ease',
+                      pointerEvents: 'none', whiteSpace: 'nowrap', boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }}>
+                      {h * 20} Apps
+                    </div>
+                  </div>
+                  <span style={{ fontSize: '11px', fontWeight: 500, color: i === 6 ? 'var(--gold)' : 'var(--dash-text-muted)' }}>{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i]}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </DashboardCard>
       </div>
