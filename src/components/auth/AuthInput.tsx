@@ -26,7 +26,7 @@ export default function AuthInput({ icon, type, ...props }: AuthInputProps) {
           borderRadius: '12px', 
           border: '1px solid var(--input-border)', 
           backgroundColor: 'var(--card-bg)', 
-          color: 'var(--text)', 
+          color: 'var(--ink)', 
           fontSize: '1rem', 
           outline: 'none', 
           transition: 'border-color 0.2s',

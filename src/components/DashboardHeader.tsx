@@ -42,7 +42,6 @@ export default function DashboardHeader() {
             type="text" 
             placeholder="Search casting calls, talent..." 
             className="dashboard-search-input"
-            style={{ color: 'var(--dash-text-main)', backgroundColor: 'var(--card-bg)', borderColor: 'var(--dash-border)' }}
           />
         </div>
       </div>
