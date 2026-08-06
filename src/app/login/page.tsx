@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { loginUser, getCurrentUser } from "@/utils/auth";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,13 +20,15 @@ export default function LoginPage() {
   useEffect(() => {
     const user = getCurrentUser();
     if (user) {
-      if (user.role === "talent") {
+      if (redirect) {
+        router.push(redirect);
+      } else if (user.role === "talent") {
         router.push("/dashboard/talent");
       } else {
         router.push("/dashboard/seeker");
       }
     }
-  }, [router]);
+  }, [router, redirect]);
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -36,7 +40,9 @@ export default function LoginPage() {
       return;
     }
 
-    if (user.role === "talent") {
+    if (redirect) {
+      router.push(redirect);
+    } else if (user.role === "talent") {
       router.push("/dashboard/talent");
     } else {
       router.push("/dashboard/seeker");

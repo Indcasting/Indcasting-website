@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { registerUser } from "@/utils/auth";
 import { User, Mail, Phone, MapPin, Lock, Camera, EyeOff, Eye, Sparkles } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -34,7 +36,11 @@ export default function SignUpPage() {
         role
       });
       alert("Account Created Successfully!");
-      router.push("/login");
+      if (redirect) {
+        router.push(`/login?redirect=${encodeURIComponent(redirect)}`);
+      } else {
+        router.push("/login");
+      }
     }, 800);
   }
 

@@ -84,7 +84,7 @@ export default function NotificationsView() {
               borderRadius: '8px',
               border: '1px solid var(--dash-border)',
               backgroundColor: notification.read ? 'var(--dash-bg)' : 'rgba(232, 169, 58, 0.05)',
-              borderLeft: notification.read ? '1px solid var(--dash-border)' : '4px solid var(--gold)'
+              borderLeft: '1px solid var(--dash-border)'
             }}
           >
             <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: '0 0 8px 0', color: 'var(--dash-text-main)' }}>{notification.title}</h3>

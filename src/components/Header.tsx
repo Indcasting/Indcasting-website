@@ -134,6 +134,9 @@ export default function Header() {
         {/* Right Section: Actions */}
         <div className="header-actions" style={{ gap: '10px', flexShrink: 0 }}>
           
+          <Link href={displayUser ? "/portfolio/builder" : "/signup?redirect=/portfolio/builder"} className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
+            Portfolios
+          </Link>
           <Link href="/talents" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
             Talents
           </Link>
