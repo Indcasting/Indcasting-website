@@ -132,7 +132,7 @@ export default function Header() {
 
 
         {/* Right Section: Actions */}
-        <div className="header-actions" style={{ gap: '10px', flexShrink: 0, marginRight: '-20px' }}>
+        <div className="header-actions" style={{ gap: '10px', flexShrink: 0 }}>
           
           <Link href="/talents" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
             Talents
@@ -187,19 +187,21 @@ export default function Header() {
           )}
 
           {/* Quick Create Dropdown */}
-          <div className="profile-menu-wrap" ref={createMenuRef}>
-            <button className="signup-btn header-btn" onClick={() => setCreateMenuOpen(!createMenuOpen)} style={{ padding: '6px 14px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Plus size={16} /> <span className="hide-on-mobile">Create</span> <ChevronDown size={14} style={{ transition: 'transform 0.2s', transform: createMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
-            </button>
-            {createMenuOpen && (
-              <div className="profile-dropdown" style={{ minWidth: '180px', top: '120%' }}>
-                <Link href={displayUser ? "/dashboard/seeker/casting-calls" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Create Casting Call</Link>
-                <Link href={displayUser ? "/dashboard/portfolio" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Create Portfolio</Link>
-                <Link href={displayUser ? "/dashboard/seeker/auditions" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Schedule Audition</Link>
-                <Link href={displayUser ? "/talents" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Invite Talent</Link>
-              </div>
-            )}
-          </div>
+          {displayUser && (
+            <div className="profile-menu-wrap" ref={createMenuRef}>
+              <button className="signup-btn header-btn" onClick={() => setCreateMenuOpen(!createMenuOpen)} style={{ padding: '4px 10px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Plus size={14} /> <span className="hide-on-mobile">Create</span> <ChevronDown size={12} style={{ transition: 'transform 0.2s', transform: createMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)' }} />
+              </button>
+              {createMenuOpen && (
+                <div className="profile-dropdown" style={{ minWidth: '180px', top: '120%' }}>
+                  <Link href={displayUser ? "/dashboard/seeker/casting-calls" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Create Casting Call</Link>
+                  <Link href={displayUser ? "/dashboard/portfolio" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Create Portfolio</Link>
+                  <Link href={displayUser ? "/dashboard/seeker/auditions" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Schedule Audition</Link>
+                  <Link href={displayUser ? "/talents" : "/signup"} className="dropdown-link" onClick={() => setCreateMenuOpen(false)}>Invite Talent</Link>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <style dangerouslySetInnerHTML={{__html: `

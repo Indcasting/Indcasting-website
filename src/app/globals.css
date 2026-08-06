@@ -388,10 +388,10 @@ html.dark .auth-switch {
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:0 20px;
+    padding:0 5px;
 }
 .site-header.scrolled .header-inner{
-    padding:14px 6%;
+    padding:14px 5px;
 }
 
 /* LOGO */
@@ -507,12 +507,12 @@ html.dark .auth-switch {
 }
 
 .header-btn{
-    padding:8px 16px;
-    font-size:13px;
+    padding:6px 14px;
+    font-size:12px;
     text-decoration:none;
     display:inline-flex;
     align-items:center;
-    border-radius:12px;
+    border-radius:10px;
 }
 
 /* PROFILE */
