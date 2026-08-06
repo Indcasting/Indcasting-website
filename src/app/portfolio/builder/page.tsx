@@ -144,7 +144,7 @@ export default function PortfolioBuilder() {
     <div style={{ minHeight: '100vh', backgroundColor: 'var(--dash-bg)', color: 'var(--dash-text-main)', paddingTop: '120px' }}>
       
       {/* Top Bar */}
-      <div style={{ borderBottom: '1px solid var(--dash-border)', padding: isScrolled ? '8px 40px' : '16px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#0a0a0a', position: 'sticky', top: '90px', zIndex: 100, transition: 'all 0.35s ease' }}>
+      <div style={{ borderBottom: '1px solid var(--dash-border)', padding: isScrolled ? '8px 40px' : '16px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--card-bg)', position: 'sticky', top: '90px', zIndex: 100, transition: 'all 0.35s ease' }}>
         <div>
           <h1 style={{ fontSize: isScrolled ? '1.2rem' : '1.5rem', margin: '0 0 4px 0', transition: 'font-size 0.3s ease' }}>Portfolio Builder</h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: isScrolled ? '0.75rem' : '0.85rem', color: 'var(--dash-text-muted)', transition: 'font-size 0.3s ease' }}>
