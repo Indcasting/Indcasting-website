@@ -516,7 +516,7 @@ function AuditionCard({ aud, getStatusVisuals, setIsScheduleModalOpen, isCompact
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#aaa', marginBottom: '12px' }}>
           <Clock size={12} color="var(--gold)" /> {aud.time} ({aud.duration})
         </div>
-        <button className="btn-start" style={{ width: '100%', justifyContent: 'center', padding: '8px' }}>
+        <button className="btn-start" style={{ width: '100%', justifyContent: 'center', padding: '8px' }} onClick={() => alert(`Starting audition session with ${aud.candidate}`)}>
           {aud.status === 'Ready' || aud.status === 'Waiting' ? 'Start' : 'Details'}
         </button>
       </div>
@@ -561,14 +561,14 @@ function AuditionCard({ aud, getStatusVisuals, setIsScheduleModalOpen, isCompact
       </div>
 
       <div className="aud-actions">
-        <button className="btn-start">
+        <button className="btn-start" onClick={() => alert(`Starting audition session with ${aud.candidate}`)}>
           <Play size={16} fill="currentColor" /> Start Audition
         </button>
         <div className="action-icon-group">
-          <button className="icon-btn" title="View Profile"><User size={16} /></button>
+          <button className="icon-btn" title="View Profile" onClick={() => alert(`Viewing profile for ${aud.candidate}`)}><User size={16} /></button>
           <button className="icon-btn" title="Reschedule" onClick={() => setIsScheduleModalOpen(true)}><Calendar size={16} /></button>
-          <button className="icon-btn" title="Leave Feedback"><MessageSquare size={16} /></button>
-          <button className="icon-btn" title="Share"><Share2 size={16} /></button>
+          <button className="icon-btn" title="Leave Feedback" onClick={() => alert(`Opening feedback form for ${aud.candidate}`)}><MessageSquare size={16} /></button>
+          <button className="icon-btn" title="Share" onClick={() => alert(`Link copied to clipboard!`)}><Share2 size={16} /></button>
         </div>
       </div>
     </div>
