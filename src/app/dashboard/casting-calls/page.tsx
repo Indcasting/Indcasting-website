@@ -497,7 +497,7 @@ export default function CastingCallsPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
         <div style={{ height: '24px', width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
-        <button style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '10px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s ease' }}>
+        <button onClick={() => window.location.href='/post'} style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '10px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, transition: 'all 0.2s ease' }}>
           <Plus size={18} /> Add Casting Call
         </button>
       </div>
