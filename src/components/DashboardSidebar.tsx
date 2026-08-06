@@ -123,7 +123,10 @@ export default function DashboardSidebar() {
                     
                     {isCalendarOpen && (
                       <div className="sidebar-calendar-wrapper" style={{ marginTop: '4px' }}>
-                        <DashboardCalendar />
+                        <DashboardCalendar 
+                          userRole={user?.role === 'seeker' ? 'seeker' : 'talent'} 
+                          userId={user?.role === 'seeker' ? 'seeker_1' : 'talent_1'} 
+                        />
                       </div>
                     )}
                   </div>
