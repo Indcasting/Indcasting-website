@@ -51,11 +51,11 @@ export default function DashboardHeader() {
           {isDark ? <Sun size={20} /> : <Moon size={20} />}
         </button>
         
-        <Link href="/messages" className="header-icon-btn">
+        <Link href={user?.role === 'seeker' ? "/dashboard/seeker/messages" : "/dashboard/messages"} className="header-icon-btn">
           <MessageSquare size={20} />
         </Link>
         
-        <Link href="/notifications" className="header-icon-btn">
+        <Link href={user?.role === 'seeker' ? "/dashboard/seeker/notifications" : "/dashboard/notifications"} className="header-icon-btn">
           <Bell size={20} />
         </Link>
 

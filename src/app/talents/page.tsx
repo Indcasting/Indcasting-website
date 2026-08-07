@@ -7,7 +7,6 @@ import {
   Heart, Share2, PlayCircle, Filter, Sparkles, Award
 } from "lucide-react";
 import Link from "next/link";
-import DashboardCardWrapper from "@/components/DashboardCardWrapper";
 
 // 1. Extended Mock Data
 const MOCK_TALENTS = [
@@ -334,10 +333,19 @@ export default function TalentDiscoveryPage() {
 
         /* Handcrafted Profile Card */
         .profile-card {
-          /* background, border, etc. now handled by DashboardCardWrapper */
+          background: linear-gradient(180deg, #181818 0%, #111 100%);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 24px;
+          overflow: hidden;
           position: relative;
+          transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
           display: flex;
           flex-direction: column;
+        }
+        .profile-card:hover {
+          transform: translateY(-8px);
+          border-color: rgba(212, 175, 55, 0.3);
+          box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
         .card-image-wrap {
@@ -477,6 +485,10 @@ export default function TalentDiscoveryPage() {
         }
         .featured-card {
           display: flex;
+          background: linear-gradient(90deg, #181818 0%, #111 100%);
+          border: 1px solid rgba(212, 175, 55, 0.2);
+          border-radius: 24px;
+          overflow: hidden;
           position: relative;
         }
         .featured-img { width: 240px; }
@@ -556,7 +568,7 @@ export default function TalentDiscoveryPage() {
             <h2 className="section-title"><Award color="var(--gold)" /> Featured Professionals</h2>
             <div className="featured-carousel">
               {featuredTalents.map(talent => (
-                <DashboardCardWrapper key={talent.id} className="featured-card">
+                <div key={talent.id} className="featured-card">
                   <div className="featured-img">
                     <img src={talent.image} alt={talent.name} />
                   </div>
@@ -578,7 +590,7 @@ export default function TalentDiscoveryPage() {
                       </div>
                     </div>
                   </div>
-                </DashboardCardWrapper>
+                </div>
               ))}
             </div>
           </div>
@@ -601,7 +613,7 @@ export default function TalentDiscoveryPage() {
         ) : (
           <div className="talent-grid">
             {filteredTalents.map(talent => (
-              <DashboardCardWrapper key={talent.id} className="profile-card">
+              <div key={talent.id} className="profile-card">
                 <div className="card-image-wrap">
                   <div className="badges-top">
                     {talent.verified && (
@@ -655,7 +667,7 @@ export default function TalentDiscoveryPage() {
                     </div>
                   </div>
                 </div>
-              </DashboardCardWrapper>
+              </div>
             ))}
           </div>
         )}
