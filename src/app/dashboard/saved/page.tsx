@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MapPin, Calendar, Clock, ChevronRight, X, Briefcase, Film, Flame, Star, Sparkles, Filter, IndianRupee, LayoutGrid, List, Bookmark, Users, Globe, PlayCircle, Share2, Trash2, CheckCircle, Info, Languages } from "lucide-react";
+import { Search, MapPin, Calendar, Clock, ChevronRight, X, Briefcase, Film, Flame, Star, Sparkles, Filter, IndianRupee, LayoutGrid, List, Bookmark, Users, Globe, PlayCircle, Share2, Trash2, CheckCircle, Info, Languages, Plus } from "lucide-react";
 import Link from "next/link";
 
 export default function SavedJobsPage() {
@@ -38,7 +38,23 @@ export default function SavedJobsPage() {
       category: "Actors",
       cardType: "featured",
       status: "Pending",
-      director: "Aisha Khan"
+      director: "Aisha Khan",
+      responsibilities: ["Lead the primary narrative arc", "Participate in promotional tours", "Attend script reading and workshops"],
+      requiredSkills: ["Method Acting", "Improvisation", "Emotional Range"],
+      preferredSkills: ["Action/Stunts", "Singing"],
+      workingHours: "12-hour shifts during shoot",
+      contractDuration: "4 Months",
+      openings: 1,
+      height: "5'8\" - 6'2\"",
+      portfolioRequired: true,
+      resumeRequired: true,
+      companyRating: 4.8,
+      projectsCompleted: 14,
+      followers: "12.4K",
+      faqs: [
+        { q: "Is travel covered?", a: "Yes, travel and accommodation are fully covered." },
+        { q: "When do shoots begin?", a: "Shooting is scheduled to begin in mid-November." }
+      ]
     },
     { 
       id: 2, 
@@ -61,7 +77,22 @@ export default function SavedJobsPage() {
       category: "Models",
       cardType: "tall",
       status: "Not Applied",
-      director: "Vikram Singh"
+      director: "Vikram Singh",
+      responsibilities: ["Feature in print and digital campaigns", "Work with renowned stylists", "Attend brand events"],
+      requiredSkills: ["Posing", "Runway Walk", "Expressive Facial Control"],
+      preferredSkills: ["Dance Background"],
+      workingHours: "8-hour shoot days",
+      contractDuration: "3 Days",
+      openings: 3,
+      height: "5'7\"+",
+      portfolioRequired: true,
+      resumeRequired: false,
+      companyRating: 4.9,
+      projectsCompleted: 120,
+      followers: "2.1M",
+      faqs: [
+        { q: "Will wardrobe be provided?", a: "Yes, all wardrobe and styling will be handled by our team." }
+      ]
     },
     { 
       id: 3, 
@@ -84,7 +115,20 @@ export default function SavedJobsPage() {
       category: "Voice Artists",
       cardType: "regular",
       status: "Not Applied",
-      director: "Sarah Jenkins"
+      director: "Sarah Jenkins",
+      responsibilities: ["Record high-quality character voices", "Deliver multiple takes for different emotional tones"],
+      requiredSkills: ["Voice Modulation", "Accents", "Audio Editing basics"],
+      preferredSkills: ["Character Design knowledge"],
+      workingHours: "Flexible",
+      contractDuration: "Ongoing",
+      openings: 2,
+      height: "Any",
+      portfolioRequired: true,
+      resumeRequired: true,
+      companyRating: 4.5,
+      projectsCompleted: 85,
+      followers: "8.5K",
+      faqs: []
     },
     { 
       id: 4, 
@@ -107,7 +151,20 @@ export default function SavedJobsPage() {
       category: "Directors",
       cardType: "wide",
       status: "Not Applied",
-      director: "Rohan Desai"
+      director: "Rohan Desai",
+      responsibilities: ["Design visual style", "Lead camera and lighting departments", "Collaborate with VFX supervisors"],
+      requiredSkills: ["Arri Alexa operation", "Lighting Design", "Color Theory"],
+      preferredSkills: ["VFX Integration", "Drone Operation"],
+      workingHours: "14-hour days on set",
+      contractDuration: "6 Months",
+      openings: 1,
+      height: "Any",
+      portfolioRequired: true,
+      resumeRequired: true,
+      companyRating: 4.7,
+      projectsCompleted: 24,
+      followers: "15K",
+      faqs: []
     }
   ]);
 
@@ -378,6 +435,7 @@ export default function SavedJobsPage() {
           break-inside: avoid;
           margin-bottom: 24px;
           z-index: 1;
+          cursor: pointer;
         }
         
         /* Shimmer Effect */
@@ -396,7 +454,7 @@ export default function SavedJobsPage() {
         .layered-card:hover {
           transform: translateY(-8px);
           border-color: rgba(212, 175, 55, 0.4);
-          box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 60px rgba(212, 175, 55, 0.08);
+          box-shadow: 0 25px 50px rgba(0,0,0,0.8), 0 0 60px rgba(212, 175, 55, 0.2);
         }
         .layered-card:hover::before { left: 150%; }
         
@@ -540,16 +598,79 @@ export default function SavedJobsPage() {
           position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
           background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(12px);
           -webkit-backdrop-filter: blur(12px); z-index: 9999; display: flex;
-          align-items: center; justify-content: center; padding: 20px;
-          animation: fadeIn 0.2s ease-out;
+          align-items: center; justify-content: flex-end; /* Drawer on right */
+          animation: fadeIn 0.3s ease-out;
         }
-        .cine-modal-content {
-          background-color: #111; border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 24px; width: 100%; max-width: 500px;
-          box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8); position: relative;
-          overflow: hidden; display: flex; flex-direction: column;
+        .cine-drawer-content {
+          background-color: #0a0a0a; border-left: 1px solid rgba(212, 175, 55, 0.3);
+          width: 100%; max-width: 600px; height: 100%;
+          box-shadow: -20px 0 80px rgba(0, 0, 0, 0.9); position: relative;
+          display: flex; flex-direction: column;
+          animation: slideInRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
+        
+        @media (max-width: 768px) {
+          .cine-modal-overlay { align-items: flex-end; }
+          .cine-drawer-content {
+            border-left: none; border-top: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px 24px 0 0; max-width: 100%; height: 90vh;
+            animation: slideInUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+          }
+        }
+        
+        .drawer-header {
+          padding: 24px 32px; border-bottom: 1px solid rgba(255,255,255,0.05);
+          display: flex; justify-content: space-between; align-items: flex-start;
+          background: linear-gradient(180deg, #111, #0a0a0a);
+        }
+        .drawer-body {
+          flex: 1; overflow-y: auto; padding: 32px;
+          display: flex; flex-direction: column; gap: 40px;
+        }
+        .drawer-body::-webkit-scrollbar { width: 8px; }
+        .drawer-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        
+        .drawer-section-title {
+          font-size: 1.2rem; font-weight: 700; color: #fff; margin: 0 0 16px 0;
+          text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 10px;
+        }
+        .drawer-section-title::before { content: ''; width: 4px; height: 16px; background: var(--gold); border-radius: 2px; }
+        
+        .drawer-pill-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+        .drawer-pill {
+          padding: 6px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 100px; font-size: 0.85rem; color: #ccc;
+        }
+        
+        .drawer-accordion {
+          background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+          border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+        }
+        .drawer-accordion-header {
+          padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+          cursor: pointer; font-weight: 600; color: #eee;
+        }
+        .drawer-accordion-content {
+          padding: 0 20px 20px 20px; color: #aaa; font-size: 0.95rem; line-height: 1.6;
+        }
+        
+        .drawer-action-bar {
+          padding: 20px 32px; background: rgba(10,10,10,0.9); backdrop-filter: blur(20px);
+          border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between;
+          align-items: center; gap: 16px;
+        }
+        
+        .file-upload-btn {
+          display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+          background: rgba(0,0,0,0.4); border: 1px dashed rgba(255,255,255,0.2);
+          border-radius: 12px; color: #ccc; font-size: 0.9rem; cursor: pointer; transition: all 0.2s;
+        }
+        .file-upload-btn:hover { border-color: var(--gold); color: #fff; }
+        
+        @keyframes slideInRight { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        @keyframes slideInUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
       `}} />
 
       {/* Hero Header */}
@@ -690,62 +811,17 @@ export default function SavedJobsPage() {
         </>
       )}
 
-      {/* Apply Modal */}
+      {/* Side Drawer for Job Details */}
       {selectedApplyJob && (
-        <div className="cine-modal-overlay" onClick={() => !isApplying && !applied && setSelectedApplyJob(null)}>
-          <div className="cine-modal-content" onClick={e => e.stopPropagation()}>
-            {applied ? (
-              <div style={{ padding: '48px 32px', textAlign: 'center' }}>
-                <CheckCircle size={64} color="#10b981" style={{ margin: '0 auto 24px auto' }} />
-                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 12px 0', color: '#fff' }}>Application Sent!</h2>
-                <p style={{ color: '#aaa', fontSize: '1.05rem', margin: 0 }}>
-                  Your application for {selectedApplyJob.title} has been successfully submitted to {selectedApplyJob.company}.
-                </p>
-              </div>
-            ) : (
-              <>
-                <div style={{ padding: '32px 32px 24px 32px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 8px 0', color: '#fff' }}>Apply for Role</h2>
-                    <p style={{ color: '#aaa', margin: 0, fontSize: '0.95rem' }}>
-                      {selectedApplyJob.title} at {selectedApplyJob.company}
-                    </p>
-                  </div>
-                  <button onClick={() => setSelectedApplyJob(null)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', cursor: 'pointer' }}>
-                    <X size={18} />
-                  </button>
-                </div>
-                
-                <div style={{ padding: '32px' }}>
-                  <label style={{ display: 'block', fontSize: '0.95rem', fontWeight: 600, color: '#eee', marginBottom: '12px' }}>
-                    Quick Pitch / Cover Letter
-                  </label>
-                  <textarea 
-                    placeholder="Tell the casting director why you're a great fit for this role..."
-                    style={{
-                      width: '100%', minHeight: '120px', padding: '16px', borderRadius: '12px',
-                      border: '1.5px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.2)',
-                      color: '#fff', fontSize: '0.95rem', outline: 'none', resize: 'vertical',
-                      fontFamily: 'inherit'
-                    }}
-                  />
-                </div>
-
-                <div style={{ padding: '24px 32px', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'flex-end', gap: '16px', background: 'rgba(0,0,0,0.2)' }}>
-                  <button onClick={() => setSelectedApplyJob(null)} style={{ background: 'none', border: 'none', color: '#aaa', fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
-                  <button 
-                    onClick={submitApplication}
-                    disabled={isApplying}
-                    style={{ padding: '12px 24px', borderRadius: '100px', border: 'none', backgroundColor: 'var(--gold)', color: '#000', fontWeight: 700, cursor: isApplying ? 'not-allowed' : 'pointer', boxShadow: '0 4px 12px rgba(201, 168, 76, 0.3)', opacity: isApplying ? 0.8 : 1 }}
-                  >
-                    {isApplying ? 'Submitting...' : 'Submit Application'}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <JobDrawer 
+          job={selectedApplyJob} 
+          onClose={() => !isApplying && !applied && setSelectedApplyJob(null)}
+          isApplying={isApplying}
+          applied={applied}
+          submitApplication={submitApplication}
+        />
       )}
+
 
     </div>
   );
@@ -760,6 +836,7 @@ function CastingCard({ job, handleApplyClick, handleDelete, setHoveredJobId, hov
       className="layered-card"
       onMouseEnter={() => setHoveredJobId(job.id)}
       onMouseLeave={() => setHoveredJobId(null)}
+      onClick={() => handleApplyClick(job)}
     >
       <div className="bookmark-ribbon">
         <Bookmark size={20} color="#000" fill="#000" />
@@ -797,21 +874,14 @@ function CastingCard({ job, handleApplyClick, handleDelete, setHoveredJobId, hov
         </div>
       </div>
 
-      <div className="card-actions">
-        <button 
-          className="btn-text btn-apply" 
-          onClick={() => handleApplyClick(job)}
-        >
-          Apply Now <ChevronRight size={16} style={{ transition: 'transform 0.3s' }} />
-        </button>
-        
-        <div style={{ display: 'flex', gap: '20px' }}>
+      <div className="card-actions" onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', gap: '20px', marginLeft: 'auto' }}>
           <button className="btn-text" style={{ color: '#888' }}>
             <Share2 size={16} />
           </button>
           <button 
             className="btn-text btn-remove" 
-            onClick={() => handleDelete(job.id)}
+            onClick={(e) => { e.stopPropagation(); handleDelete(job.id); }}
             title="Remove from Collection"
           >
             <Trash2 size={16} />
@@ -826,7 +896,10 @@ function CastingCard({ job, handleApplyClick, handleDelete, setHoveredJobId, hov
             <Film size={32} color="var(--gold)" />
           </div>
           <h4 style={{ fontSize: '1.4rem', color: '#fff', margin: '0 0 8px 0' }}>{job.title}</h4>
-          <p style={{ color: '#aaa', margin: 0 }}>Directed by {job.director}</p>
+          <p style={{ color: '#aaa', margin: '0 0 16px 0' }}>Directed by {job.director}</p>
+          <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(212,175,55,0.2)', borderRadius: '100px', color: 'var(--gold)', fontWeight: 600, fontSize: '0.85rem' }}>
+            Click to View Details
+          </div>
         </div>
         
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'rgba(0,0,0,0.5)', padding: '20px', borderRadius: '16px' }}>
@@ -852,6 +925,261 @@ function CastingCard({ job, handleApplyClick, handleDelete, setHoveredJobId, hov
         </div>
         
         {/* We keep the preview above the card content, but below the action buttons (z-index 30) */}
+      </div>
+    </div>
+  );
+}
+
+function JobDrawer({ job, onClose, isApplying, applied, submitApplication }: any) {
+  const [expandedSection, setExpandedSection] = useState<string | null>("Project Description");
+  const [files, setFiles] = useState({ resume: null, portfolio: null, showreel: null, other: null });
+
+  const toggleSection = (name: string) => {
+    setExpandedSection(prev => prev === name ? null : name);
+  };
+
+  return (
+    <div className="cine-modal-overlay" onClick={onClose}>
+      <div className="cine-drawer-content" onClick={e => e.stopPropagation()}>
+        <div className="drawer-header">
+          <div>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: '0 0 8px 0', color: '#fff' }}>{job.title}</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#aaa', fontSize: '0.95rem' }}>
+              <Film size={16} /> {job.company}
+              {job.verified && <CheckCircle size={14} color="#22c55e" />}
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa', cursor: 'pointer' }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {applied ? (
+          <div className="drawer-body" style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+            <CheckCircle size={80} color="#10b981" style={{ margin: '0 auto 24px auto' }} />
+            <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 16px 0', color: '#fff' }}>Application Submitted Successfully</h2>
+            <p style={{ color: '#aaa', fontSize: '1.1rem', maxWidth: '400px' }}>
+              Your application for {job.title} has been sent to {job.company}. Good luck!
+            </p>
+            <p style={{ color: '#666', marginTop: '24px', fontSize: '0.9rem' }}>
+              Submitted on {new Date().toLocaleString()}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="drawer-body">
+              {/* Overview */}
+              <section>
+                <h3 className="drawer-section-title">Overview</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Employment Type</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.type}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Category</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.category}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Production Type</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.genre}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Compensation</strong><p style={{ color: '#22c55e', margin: '4px 0 0 0', fontWeight: 600 }}>{job.compensation}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Location</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.location}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Deadline</strong><p style={{ color: job.deadlineColor, margin: '4px 0 0 0', fontWeight: 600 }}>{job.deadline}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Experience required</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.experience}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Languages required</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.language}</p></div>
+                </div>
+              </section>
+
+              {/* About the Role */}
+              <section>
+                <h3 className="drawer-section-title">About the Role</h3>
+                <p style={{ color: '#aaa', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '24px' }}>{job.description}</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px' }}>
+                  {job.responsibilities && (
+                    <div>
+                      <strong style={{ color: '#eee', display: 'block', marginBottom: '8px' }}>Responsibilities</strong>
+                      <ul style={{ color: '#aaa', paddingLeft: '20px', margin: 0, fontSize: '0.95rem', lineHeight: 1.6 }}>
+                        {job.responsibilities.map((r: string, i: number) => <li key={i}>{r}</li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {job.requiredSkills && (
+                    <div>
+                      <strong style={{ color: '#eee', display: 'block', marginBottom: '8px' }}>Required Skills</strong>
+                      <div className="drawer-pill-grid">
+                        {job.requiredSkills.map((s: string, i: number) => <span key={i} className="drawer-pill">{s}</span>)}
+                      </div>
+                    </div>
+                  )}
+                  {job.preferredSkills && (
+                    <div>
+                      <strong style={{ color: '#eee', display: 'block', marginBottom: '8px' }}>Preferred Skills</strong>
+                      <div className="drawer-pill-grid">
+                        {job.preferredSkills.map((s: string, i: number) => <span key={i} className="drawer-pill">{s}</span>)}
+                      </div>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', gap: '32px', marginTop: '12px' }}>
+                    <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Working Hours</strong><p style={{ color: '#eee', margin: '4px 0 0 0', fontSize: '0.95rem' }}>{job.workingHours || "N/A"}</p></div>
+                    <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Contract Duration</strong><p style={{ color: '#eee', margin: '4px 0 0 0', fontSize: '0.95rem' }}>{job.contractDuration || "N/A"}</p></div>
+                    <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Openings</strong><p style={{ color: '#eee', margin: '4px 0 0 0', fontSize: '0.95rem' }}>{job.openings || "1"}</p></div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Requirements */}
+              <section>
+                <h3 className="drawer-section-title">Requirements</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'rgba(255,255,255,0.02)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Age Criteria</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.ageRange}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Gender Preference</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.gender}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Height</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.height || "Any"}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Experience Level</strong><p style={{ color: '#fff', margin: '4px 0 0 0' }}>{job.experience}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Portfolio Required</strong><p style={{ color: job.portfolioRequired ? '#22c55e' : '#aaa', margin: '4px 0 0 0' }}>{job.portfolioRequired ? "Yes" : "No"}</p></div>
+                  <div><strong style={{ color: '#666', fontSize: '0.8rem', textTransform: 'uppercase' }}>Resume Required</strong><p style={{ color: job.resumeRequired ? '#22c55e' : '#aaa', margin: '4px 0 0 0' }}>{job.resumeRequired ? "Yes" : "No"}</p></div>
+                </div>
+              </section>
+
+              {/* More Details (Accordion) */}
+              <section>
+                <h3 className="drawer-section-title">More Details</h3>
+                {["Project Description", "Casting Director Notes", "Shooting Schedule", "Audition Process", "Compensation Details", "Benefits", "FAQs"].map((title) => {
+                  const isExpanded = expandedSection === title;
+                  let content = "Detailed information for this section is currently unavailable.";
+                  if (title === "Project Description") content = job.description;
+                  if (title === "FAQs" && job.faqs && job.faqs.length > 0) {
+                    content = job.faqs.map((f: any) => `Q: ${f.q}\nA: ${f.a}`).join("\n\n");
+                  }
+                  
+                  return (
+                    <div key={title} className="drawer-accordion">
+                      <div className="drawer-accordion-header" onClick={() => toggleSection(title)}>
+                        {title}
+                        <ChevronRight size={18} style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }} />
+                      </div>
+                      {isExpanded && (
+                        <div className="drawer-accordion-content" style={{ whiteSpace: 'pre-line' }}>
+                          {content}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </section>
+
+              {/* Company Section */}
+              <section>
+                <h3 className="drawer-section-title">Company Profile</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', background: 'rgba(255,255,255,0.02)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div className="company-logo" style={{ width: 80, height: 80, borderRadius: 20 }}>
+                    <Globe size={40} color="var(--gold)" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ fontSize: '1.2rem', color: '#fff', margin: '0 0 8px 0', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {job.company} {job.verified && <CheckCircle size={16} color="#22c55e" />}
+                    </h4>
+                    <div style={{ display: 'flex', gap: '16px', fontSize: '0.85rem', color: '#aaa' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Star size={14} color="#f59e0b" fill="#f59e0b" /> {job.companyRating || "4.5"} Rating</span>
+                      <span>{job.projectsCompleted || 0} Projects</span>
+                      <span>{job.followers || "0"} Followers</span>
+                    </div>
+                    <button style={{ marginTop: '12px', background: 'none', border: 'none', color: 'var(--gold)', fontWeight: 600, fontSize: '0.9rem', cursor: 'pointer', padding: 0 }}>
+                      View Company Profile →
+                    </button>
+                  </div>
+                </div>
+              </section>
+              
+              {/* Related Castings */}
+              <section>
+                <h3 className="drawer-section-title">Similar Opportunities</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '12px' }}>
+                  {[1, 2, 3].map(i => (
+                    <div key={i} style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', transition: 'background 0.2s' }}>
+                      <div>
+                        <h5 style={{ color: '#fff', margin: '0 0 4px 0', fontSize: '1rem' }}>Similar Role {i}</h5>
+                        <p style={{ color: '#888', margin: 0, fontSize: '0.85rem' }}>Another Company • Mumbai</p>
+                      </div>
+                      <ChevronRight size={18} color="#aaa" />
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              {/* Application Section */}
+              <section id="application-section">
+                <h3 className="drawer-section-title">Apply for this Casting Call</h3>
+                <div style={{ background: 'linear-gradient(145deg, rgba(212, 175, 55, 0.05), transparent)', border: '1px solid rgba(212, 175, 55, 0.2)', padding: '32px', borderRadius: '24px' }}>
+                  <label style={{ display: 'block', fontSize: '0.95rem', fontWeight: 600, color: '#eee', marginBottom: '12px' }}>
+                    Cover Letter / Application Message
+                  </label>
+                  <textarea 
+                    placeholder="Introduce yourself and explain why you're the right fit for this role..."
+                    style={{
+                      width: '100%', minHeight: '160px', padding: '16px', borderRadius: '12px',
+                      border: '1px solid rgba(255,255,255,0.1)', backgroundColor: 'rgba(0,0,0,0.3)',
+                      color: '#fff', fontSize: '0.95rem', outline: 'none', resize: 'vertical',
+                      fontFamily: 'inherit', marginBottom: '24px'
+                    }}
+                  />
+                  
+                  <label style={{ display: 'block', fontSize: '0.95rem', fontWeight: 600, color: '#eee', marginBottom: '12px' }}>
+                    Required Documents
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+                    <label className="file-upload-btn">
+                      <input type="file" style={{ display: 'none' }} onChange={(e) => setFiles({...files, resume: e.target.value as any})} />
+                      <Briefcase size={20} /> {files.resume ? "Resume Uploaded" : "Upload Resume"}
+                    </label>
+                    <label className="file-upload-btn">
+                      <input type="file" style={{ display: 'none' }} onChange={(e) => setFiles({...files, portfolio: e.target.value as any})} />
+                      <Film size={20} /> {files.portfolio ? "Portfolio Uploaded" : "Upload Portfolio"}
+                    </label>
+                    <label className="file-upload-btn">
+                      <input type="file" style={{ display: 'none' }} onChange={(e) => setFiles({...files, showreel: e.target.value as any})} />
+                      <PlayCircle size={20} /> {files.showreel ? "Showreel Uploaded" : "Upload Showreel"}
+                    </label>
+                    <label className="file-upload-btn">
+                      <input type="file" style={{ display: 'none' }} onChange={(e) => setFiles({...files, other: e.target.value as any})} />
+                      <Plus size={20} /> {files.other ? "File Uploaded" : "Upload Additional Files"}
+                    </label>
+                  </div>
+                  
+                  <button 
+                    onClick={submitApplication}
+                    disabled={isApplying}
+                    style={{ 
+                      width: '100%', padding: '16px', borderRadius: '12px', border: 'none', 
+                      backgroundColor: 'var(--gold)', color: '#000', fontSize: '1.1rem', fontWeight: 700, 
+                      cursor: isApplying ? 'not-allowed' : 'pointer', boxShadow: '0 8px 24px rgba(212, 175, 55, 0.4)', 
+                      opacity: isApplying ? 0.8 : 1, transition: 'all 0.3s' 
+                    }}
+                  >
+                    {isApplying ? 'Submitting Application...' : 'Submit Application'}
+                  </button>
+                </div>
+              </section>
+
+            </div>
+
+            <div className="drawer-action-bar">
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <button className="btn-text" style={{ color: '#fff', fontSize: '1.2rem', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }} title="Share">
+                  <Share2 size={20} />
+                </button>
+                <button className="btn-text" style={{ color: '#fff', fontSize: '1.2rem', padding: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }} title="Save">
+                  <Bookmark size={20} fill="#fff" />
+                </button>
+                <button className="btn-text" style={{ color: '#ef4444', fontSize: '1.2rem', padding: '8px', background: 'rgba(239,68,68,0.1)', borderRadius: '8px' }} title="Report">
+                  <Info size={20} />
+                </button>
+              </div>
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <button style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', padding: '10px 20px', borderRadius: '100px', fontWeight: 600, cursor: 'pointer' }}>
+                  Contact Recruiter
+                </button>
+                <button 
+                  onClick={() => document.getElementById('application-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '10px 24px', borderRadius: '100px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)' }}>
+                  Submit Application
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -127,7 +127,8 @@ export default function Header() {
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center',
-          flexWrap: 'nowrap'
+          flexWrap: 'nowrap',
+          position: 'relative'
         }}
       >
         
@@ -141,18 +142,21 @@ export default function Header() {
         </div>
 
 
-        {/* Right Section: Navigation & Actions */}
-        <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
-          
-          <Link href={displayUser ? "/portfolio/builder" : "/signup?redirect=/portfolio/builder"} className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
-            Portfolios
+        {/* Center Section: Navigation */}
+        <div className="hide-on-mobile" style={{ display: 'flex', alignItems: 'center', gap: '32px', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+          <Link href={displayUser ? "/post" : "/signup?redirect=/post"} className="nav-link" style={{ fontSize: '15px' }}>
+            Post
           </Link>
-          <Link href="/talents" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
+          <Link href="/talents" className="nav-link" style={{ fontSize: '15px' }}>
             Talents
           </Link>
-          <Link href="/membership" className="nav-link hide-on-mobile" style={{ fontSize: '15px' }}>
+          <Link href="/membership" className="nav-link" style={{ fontSize: '15px' }}>
             Membership
           </Link>
+        </div>
+
+        {/* Right Section: Actions */}
+        <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
 
           {displayUser && (
             <>
@@ -210,9 +214,9 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <div className="auth-buttons" style={{ display: 'flex', gap: '12px', marginLeft: '8px', marginRight: '-8px' }}>
-              <Link href="/login" className="signup-btn header-btn" style={{ padding: '0 16px', height: '36px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>Log In</Link>
-              <Link href="/signup" className="signup-btn header-btn" style={{ padding: '0 16px', height: '36px', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>Sign Up</Link>
+            <div className="auth-buttons" style={{ display: 'flex', gap: '8px', marginLeft: 'auto', marginRight: '-16px' }}>
+              <Link href="/login" className="signup-btn header-btn" style={{ padding: '0 12px', height: '32px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px' }}>Log In</Link>
+              <Link href="/signup" className="signup-btn header-btn" style={{ padding: '0 12px', height: '32px', fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '6px' }}>Sign Up</Link>
             </div>
           )}
 
