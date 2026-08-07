@@ -29,7 +29,7 @@ import DashboardCalendar from "./DashboardCalendar";
 const talentMenuItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Casting Calls", href: "/dashboard/casting-calls", icon: BriefcaseBusiness },
-  { name: "My Applications", href: "/talents", icon: FileText },
+  { name: "My Applications", href: "/dashboard/applications", icon: FileText },
   { name: "Portfolio", href: "/portfolio/builder", icon: User },
   { name: "Saved Jobs", href: "/dashboard/saved", icon: Star },
   { name: "Messages", href: "/messages", icon: MessageCircle },
@@ -42,7 +42,7 @@ const talentMenuItems = [
 const seekerMenuItems = [
   { name: "Dashboard", href: "/dashboard/seeker", icon: Home },
   { name: "My Casting Calls", href: "/dashboard/seeker/casting-calls", icon: BriefcaseBusiness },
-  { name: "Applications", href: "/talents", icon: FileText },
+  { name: "Applications", href: "/dashboard/seeker/applications", icon: FileText },
   { name: "Shortlisted Talent", href: "/dashboard/seeker/shortlisted", icon: Star },
   { name: "Auditions", href: "/dashboard/seeker/auditions", icon: Video },
   { name: "Portfolio", href: "/portfolio/builder", icon: User },
