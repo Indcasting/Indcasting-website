@@ -573,7 +573,7 @@ html.dark .m-hero-sub{
     flex-wrap:wrap;
 
 }
-        .m-hero-img  { width: 100%; max-width: 500px; border-radius: 24px; will-change: transform; display: block; }
+        
 
         .btn-gold {
           background: var(--gold); color: var(--ink); border: none; border-radius: 100px;
@@ -597,14 +597,7 @@ html.dark .m-hero-sub{
     border-color: var(--ink);
 }
 
-        .magic-rings-container{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    pointer-events:none;
-}
+        
 
 .magic-rings-container canvas{
     width:100% !important;
@@ -695,7 +688,7 @@ html.dark .m-hero-sub{
           letter-spacing: -0.04em; line-height: 1;
           color: var(--ink); transition: color .35s;
         }
-        html.dark .plan-price { color: var(--ink); }
+        
         .plan-card.plan-featured .plan-price { color: #ffffff; }
         .plan-per { font-size: 0.8rem; font-weight: 500; color: var(--mid); }
         .plan-card.plan-featured .plan-per { color: rgba(255,255,255,0.4); }
@@ -1012,17 +1005,7 @@ html.dark .testi-header .section-title{
 
 }
 
-/* Stars */
 
-.testi-stars{
-
-    color:var(--gold);
-
-    font-size:.9rem;
-
-    letter-spacing:2px;
-
-}
 
 /* -------------------------
    DARK MODE
@@ -1369,21 +1352,7 @@ html.dark .upgrade-inner{
 
 /* Heading */
 
-.upgrade-title{
 
-    font-size:clamp(2.4rem,4vw,4rem);
-
-    font-weight:800;
-
-    line-height:1.12;
-
-    letter-spacing:-.04em;
-
-    color:var(--ink);
-
-    margin-bottom:24px;
-
-}
 
 html.dark .upgrade-title{
 
@@ -1410,50 +1379,6 @@ html.dark .upgrade-title{
 html.dark .upgrade-tagline{
 
     color:#bcbcbc;
-
-}
-
-/* Stats */
-
-.upgrade-stats{
-
-    display:flex;
-
-    justify-content:center;
-
-    gap:42px;
-
-    margin-bottom:50px;
-
-    flex-wrap:wrap;
-
-}
-
-.upgrade-stat{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-}
-
-.upgrade-stat strong{
-
-    font-size:1.5rem;
-
-    color:var(--gold);
-
-}
-
-.upgrade-stat span{
-
-    margin-top:6px;
-
-    font-size:.9rem;
-
-    color:var(--mid);
 
 }
 
@@ -1579,7 +1504,7 @@ html.dark .upgrade-tagline{
         /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
           .m-hero { grid-template-columns: 1fr; }
-          .m-hero-img { display: none; }
+          
           .plans-grid { grid-template-columns: 1fr; }
           .testi-card { width: 270px; }
         }

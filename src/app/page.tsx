@@ -331,7 +331,6 @@ export default function Home() {
           --mid: #6b6560;
           --white: #ffffff;
           --radius-md: 14px;
-          --radius-lg: 24px;
         }
         html.dark {
           --ink: #f6f6f6;
@@ -520,7 +519,6 @@ export default function Home() {
 
         /* ── TILES ── */
         .tiles-section { padding: 40px 4vw 2px; overflow: hidden; }
-        .tiles-eyebrow { text-align: center; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mid); margin-bottom: 2.5rem; }
         .tiles-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; align-items: start; min-height: 1100px; }
         .tile-col { display: flex; flex-direction: column; gap: 16px; will-change: transform; }
         .tile { border-radius: var(--radius-md); overflow: hidden; position: relative; background: var(--mist); }

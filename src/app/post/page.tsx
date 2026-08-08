@@ -760,7 +760,6 @@ export default function PostPage() {
           --ink: #0f0e0d; --cream: #FFFDF7; --gold: #c9a84c; --gold2: #e8c96a;
           --mist: #f0ebe0; --mid: #6b6560; --white: #ffffff;
           --card-bg: #ffffff; --input-bg: #ffffff; --input-border: #e0dbd0;
-          --subtle-bg: #fafaf7; --shadow: 0 8px 32px rgba(0,0,0,0.07);
           --rad-md: 14px; --rad-lg: 22px;
           --nb-border: #0f0e0d;
         }
@@ -804,7 +803,6 @@ export default function PostPage() {
         .csd-option { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; background: transparent; border: none; color: var(--ink); font-size: 0.88rem; font-family: inherit; cursor: pointer; transition: background 0.15s, color 0.15s; text-align: left; border-bottom: 1px solid var(--mist); }
         .csd-option:last-child { border-bottom: none; }
         /* Dark mode: explicit white text so hover bg doesn't swallow it */
-        html.dark .csd-option { color: var(--ink); }
         .csd-option:hover { background: rgba(201,168,76,0.18); color: var(--ink); }
         html.dark .csd-option:hover { background: rgba(201,168,76,0.25); color: #f0eeea; }
         .csd-option.selected { background: rgba(201,168,76,0.15); color: var(--gold); font-weight: 700; }
@@ -827,25 +825,7 @@ export default function PostPage() {
 
         /* ─── OVERVIEW STRIP ─── */
         .overview-strip { padding: 2.5rem 6vw; background: var(--cream); border-bottom: 1px solid var(--mist); transition: background 0.35s; }
-        .overview-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-end;
-    margin-bottom:1.6rem;
-}
-
-.overview-header h2{
-    font-size:1.8rem;
-    font-weight:800;
-    color:var(--ink);
-    margin:0;
-}
-
-.overview-header p{
-    margin-top:.3rem;
-    color:var(--mid);
-    font-size:.9rem;
-}
+        
 
 .overview-meta{
     display:flex;
