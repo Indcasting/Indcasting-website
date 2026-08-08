@@ -1,3 +1,5 @@
+import { cache } from "./cache";
+
 export interface Audition {
   id: string;
   title: string;          // Role Applied For / Job Role
@@ -15,6 +17,7 @@ export interface Audition {
 }
 
 const STORAGE_KEY = 'indcasting_auditions';
+const CACHE_KEY = 'auditions_list';
 
 const getInitialData = (): Audition[] => {
   const today = new Date();
@@ -111,14 +114,20 @@ const getInitialData = (): Audition[] => {
 
 export const getAllAuditions = (): Audition[] => {
   if (typeof window === 'undefined') return [];
-  
+
+  const cached = cache.get<Audition[]>(CACHE_KEY);
+  if (cached) return cached;
+
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
-    return JSON.parse(stored);
+    const data = JSON.parse(stored);
+    cache.set(CACHE_KEY, data, 5);
+    return data;
   }
-  
+
   const initial = getInitialData();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
+  cache.set(CACHE_KEY, initial, 5);
   return initial;
 };
 
@@ -131,7 +140,8 @@ export const updateAuditionStatus = (id: string, newStatus: Audition['status']) 
   const all = getAllAuditions();
   const updated = all.map(a => a.id === id ? { ...a, status: newStatus } : a);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  
+  cache.remove(CACHE_KEY);
+
   // Dispatch custom event to trigger re-renders
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('auditionsUpdated'));
@@ -142,7 +152,8 @@ export const rescheduleAudition = (id: string, newDate: string, newStartTime: st
   const all = getAllAuditions();
   const updated = all.map(a => a.id === id ? { ...a, date: newDate, startTime: newStartTime, endTime: newEndTime, status: 'Scheduled' } : a);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  
+  cache.remove(CACHE_KEY);
+
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('auditionsUpdated'));
   }

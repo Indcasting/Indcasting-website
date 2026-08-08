@@ -1,0 +1,155 @@
+Comprehensive Security Audit Findings - IndCasting Frontend
+
+F1: Plaintext passwords stored in localStorage
+Location: src/utils/auth.ts:6-15, 17-33
+Vulnerability: User passwords are stored unencrypted in localStorage.
+Severity: Critical
+Exploit: Any script running on the page (XSS or compromised CDN) can execute localStorage.getItem('indcasting_users') to steal all registered user passwords.
+Fix: Move auth to a server-side backend. Store only HttpOnly session cookies on the client. Hash passwords server-side using bcrypt/argon2.
+
+F2: Client-side-only authentication & authorization
+Location: src/utils/auth.ts, src/app/dashboard/page.tsx:8-28
+Vulnerability: Auth decisions are made solely on the client based on a JSON blob in localStorage.
+Severity: Critical
+Exploit: An attacker can set a fake session blob in the console: localStorage.setItem('indcasting_current_user', JSON.stringify({role:'seeker'})), gaining full access to the seeker dashboard.
+Fix: Implement server-side session management and authorization checks.
+
+F3: Stored XSS via unsanitized portfolio links
+Location: src/app/portfolio/[username]/page.tsx:123-124, 202-206
+Vulnerability: Portfolio social links are rendered verbatim in <a> hrefs without scheme validation.
+Severity: High
+Exploit: A user sets their GitHub link to "javascript:alert(1)". Anyone clicking it executes the script in their session.
+Fix: Whitelist URL schemes (http: and https: only). Reject javascript: and data: schemes.
+
+F4: Open redirect via ?redirect= query parameter
+Location: src/app/login/page.tsx:19, 31-32, 56-57; src/app/signup/page.tsx:18, 44-45
+Vulnerability: The redirect parameter is passed directly to router.push() without validation.
+Severity: High
+Exploit: Attacker sends a link: /login?redirect=https://evil.com. After login, the user is redirected to the malicious site.
+Fix: Use a whitelist of allowed internal redirect paths.
+
+F5: Third-party scripts without SRI
+Location: src/app/page.tsx:58-67, 130-131; src/app/post/page.tsx:39-48; src/app/membership/page.tsx:65-73
+Vulnerability: GSAP is loaded from a CDN without Subresource Integrity (SRI) hashes.
+Severity: High
+Exploit: If the CDN is compromised, the attacker can inject arbitrary JS into the application.
+Fix: Bundle GSAP via npm or add integrity hashes to <script> tags.
+
+F6: High-severity dependency vulnerabilities
+Location: package.json:16, package-lock.json
+Vulnerability: Outdated Next.js version (16.2.10) with known SSRF, DoS, and middleware bypass vulnerabilities.
+Severity: High
+Exploit: Attackers can exploit known CVEs in the framework to bypass security controls or cause DoS.
+Fix: Upgrade Next.js to 16.3.0 and run npm audit fix.
+
+F7: Missing CSP and Security Headers
+Location: next.config.ts:3-5, src/app/layout.tsx:13-17
+Vulnerability: No Content-Security-Policy, X-Frame-Options, or HSTS headers are configured.
+Severity: Medium
+Exploit: The site is vulnerable to clickjacking (via iframes) and has no defense-in-depth against XSS.
+Fix: Add security headers (X-Frame-Options: DENY, CSP: default-src 'self') in next.config.ts.
+
+F8: Unbounded base64 file uploads in localStorage
+Location: src/components/portfolio/BasicInfoForm.tsx:16-25, MiscForm.tsx:24-35
+Vulnerability: Images/resumes are stored as base64 in localStorage with no size limits.
+Severity: Medium
+Exploit: A user can crash their own browser/app by exceeding the localStorage quota (self-DoS).
+Fix: Enforce file size limits and use a real backend for file uploads.
+
+F9: "Recruiter Only" portfolio fields are public
+Location: src/app/portfolio/[username]/page.tsx:44-49
+Vulnerability: Recruiter-only fields are rendered to all users.
+Severity: Medium
+Exploit: Anonymous visitors can harvest private talent contact info.
+Fix: Enforce role-based visibility on the server.
+
+F10: Fake password change flow
+Location: src/app/dashboard/settings/page.tsx:61-85
+Vulnerability: Password change logic is simulated and does not actually update the password.
+Severity: Medium
+Exploit: Users are misled into thinking they have secured their account when they haven't.
+Fix: Implement a real server-side password update flow.
+
+F11: No per-user data isolation
+Location: src/utils/auditionData.ts:125-148, src/utils/storage.ts:5-51
+Vulnerability: Shared localStorage keys are used for all users; no ownership checks.
+Severity: Medium
+Exploit: Any user can modify or delete anyone else's auditions or posts via the browser console.
+Fix: Implement server-side ownership validation for all data mutations.
+
+F12: Hardcoded demo credentials in bundle
+Location: src/components/Header.tsx:17-22, src/app/post/page.tsx:364, 701
+Vulnerability: Mock users and hardcoded ownership strings ("current-user") are shipped in production code.
+Severity: Medium
+Exploit: Normalizes insecure patterns and could lead to auth bypasses if ported to a real backend without change.
+Fix: Remove all mock data and use real authenticated user IDs.
+
+F13: User-controlled values in CSS url()
+Location: src/app/portfolio/[username]/page.tsx:57, 117; src/app/portfolio/builder/page.tsx:383
+Vulnerability: User-supplied image URLs are interpolated directly into CSS backgroundImage.
+Severity: Medium
+Exploit: CSS injection or tracking via malicious URLs.
+Fix: Validate image URLs against a strict allowlist.
+
+F14: Weak registration and no password policy
+Location: src/utils/auth.ts:11-15, src/app/signup/page.tsx:34-42
+Vulnerability: No email uniqueness checks, no password strength requirements, and no verification.
+Severity: Medium
+Exploit: Easy account enumeration and creation of weak accounts.
+Fix: Implement server-side validation, uniqueness checks, and password policies.
+
+F15: innerHTML used for static text
+Location: src/app/page.tsx:182
+Vulnerability: Use of innerHTML to wrap characters in spans for animation.
+Severity: Low
+Exploit: While currently using static text, it's a pattern that leads to DOM-XSS if the text becomes dynamic.
+Fix: Use React JSX map() to create spans.
+
+F16: dangerouslySetInnerHTML for static style blocks
+Location: Multiple files (e.g., src/app/page.tsx:323, src/components/Header.tsx:225)
+Vulnerability: Use of dangerouslySetInnerHTML to inject static <style> blocks.
+Severity: Low
+Exploit: Risk of CSS/HTML injection if variables are ever interpolated into these blocks.
+Fix: Move styles to CSS modules or use React style props.
+
+F17: Unsafe URL scheme check for meeting links
+Location: src/components/DayScheduleModal.tsx:187-188
+Vulnerability: Using .startsWith('http') as a security check for links.
+Severity: Low
+Exploit: Fragile check that can be bypassed or used for phishing.
+Fix: Use new URL() and verify protocol === 'https:'.
+
+F18: String concatenation into https:// href
+Location: src/app/talents/[slug]/page.tsx:806-808
+Vulnerability: Concatenating untrusted data into a hardcoded https:// prefix.
+Severity: Low
+Exploit: Potential for link-decoration abuse or malformed URLs.
+Fix: Normalize via new URL() and validate before rendering.
+
+F19: Weak random identifiers
+Location: src/app/post/page.tsx:122, src/app/signup/page.tsx:35
+Vulnerability: Use of Math.random() and Date.now() for IDs.
+Severity: Low
+Exploit: Predictable IDs could lead to IDOR if used for secure resources.
+Fix: Use crypto.randomUUID().
+
+F20: Inconsistent auth storage keys
+Location: src/app/dashboard/page.tsx:11 vs src/utils/auth.ts:4, 38
+Vulnerability: Different keys ("currentUser" vs "indcasting_current_user") used for the same data.
+Severity: Low
+Exploit: Broken UX and potential for auth bypasses due to ambiguity.
+Fix: Centralize keys in a single constants file.
+
+F21: Session data readable by in-page scripts
+Location: src/utils/auth.ts:26-41
+Vulnerability: Auth state in localStorage is accessible to all scripts.
+Severity: Low
+Exploit: Amplifies impact of any XSS or CDN compromise.
+Fix: Use HttpOnly, Secure, SameSite cookies.
+
+F22: Missing robots.txt and security.txt
+Location: public/
+Vulnerability: Lack of standard security/indexing files and duplicate assets.
+Severity: Low
+Exploit: Poor search engine control and no security disclosure channel.
+Fix: Add robots.txt and security.txt; remove duplicate assets.

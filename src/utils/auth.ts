@@ -1,17 +1,28 @@
 import { UserProfile } from "@/types/user";
+import { cache } from "./cache";
 
 const USERS_KEY = "indcasting_users";
+const USERS_CACHE_KEY = "users_list";
 const CURRENT_USER_KEY = "indcasting_current_user";
 
 export function getUsers(): UserProfile[] {
   if (typeof window === "undefined") return [];
-  return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
+
+  const cached = cache.get<UserProfile[]>(USERS_CACHE_KEY);
+  if (cached) return cached;
+
+  const data = localStorage.getItem(USERS_KEY) || "[]";
+  const users = JSON.parse(data);
+
+  cache.set(USERS_CACHE_KEY, users, 5);
+  return users;
 }
 
 export function registerUser(user: UserProfile) {
   const users = getUsers();
   users.push(user);
   localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  cache.remove(USERS_CACHE_KEY);
 }
 
 export function loginUser(email: string, password: string, remember: boolean = true) {
@@ -53,8 +64,9 @@ export function updateUser(oldEmail: string, updatedUser: UserProfile) {
   if (index !== -1) {
     users[index] = updatedUser;
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    cache.remove(USERS_CACHE_KEY);
   }
-  
+
   if (localStorage.getItem(CURRENT_USER_KEY)) {
     localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
   } else if (sessionStorage.getItem(CURRENT_USER_KEY)) {
