@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { registerUser } from "@/utils/auth";
+import { validateInternalPath } from "@/utils/security";
 import { User, Mail, Phone, MapPin, Lock, Camera, Sparkles } from "lucide-react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthHeroSection from "@/components/auth/AuthHeroSection";
@@ -42,7 +43,7 @@ export default function SignUpPage() {
       });
       alert("Account Created Successfully!");
       if (redirect) {
-        router.push(`/login?redirect=${encodeURIComponent(redirect)}`);
+        router.push(`/login?redirect=${encodeURIComponent(validateInternalPath(redirect))}`);
       } else {
         router.push("/login");
       }

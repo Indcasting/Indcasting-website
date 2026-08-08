@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getPortfolioBySlug } from "@/utils/portfolioStorage";
 import { PortfolioData } from "@/types/portfolio";
+import { validateUrl } from "@/utils/security";
 import { Mail, Phone, MapPin, ExternalLink, Github, Linkedin, Twitter, Instagram, Youtube, Download, Award, Briefcase, GraduationCap, CheckCircle } from "lucide-react";
 import Header from "@/components/Header";
 
@@ -120,8 +121,8 @@ export default function PublicPortfolioPage() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                         <h3 style={{ fontSize: '1.4rem', fontWeight: 700, margin: 0 }}>{p.title}</h3>
                         <div style={{ display: 'flex', gap: '12px' }}>
-                          {p.githubLink && <a href={p.githubLink} target="_blank" rel="noreferrer" style={{ color: 'var(--mid)' }}><Github size={20} /></a>}
-                          {p.liveDemoLink && <a href={p.liveDemoLink} target="_blank" rel="noreferrer" style={{ color: 'var(--mid)' }}><ExternalLink size={20} /></a>}
+                          {p.githubLink && <a href={validateUrl(p.githubLink)} target="_blank" rel="noreferrer" style={{ color: 'var(--mid)' }}><Github size={20} /></a>}
+                          {p.liveDemoLink && <a href={validateUrl(p.liveDemoLink)} target="_blank" rel="noreferrer" style={{ color: 'var(--mid)' }}><ExternalLink size={20} /></a>}
                         </div>
                       </div>
                       <p style={{ color: 'var(--mid)', lineHeight: 1.6, marginBottom: '16px' }}>{p.description}</p>
@@ -199,11 +200,11 @@ export default function PublicPortfolioPage() {
             <section style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '16px', border: '1px solid var(--input-border)' }}>
               <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 16px 0' }}>Connect</h3>
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                {socialLinks.linkedin && <a href={socialLinks.linkedin} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Linkedin size={24} /></a>}
-                {socialLinks.github && <a href={socialLinks.github} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Github size={24} /></a>}
-                {socialLinks.twitter && <a href={socialLinks.twitter} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Twitter size={24} /></a>}
-                {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Instagram size={24} /></a>}
-                {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Youtube size={24} /></a>}
+                {socialLinks.linkedin && <a href={validateUrl(socialLinks.linkedin)} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Linkedin size={24} /></a>}
+                {socialLinks.github && <a href={validateUrl(socialLinks.github)} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Github size={24} /></a>}
+                {socialLinks.twitter && <a href={validateUrl(socialLinks.twitter)} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Twitter size={24} /></a>}
+                {socialLinks.instagram && <a href={validateUrl(socialLinks.instagram)} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Instagram size={24} /></a>}
+                {socialLinks.youtube && <a href={validateUrl(socialLinks.youtube)} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)' }}><Youtube size={24} /></a>}
               </div>
             </section>
           )}

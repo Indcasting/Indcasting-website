@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { loginUser, getCurrentUser } from "@/utils/auth";
+import { validateInternalPath } from "@/utils/security";
 import { Mail, Lock } from "lucide-react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthHeroSection from "@/components/auth/AuthHeroSection";
@@ -29,7 +30,7 @@ export default function LoginPage() {
     const user = getCurrentUser();
     if (user) {
       if (redirect) {
-        router.push(redirect);
+        router.push(validateInternalPath(redirect));
       } else if (user.role === "talent") {
         router.push("/dashboard/talent");
       } else {
@@ -54,7 +55,7 @@ export default function LoginPage() {
       }
 
       if (redirect) {
-        router.push(redirect);
+        router.push(validateInternalPath(redirect));
       } else if (user.role === "talent") {
         router.push("/dashboard/talent");
       } else {
