@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { registerUser } from "@/utils/auth";
 import { validateInternalPath } from "@/utils/security";
@@ -13,7 +13,7 @@ import AuthButton from "@/components/auth/AuthButton";
 import AuthDivider from "@/components/auth/AuthDivider";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
-export default function SignUpPage() {
+function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
@@ -151,5 +151,13 @@ export default function SignUpPage() {
         
       </AuthCard>
     </AuthLayout>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#111' }}></div>}>
+      <SignUpContent />
+    </Suspense>
   );
 }
