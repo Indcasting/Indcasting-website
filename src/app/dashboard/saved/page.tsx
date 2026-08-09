@@ -203,7 +203,7 @@ export default function SavedJobsPage() {
       <style dangerouslySetInnerHTML={{__html: `
         .collection-container {
           padding: 20px 0 80px 0;
-          color: #f1f1f1;
+          color: var(--dash-text-main, #000);
           position: relative;
           min-height: 100vh;
         }
@@ -232,9 +232,7 @@ export default function SavedJobsPage() {
           font-weight: 800;
           margin: 0 0 8px 0;
           letter-spacing: -0.03em;
-          background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: var(--dash-text-main, #fff);
         }
         .collection-subtitle {
           font-size: 1.15rem;
@@ -312,8 +310,8 @@ export default function SavedJobsPage() {
           display: flex;
           align-items: center;
           gap: 12px;
-          background: rgba(0,0,0,0.3);
-          border: 1px solid rgba(255,255,255,0.08);
+          background: var(--dash-surface, rgba(0,0,0,0.3));
+          border: 1px solid var(--dash-border, rgba(255,255,255,0.08));
           border-radius: 16px;
           padding: 12px 20px;
           transition: all 0.3s ease;
@@ -326,11 +324,11 @@ export default function SavedJobsPage() {
           flex: 1;
           background: transparent;
           border: none;
-          color: #fff;
+          color: var(--dash-text-main, #fff);
           font-size: 1rem;
           outline: none;
         }
-        .search-input::placeholder { color: rgba(255,255,255,0.3); }
+        .search-input::placeholder { color: var(--dash-text-muted, rgba(255,255,255,0.3)); }
 
         .cine-view-toggle {
           display: flex;
@@ -368,9 +366,9 @@ export default function SavedJobsPage() {
         .chip {
           padding: 8px 20px;
           border-radius: 100px;
-          background: rgba(255,255,255,0.02);
-          border: 1px solid rgba(255,255,255,0.08);
-          color: #aaa;
+          background: var(--dash-surface, rgba(255,255,255,0.02));
+          border: 1px solid var(--dash-border, rgba(255,255,255,0.08));
+          color: var(--dash-text-main, #aaa);
           font-size: 0.85rem;
           font-weight: 600;
           cursor: pointer;
@@ -378,8 +376,8 @@ export default function SavedJobsPage() {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .chip:hover {
-          background: rgba(255,255,255,0.06);
-          color: #fff;
+          background: var(--dash-hover-bg, rgba(255,255,255,0.06));
+          color: var(--dash-text-main, #fff);
         }
         .chip.active {
           background: rgba(212, 175, 55, 0.15);

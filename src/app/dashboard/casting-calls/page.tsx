@@ -189,7 +189,7 @@ export default function CastingCallsPage() {
       <style dangerouslySetInnerHTML={{__html: `
         .cine-container {
           padding: 20px 0 80px 0;
-          color: #f1f1f1;
+          color: var(--dash-text-main, #000);
           position: relative;
           min-height: 100vh;
         }
@@ -209,10 +209,10 @@ export default function CastingCallsPage() {
           top: 80px;
           z-index: 100;
           margin: 0 auto 40px auto;
-          background: rgba(15, 15, 15, 0.6);
+          background: var(--dash-surface, rgba(15, 15, 15, 0.6));
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
-          border: 1px solid rgba(255, 255, 255, 0.05);
+          border: 1px solid var(--dash-border, rgba(255, 255, 255, 0.05));
           border-radius: 20px;
           padding: 16px 24px;
           display: flex;
@@ -229,13 +229,13 @@ export default function CastingCallsPage() {
           flex: 1;
           background: transparent;
           border: none;
-          color: #fff;
+          color: var(--dash-text-main, #fff);
           font-size: 1.1rem;
           outline: none;
           padding: 8px 0;
         }
         .cine-search-input::placeholder {
-          color: rgba(255,255,255,0.3);
+          color: var(--dash-text-muted, rgba(255,255,255,0.3));
         }
         
         /* Filter Chips */
@@ -253,9 +253,9 @@ export default function CastingCallsPage() {
         .cine-chip {
           padding: 10px 20px;
           border-radius: 100px;
-          background: rgba(255,255,255,0.03);
-          border: 1px solid rgba(255,255,255,0.08);
-          color: #aaa;
+          background: var(--dash-surface, rgba(255,255,255,0.03));
+          border: 1px solid var(--dash-border, rgba(255,255,255,0.08));
+          color: var(--dash-text-main, #aaa);
           font-size: 0.9rem;
           font-weight: 500;
           cursor: pointer;
@@ -263,8 +263,8 @@ export default function CastingCallsPage() {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .cine-chip:hover {
-          background: rgba(255,255,255,0.08);
-          color: #fff;
+          background: var(--dash-hover-bg, rgba(255,255,255,0.08));
+          color: var(--dash-text-main, #fff);
         }
         .cine-chip.active {
           background: rgba(212, 175, 55, 0.15);
@@ -275,8 +275,8 @@ export default function CastingCallsPage() {
         
         /* Cinematic Card */
         .cine-card {
-          background: linear-gradient(145deg, #151515, #0a0a0a);
-          border: 1px solid rgba(255, 255, 255, 0.04);
+          background: var(--dash-surface, linear-gradient(145deg, #151515, #0a0a0a));
+          border: 2px solid var(--dash-border, rgba(255, 255, 255, 0.04));
           border-radius: 20px;
           padding: 28px;
           position: relative;
@@ -298,9 +298,9 @@ export default function CastingCallsPage() {
           transition: 0.5s;
         }
         .cine-card:hover {
-          transform: translateY(-6px);
-          border-color: rgba(212, 175, 55, 0.3);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 40px rgba(212, 175, 55, 0.05);
+          transform: translate(-2px, -2px);
+          box-shadow: 6px 6px 0px 0px var(--gold, #c9a84c);
+          border-color: var(--gold, #c9a84c);
         }
         .cine-card:hover::before {
           left: 150%;
@@ -312,10 +312,10 @@ export default function CastingCallsPage() {
         .cine-logo {
           width: 48px; height: 48px;
           border-radius: 12px;
-          background: #222;
+          background: var(--dash-surface, #222);
           display: flex; align-items: center; justify-content: center;
           color: var(--gold);
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid var(--dash-border, rgba(255,255,255,0.1));
           transition: all 0.4s ease;
         }
         
@@ -329,7 +329,7 @@ export default function CastingCallsPage() {
         .cine-title {
           font-size: 1.4rem;
           font-weight: 700;
-          color: #fff;
+          color: var(--dash-text-main, #fff);
           margin: 12px 0 6px 0;
           line-height: 1.3;
           letter-spacing: -0.02em;
@@ -337,7 +337,7 @@ export default function CastingCallsPage() {
         
         .cine-company {
           font-size: 1rem;
-          color: #aaa;
+          color: var(--dash-text-muted, #aaa);
           display: flex;
           align-items: center;
           gap: 6px;
@@ -349,25 +349,26 @@ export default function CastingCallsPage() {
           gap: 16px;
           margin: 24px 0;
           padding-top: 20px;
-          border-top: 1px solid rgba(255,255,255,0.05);
+          border-top: 1px solid var(--dash-border, rgba(255,255,255,0.05));
         }
         .cine-meta-item {
           display: flex;
           align-items: center;
           gap: 10px;
           font-size: 0.85rem;
-          color: #888;
+          color: var(--dash-text-muted, #888);
         }
         .cine-meta-item strong {
-          color: #ccc;
+          color: var(--dash-text-main, #ccc);
           font-weight: 500;
         }
         
         .cine-badge {
           padding: 6px 12px;
           border-radius: 8px;
-          background: rgba(255,255,255,0.05);
-          color: #ccc;
+          background: var(--dash-surface, rgba(255,255,255,0.05));
+          color: var(--dash-text-main, #ccc);
+          border: 1px solid var(--dash-border, transparent);
           font-size: 0.75rem;
           font-weight: 600;
           display: inline-flex;
@@ -387,7 +388,7 @@ export default function CastingCallsPage() {
         
         .cine-link {
           background: none; border: none;
-          color: #aaa;
+          color: var(--dash-text-muted, #aaa);
           font-size: 0.9rem;
           font-weight: 600;
           text-transform: uppercase;
