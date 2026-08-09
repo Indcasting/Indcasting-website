@@ -4,7 +4,6 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import HeroCarousel from "@/components/ui/Herocarousel";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import NeobrutalistCard from "@/components/ui/NeobrutalistCard";
 
 /* ─────────────────────────────────────────
    TYPES
@@ -536,70 +535,37 @@ function CastingCard({
   onView: (p: CastingPost) => void;
 }) {
   return (
-    <NeobrutalistCard
-      onClick={() => onView(post)}
-      tags={
-        <span style={{ 
-          padding: '4px 12px', 
-          borderRadius: '100px', 
-          backgroundColor: post.status === "Open" ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', 
-          color: post.status === "Open" ? '#22c55e' : '#ef4444', 
-          fontSize: '0.75rem', 
-          fontWeight: 700, 
-          textTransform: 'uppercase', 
-          letterSpacing: '0.5px',
-          border: `1px solid ${post.status === "Open" ? '#22c55e' : '#ef4444'}`
-        }}>
-          {post.status}
-        </span>
-      }
-      title={post.title}
-      subtitle={post.company}
-      metadata={
-        <>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Location</span>
-            <span style={{ fontSize: '0.9rem', color: '#ccc', fontWeight: 500 }}>{post.location}</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Age Range</span>
-            <span style={{ fontSize: '0.9rem', color: '#ccc', fontWeight: 500 }}>{post.age || "—"}</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Budget</span>
-            <span style={{ fontSize: '0.9rem', color: '#22c55e', fontWeight: 600 }}>₹{Number(post.budget || 0).toLocaleString("en-IN")}</span>
-          </div>
-        </>
-      }
-      content={
-        <>
-          <p style={{ margin: '0 0 16px 0' }}>{post.description}</p>
-          <small style={{ color: '#888' }}>Posted {fmt(post.createdAt)}{post.deadline ? ` · Deadline ${fmt(post.deadline)}` : ""}</small>
-        </>
-      }
-      actions={
-        isOwn ? (
-          <div style={{ display: 'flex', gap: '12px', width: '100%' }}>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onEdit(post); }}
-              style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
-            >
-              Edit
-            </button>
-            <button 
-              onClick={(e) => { e.stopPropagation(); onDelete(post.id); }}
-              style={{ flex: 1, padding: '10px', borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: '#ef4444', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px #ef4444'; e.currentTarget.style.borderColor = '#ef4444'; e.currentTarget.style.color = '#ef4444' }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = '#ef4444' }}
-            >
-              Delete
-            </button>
-          </div>
-        ) : undefined
-      }
-    />
+    <div className="casting-post-card" onClick={() => onView(post)}>
+      <div className="post-top">
+        <div className="post-meta">
+          <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
+            {post.status}
+          </span>
+        </div>
+        <div style={{ marginTop: "14px" }}>
+          <h3 style={{ fontSize:"1.35rem", fontWeight:900, color:"var(--ink)", lineHeight:1.2, marginBottom:"6px" }}>
+            {post.title}
+          </h3>
+          <p className="company-name">{post.company}</p>
+        </div>
+      </div>
+
+      <div className="casting-info">
+        <div><strong>Location</strong><p>{post.location}</p></div>
+        <div><strong>Age</strong><p>{post.age || "—"}</p></div>
+        <div><strong>Budget</strong><p>₹{Number(post.budget || 0).toLocaleString("en-IN")}</p></div>
+      </div>
+
+      <p className="description-preview">{post.description}</p>
+      <small>Posted {fmt(post.createdAt)}{post.deadline ? ` · Deadline ${fmt(post.deadline)}` : ""}</small>
+
+      {isOwn && (
+        <div className="post-actions" onClick={e => e.stopPropagation()}>
+          <button onClick={() => onEdit(post)}>Edit</button>
+          <button onClick={() => onDelete(post.id)}>Delete</button>
+        </div>
+      )}
+    </div>
   );
 }
 
