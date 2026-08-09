@@ -86,25 +86,25 @@ const CATEGORIES = [
   "Director", "Assistant Director", "Production Crew", "Spot Boy", "Light Technician",
   "Camera Operator", "Stunt Performer", "Action Choreographer",
 ];
-const GENDERS    = ["Male","Female","Any"];
-const EXPERIENCE = ["Beginner","Intermediate","Expert"];
+const GENDERS = ["Male", "Female", "Any"];
+const EXPERIENCE = ["Beginner", "Intermediate", "Expert"];
 const ALL_LANGUAGES = [
-  "Hindi","English","Tamil","Telugu","Bengali","Kannada",
-  "Malayalam","Marathi","Gujarati","Punjabi","Odia","Urdu",
+  "Hindi", "English", "Tamil", "Telugu", "Bengali", "Kannada",
+  "Malayalam", "Marathi", "Gujarati", "Punjabi", "Odia", "Urdu",
 ];
-const SORT_OPTS  = [
-  { v: "newest",      l: "Newest First" },
-  { v: "oldest",      l: "Oldest First" },
+const SORT_OPTS = [
+  { v: "newest", l: "Newest First" },
+  { v: "oldest", l: "Oldest First" },
   { v: "budget-high", l: "Budget: High → Low" },
-  { v: "budget-low",  l: "Budget: Low → High" },
-  { v: "company",     l: "Company A–Z" },
+  { v: "budget-low", l: "Budget: Low → High" },
+  { v: "company", l: "Company A–Z" },
 ];
 const BUDGET_OPTS = [
-  { v: "",             l: "Any Budget" },
-  { v: "0-25000",      l: "Under ₹25k" },
-  { v: "25000-50000",  l: "₹25k – ₹50k" },
+  { v: "", l: "Any Budget" },
+  { v: "0-25000", l: "Under ₹25k" },
+  { v: "25000-50000", l: "₹25k – ₹50k" },
   { v: "50000-100000", l: "₹50k – ₹1L" },
-  { v: "100000+",      l: "₹1L+" },
+  { v: "100000+", l: "₹1L+" },
 ];
 
 /* ─────────────────────────────────────────
@@ -112,7 +112,7 @@ const BUDGET_OPTS = [
 ───────────────────────────────────────── */
 function uid() { return Math.random().toString(36).slice(2) + Date.now().toString(36); }
 function fmt(iso: string) {
-  return new Date(iso).toLocaleDateString("en-IN", { day:"numeric", month:"short", year:"numeric" });
+  return new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
 /* ─────────────────────────────────────────
@@ -147,7 +147,7 @@ function CustomSelect({
         </span>
         <span className={`csd-arrow${open ? " up" : ""}`}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M6 9l6 6 6-6"/>
+            <path d="M6 9l6 6 6-6" />
           </svg>
         </span>
       </button>
@@ -212,7 +212,7 @@ function LanguageMultiSelect({
           {value.length > 0 && <span className="csd-count">{value.length}</span>}
           <span className={`csd-arrow${open ? " up" : ""}`}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M6 9l6 6 6-6"/>
+              <path d="M6 9l6 6 6-6" />
             </svg>
           </span>
         </span>
@@ -261,14 +261,14 @@ function DetailsModal({ post, onClose }: { post: CastingPost; onClose: () => voi
   }, [onClose]);
 
   const infoItems: [string, string][] = [
-    ["Location",   post.location],
-    ["Age Range",  post.age],
-    ["Gender",     post.gender ?? "Any"],
+    ["Location", post.location],
+    ["Age Range", post.age],
+    ["Gender", post.gender ?? "Any"],
     ["Experience", post.experience ?? "Any"],
-    ["Languages",  post.languages ?? "—"],
-    ["Budget",     `₹${Number(post.budget).toLocaleString("en-IN")}`],
+    ["Languages", post.languages ?? "—"],
+    ["Budget", `₹${Number(post.budget).toLocaleString("en-IN")}`],
     ...(post.deadline ? [["Deadline", fmt(post.deadline)] as [string, string]] : []),
-    ["Posted",     fmt(post.createdAt)],
+    ["Posted", fmt(post.createdAt)],
   ];
 
   return (
@@ -277,7 +277,7 @@ function DetailsModal({ post, onClose }: { post: CastingPost; onClose: () => voi
         <button className="close-btn" onClick={onClose}>×</button>
 
         {/* Status badge — top right, matching card style */}
-        <div style={{ display:"flex", justifyContent:"flex-end", marginBottom:"1rem" }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
           <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
             {post.status}
           </span>
@@ -299,7 +299,7 @@ function DetailsModal({ post, onClose }: { post: CastingPost; onClose: () => voi
         <h3 className="modal-desc-heading">About this role</h3>
         <div className="modal-description">{post.description}</div>
 
-        <div style={{ display:"flex", gap:"1rem", marginTop:"2rem", flexWrap:"wrap" }}>
+        <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", flexWrap: "wrap" }}>
           <button className="btn-gold">Apply Now</button>
           <button className="btn-outline-sm" onClick={onClose}>Close</button>
         </div>
@@ -324,8 +324,8 @@ function CastingFormSection({
     budget: string; description: string; status: "Open" | "Closed"; deadline: string;
   };
   const blank: FormState = {
-    title:"", company:"", category:"", location:"", age:"", gender:"",
-    experience:"", languages:"", budget:"", description:"", status:"Open", deadline:"",
+    title: "", company: "", category: "", location: "", age: "", gender: "",
+    experience: "", languages: "", budget: "", description: "", status: "Open", deadline: "",
   };
   const [f, setF] = useState<FormState>(blank);
 
@@ -341,7 +341,7 @@ function CastingFormSection({
     } else {
       setF({ ...blank });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
   const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
@@ -363,46 +363,46 @@ function CastingFormSection({
   return (
     <section className="post-form-section">
       <div className="post-form-header">
-        <h2 style={{ fontSize:"clamp(1.4rem,2.5vw,1.8rem)", fontWeight:800, color:"var(--ink)" }}>
+        <h2 style={{ fontSize: "clamp(1.4rem,2.5vw,1.8rem)", fontWeight: 800, color: "var(--ink)" }}>
           {editing ? "Edit Casting Call" : "✦ Post a Casting Call"}
         </h2>
-        <p style={{ color:"var(--mid)", marginTop:"0.4rem" }}>
+        <p style={{ color: "var(--mid)", marginTop: "0.4rem" }}>
           {editing ? "Update the details below." : "Fill in the details to reach the right talent."}
         </p>
       </div>
       <form className="post-form" onSubmit={handleSubmit}>
         <div className="form-field">
           <label className="form-label">Role / Title *</label>
-          <input className={inp} placeholder="e.g. Lead Actor — Web Series" value={f.title} onChange={e=>set("title",e.target.value)} />
+          <input className={inp} placeholder="e.g. Lead Actor — Web Series" value={f.title} onChange={e => set("title", e.target.value)} />
         </div>
         <div className="form-field">
           <label className="form-label">Company / Production *</label>
-          <input className={inp} placeholder="e.g. Netflix India" value={f.company} onChange={e=>set("company",e.target.value)} />
+          <input className={inp} placeholder="e.g. Netflix India" value={f.company} onChange={e => set("company", e.target.value)} />
         </div>
         <div className="form-field">
           <label className="form-label">Category *</label>
-          <CustomSelect value={f.category} onChange={v=>set("category",v)}
-            options={[{v:"",l:"Select category"},...CATEGORIES.map(c=>({v:c,l:c}))]}
+          <CustomSelect value={f.category} onChange={v => set("category", v)}
+            options={[{ v: "", l: "Select category" }, ...CATEGORIES.map(c => ({ v: c, l: c }))]}
             placeholder="Select category" />
         </div>
         <div className="form-field">
           <label className="form-label">Location *</label>
-          <input className={inp} placeholder="e.g. Mumbai / Remote" value={f.location} onChange={e=>set("location",e.target.value)} />
+          <input className={inp} placeholder="e.g. Mumbai / Remote" value={f.location} onChange={e => set("location", e.target.value)} />
         </div>
         <div className="form-field">
           <label className="form-label">Age Range</label>
-          <input className={inp} placeholder="e.g. 18-30" value={f.age} onChange={e=>set("age",e.target.value)} />
+          <input className={inp} placeholder="e.g. 18-30" value={f.age} onChange={e => set("age", e.target.value)} />
         </div>
         <div className="form-field">
           <label className="form-label">Gender</label>
-          <CustomSelect value={f.gender} onChange={v=>set("gender",v)}
-            options={[{v:"",l:"Any"},...GENDERS.map(g=>({v:g,l:g}))]}
+          <CustomSelect value={f.gender} onChange={v => set("gender", v)}
+            options={[{ v: "", l: "Any" }, ...GENDERS.map(g => ({ v: g, l: g }))]}
             placeholder="Any" />
         </div>
         <div className="form-field">
           <label className="form-label">Experience Level</label>
-          <CustomSelect value={f.experience} onChange={v=>set("experience",v)}
-            options={[{v:"",l:"Any"},...EXPERIENCE.map(x=>({v:x,l:x}))]}
+          <CustomSelect value={f.experience} onChange={v => set("experience", v)}
+            options={[{ v: "", l: "Any" }, ...EXPERIENCE.map(x => ({ v: x, l: x }))]}
             placeholder="Any" />
         </div>
         <div className="form-field">
@@ -414,23 +414,23 @@ function CastingFormSection({
         </div>
         <div className="form-field">
           <label className="form-label">Budget (₹)</label>
-          <input className={inp} type="number" placeholder="e.g. 50000" value={f.budget} onChange={e=>set("budget",e.target.value)} />
+          <input className={inp} type="number" placeholder="e.g. 50000" value={f.budget} onChange={e => set("budget", e.target.value)} />
         </div>
         <div className="form-field">
           <label className="form-label">Application Deadline</label>
-          <input className={inp} type="date" value={f.deadline} onChange={e=>set("deadline",e.target.value)} />
+          <input className={inp} type="date" value={f.deadline} onChange={e => set("deadline", e.target.value)} />
         </div>
         <div className="form-field form-full">
           <label className="form-label">Description</label>
-          <textarea className={inp} style={{ resize:"none", height:"160px" }}
+          <textarea className={inp} style={{ resize: "none", height: "160px" }}
             placeholder="Describe the role, requirements, shoot details…"
-            value={f.description} onChange={e=>set("description",e.target.value)} />
+            value={f.description} onChange={e => set("description", e.target.value)} />
         </div>
         {editing && (
           <div className="form-field">
             <label className="form-label">Status</label>
-            <CustomSelect value={f.status} onChange={v=>set("status",v as "Open"|"Closed")}
-              options={[{v:"Open",l:"Open"},{v:"Closed",l:"Closed"}]}
+            <CustomSelect value={f.status} onChange={v => set("status", v as "Open" | "Closed")}
+              options={[{ v: "Open", l: "Open" }, { v: "Closed", l: "Closed" }]}
               placeholder="Open" />
           </div>
         )}
@@ -464,50 +464,50 @@ function FilterBar({ f, set, total, onReset }: {
   return (
     <div className="filter-bar">
       <div className="filter-grid">
-        <CustomSelect value={f.category} onChange={v=>set("category",v)}
-          options={[{v:"",l:"Any Category"},...CATEGORIES.map(c=>({v:c,l:c}))]}
+        <CustomSelect value={f.category} onChange={v => set("category", v)}
+          options={[{ v: "", l: "Any Category" }, ...CATEGORIES.map(c => ({ v: c, l: c }))]}
           placeholder="Any Category" />
 
         <div className="csd-wrap">
-          <div style={{ position:"relative" }}>
-            <svg style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"var(--mid)", pointerEvents:"none" }}
+          <div style={{ position: "relative" }}>
+            <svg style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--mid)", pointerEvents: "none" }}
               width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
             </svg>
-            <input className="hf-inp" placeholder="Location" value={f.location} style={{ paddingLeft:"38px" }}
-              onChange={e=>set("location", e.target.value)} />
+            <input className="hf-inp" placeholder="Location" value={f.location} style={{ paddingLeft: "38px" }}
+              onChange={e => set("location", e.target.value)} />
           </div>
         </div>
 
-        <CustomSelect value={f.gender} onChange={v=>set("gender",v)}
-          options={[{v:"",l:"Any Gender"},...GENDERS.map(g=>({v:g,l:g}))]}
+        <CustomSelect value={f.gender} onChange={v => set("gender", v)}
+          options={[{ v: "", l: "Any Gender" }, ...GENDERS.map(g => ({ v: g, l: g }))]}
           placeholder="Any Gender" />
 
-        <CustomSelect value={f.experience} onChange={v=>set("experience",v)}
-          options={[{v:"",l:"Any Experience"},...EXPERIENCE.map(x=>({v:x,l:x}))]}
+        <CustomSelect value={f.experience} onChange={v => set("experience", v)}
+          options={[{ v: "", l: "Any Experience" }, ...EXPERIENCE.map(x => ({ v: x, l: x }))]}
           placeholder="Any Experience" />
 
-        <LanguageMultiSelect value={f.languages} onChange={v=>set("languages",v)} />
+        <LanguageMultiSelect value={f.languages} onChange={v => set("languages", v)} />
 
         <div className="csd-wrap">
-          <div style={{ position:"relative" }}>
-            <svg style={{ position:"absolute", left:14, top:"50%", transform:"translateY(-50%)", color:"var(--mid)", pointerEvents:"none" }}
+          <div style={{ position: "relative" }}>
+            <svg style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", color: "var(--mid)", pointerEvents: "none" }}
               width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
             </svg>
             <input className="hf-inp" placeholder="Age (e.g. 25)" type="number" value={f.age}
-              style={{ paddingLeft:"38px" }} onChange={e=>set("age", e.target.value)} />
+              style={{ paddingLeft: "38px" }} onChange={e => set("age", e.target.value)} />
           </div>
         </div>
 
-        <CustomSelect value={f.budget} onChange={v=>set("budget",v)}
+        <CustomSelect value={f.budget} onChange={v => set("budget", v)}
           options={BUDGET_OPTS} placeholder="Any Budget" />
 
-        <CustomSelect value={f.status} onChange={v=>set("status",v)}
-          options={[{v:"",l:"Any Status"},{v:"Open",l:"Open"},{v:"Closed",l:"Closed"}]}
+        <CustomSelect value={f.status} onChange={v => set("status", v)}
+          options={[{ v: "", l: "Any Status" }, { v: "Open", l: "Open" }, { v: "Closed", l: "Closed" }]}
           placeholder="Any Status" />
 
-        <CustomSelect value={f.sort} onChange={v=>set("sort",v)}
+        <CustomSelect value={f.sort} onChange={v => set("sort", v)}
           options={SORT_OPTS} placeholder="Sort by" />
       </div>
 
@@ -543,7 +543,7 @@ function CastingCard({
           </span>
         </div>
         <div style={{ marginTop: "14px" }}>
-          <h3 style={{ fontSize:"1.35rem", fontWeight:900, color:"var(--ink)", lineHeight:1.2, marginBottom:"6px" }}>
+          <h3 style={{ fontSize: "1.35rem", fontWeight: 900, color: "var(--ink)", lineHeight: 1.2, marginBottom: "6px" }}>
             {post.title}
           </h3>
           <p className="company-name">{post.company}</p>
@@ -584,13 +584,13 @@ function CastingListRow({
     <div className="list-row" onClick={() => onView(post)}>
       <div className="list-row-left">
         <div>
-          <span style={{ fontWeight:800, color:"var(--ink)", fontSize:"1rem" }}>{post.title}</span>
-          <span style={{ color:"var(--mid)", fontSize:"0.85rem", marginLeft:"0.6rem" }}>{post.company}</span>
+          <span style={{ fontWeight: 800, color: "var(--ink)", fontSize: "1rem" }}>{post.title}</span>
+          <span style={{ color: "var(--mid)", fontSize: "0.85rem", marginLeft: "0.6rem" }}>{post.company}</span>
         </div>
-        <div style={{ display:"flex", gap:"1rem", marginTop:"0.3rem", fontSize:"0.8rem", color:"var(--mid)", flexWrap:"wrap" }}>
+        <div style={{ display: "flex", gap: "1rem", marginTop: "0.3rem", fontSize: "0.8rem", color: "var(--mid)", flexWrap: "wrap" }}>
           <span>{post.location}</span>
           <span>{post.age || "—"}</span>
-          <span>₹{Number(post.budget||0).toLocaleString("en-IN")}</span>
+          <span>₹{Number(post.budget || 0).toLocaleString("en-IN")}</span>
           <span>{fmt(post.createdAt)}</span>
         </div>
       </div>
@@ -617,17 +617,17 @@ function CastingListRow({
 export default function PostPage() {
   const gsapLoaded = useRef(false);
 
-  const [posts,        setPosts]        = useState<CastingPost[]>([]);
-  const [editing,      setEditing]      = useState<CastingPost | null>(null);
-  const [showForm,      setShowForm]    = useState(false);
+  const [posts, setPosts] = useState<CastingPost[]>([]);
+  const [editing, setEditing] = useState<CastingPost | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [selectedPost, setSelectedPost] = useState<CastingPost | null>(null);
-  const [viewMode,     setViewMode]     = useState<"grid"|"list">("grid");
-  const [showFilters,  setShowFilters]  = useState(false);
-  const [search,       setSearch]       = useState("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [showFilters, setShowFilters] = useState(false);
+  const [search, setSearch] = useState("");
 
   const [filters, setFilters] = useState<Filters>({
-    search:"", category:"", location:"", gender:"", experience:"",
-    languages:[], age:"", budget:"", status:"", sort:"newest",
+    search: "", category: "", location: "", gender: "", experience: "",
+    languages: [], age: "", budget: "", status: "", sort: "newest",
   });
 
   useEffect(() => {
@@ -643,25 +643,25 @@ export default function PostPage() {
     gsap.registerPlugin(ScrollTrigger);
 
     gsap.to(".progress-bar", {
-      scaleX:1, ease:"none",
-      scrollTrigger:{ trigger:"body", start:"top top", end:"bottom bottom", scrub:0 },
+      scaleX: 1, ease: "none",
+      scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 0 },
     });
     gsap.utils.toArray<HTMLElement>(".overview-card").forEach((card, i) => {
       gsap.from(card, {
-        y:40, opacity:0, scale:0.92, duration:0.6, delay:i*0.1, ease:"power3.out",
-        scrollTrigger:{ trigger:".dashboard-overview", start:"top 85%", toggleActions:"play none none none" },
+        y: 40, opacity: 0, scale: 0.92, duration: 0.6, delay: i * 0.1, ease: "power3.out",
+        scrollTrigger: { trigger: ".dashboard-overview", start: "top 85%", toggleActions: "play none none none" },
       });
     });
     gsap.utils.toArray<Element>(".casting-post-card, .list-row").forEach((el, i) => {
       gsap.from(el, {
-        y:30, opacity:0, duration:0.5, delay:(i%6)*0.07, ease:"power2.out",
-        scrollTrigger:{ trigger:el, start:"top 88%", toggleActions:"play none none none" },
+        y: 30, opacity: 0, duration: 0.5, delay: (i % 6) * 0.07, ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
       });
     });
     gsap.utils.toArray<Element>(".reveal").forEach((el) => {
       gsap.from(el, {
-        y:40, opacity:0, duration:0.8, ease:"power2.out",
-        scrollTrigger:{ trigger:el, start:"top 88%", toggleActions:"play none none none" },
+        y: 40, opacity: 0, duration: 0.8, ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
       });
     });
 
@@ -690,11 +690,11 @@ export default function PostPage() {
   }
   function handleEdit(post: CastingPost) {
     setEditing(post); setShowForm(true);
-    window.scrollTo({ top:0, behavior:"smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function handleNewPost() {
     setEditing(null); setShowForm(true);
-    window.scrollTo({ top:0, behavior:"smooth" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
   function handleCancelForm() {
     setEditing(null); setShowForm(false);
@@ -704,15 +704,15 @@ export default function PostPage() {
   }, []);
   function resetFilters() {
     setSearch("");
-    setFilters({ search:"", category:"", location:"", gender:"", experience:"", languages:[], age:"", budget:"", status:"", sort:"newest" });
+    setFilters({ search: "", category: "", location: "", gender: "", experience: "", languages: [], age: "", budget: "", status: "", sort: "newest" });
   }
 
   const CURRENT = "current-user";
   const now = new Date();
-  const totalPosts  = posts.length;
-  const openPosts   = posts.filter(p => p.status === "Open").length;
+  const totalPosts = posts.length;
+  const openPosts = posts.filter(p => p.status === "Open").length;
   const closedPosts = posts.filter(p => p.status === "Closed").length;
-  const thisMonth   = posts.filter(p => {
+  const thisMonth = posts.filter(p => {
     const d = new Date(p.createdAt);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
@@ -721,15 +721,15 @@ export default function PostPage() {
     .filter(p => {
       if (!search) return true;
       const t = search.toLowerCase();
-      return [p.title,p.company,p.location,p.category].some(v => v.toLowerCase().includes(t));
+      return [p.title, p.company, p.location, p.category].some(v => v.toLowerCase().includes(t));
     })
     .filter(p => !filters.category || p.category.toLowerCase() === filters.category.toLowerCase())
     .filter(p => !filters.location || p.location.toLowerCase().includes(filters.location.toLowerCase()))
-    .filter(p => !filters.gender   || (p.gender??"").toLowerCase() === filters.gender.toLowerCase())
-    .filter(p => !filters.experience || (p.experience??"").toLowerCase() === filters.experience.toLowerCase())
+    .filter(p => !filters.gender || (p.gender ?? "").toLowerCase() === filters.gender.toLowerCase())
+    .filter(p => !filters.experience || (p.experience ?? "").toLowerCase() === filters.experience.toLowerCase())
     .filter(p => {
       if (filters.languages.length === 0) return true;
-      const postLangs = (p.languages??"").split(",").map(l=>l.trim().toLowerCase());
+      const postLangs = (p.languages ?? "").split(",").map(l => l.trim().toLowerCase());
       return filters.languages.some(l => postLangs.includes(l.toLowerCase()));
     })
     .filter(p => {
@@ -743,24 +743,24 @@ export default function PostPage() {
     .filter(p => {
       if (!filters.budget) return true;
       const b = Number(p.budget);
-      if (filters.budget.endsWith("+")) return b >= Number(filters.budget.replace("+",""));
-      const [mn,mx] = filters.budget.split("-");
+      if (filters.budget.endsWith("+")) return b >= Number(filters.budget.replace("+", ""));
+      const [mn, mx] = filters.budget.split("-");
       return b >= Number(mn) && b <= Number(mx);
     })
     .filter(p => !filters.status || p.status.toLowerCase() === filters.status.toLowerCase())
-    .sort((a,b) => {
-      if (filters.sort === "newest")      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      if (filters.sort === "oldest")      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    .sort((a, b) => {
+      if (filters.sort === "newest") return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (filters.sort === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (filters.sort === "budget-high") return Number(b.budget) - Number(a.budget);
-      if (filters.sort === "budget-low")  return Number(a.budget) - Number(b.budget);
-      if (filters.sort === "company")     return a.company.localeCompare(b.company);
+      if (filters.sort === "budget-low") return Number(a.budget) - Number(b.budget);
+      if (filters.sort === "company") return a.company.localeCompare(b.company);
       return 0;
     });
 
   return (
     <>
-      <div style={{ position:"fixed", top:0, left:0, right:0, height:"2px", background:"rgba(201,168,76,0.15)", zIndex:300 }}>
-        <div className="progress-bar" style={{ height:"100%", background:"var(--gold)", transformOrigin:"left", transform:"scaleX(0)" }} />
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "2px", background: "rgba(201,168,76,0.15)", zIndex: 300 }}>
+        <div className="progress-bar" style={{ height: "100%", background: "var(--gold)", transformOrigin: "left", transform: "scaleX(0)" }} />
       </div>
 
       <style>{`
@@ -1026,7 +1026,7 @@ export default function PostPage() {
           <div className="toolbar-left">
             <div className="search-input-wrap">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
               <input className="search-input" placeholder="Search casting calls…" value={search}
                 onChange={e => setSearch(e.target.value)} />
@@ -1038,12 +1038,12 @@ export default function PostPage() {
           <div className="toolbar-right">
             <button className={`filter-btn${showFilters ? " active" : ""}`} onClick={() => setShowFilters(s => !s)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 5h18M6 12h12M10 19h4"/>
+                <path d="M3 5h18M6 12h12M10 19h4" />
               </svg>
               Filters {showFilters ? "▲" : "▼"}
             </button>
-            <button className={`view-btn${viewMode==="grid"?" active":""}`} onClick={()=>setViewMode("grid")} title="Grid view">⊞</button>
-            <button className={`view-btn${viewMode==="list"?" active":""}`} onClick={()=>setViewMode("list")} title="List view">☰</button>
+            <button className={`view-btn${viewMode === "grid" ? " active" : ""}`} onClick={() => setViewMode("grid")} title="Grid view">⊞</button>
+            <button className={`view-btn${viewMode === "list" ? " active" : ""}`} onClick={() => setViewMode("list")} title="List view">☰</button>
           </div>
         </div>
 
