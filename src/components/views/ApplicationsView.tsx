@@ -101,13 +101,6 @@ export default function ApplicationsView() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
-                padding: '10px 16px 10px 40px',
-                borderRadius: '999px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                backgroundColor: '#111',
-                color: '#fff',
-                fontSize: '0.9rem',
-                outline: 'none',
                 width: '300px', padding: '12px 16px 12px 42px', borderRadius: '12px', border: '1px solid var(--dash-border, #333)', backgroundColor: 'var(--dash-surface, #111)', color: 'var(--dash-text-main, #fff)', fontSize: '0.95rem'
               }}
             />

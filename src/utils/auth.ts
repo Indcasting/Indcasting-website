@@ -41,11 +41,11 @@ function getUsers(): UserProfile[] {
   return users;
 }
 
-export function registerUser(user: UserProfile) {
+export async function registerUser(user: UserProfile) {
   const users = getUsers();
 
   // Store the user with hashed password
-  const hashedPassword = hashPassword(user.password, getSalt());
+  const hashedPassword = await hashPassword(user.password, getSalt());
   const userWithHash = {
     ...user,
     password: hashedPassword
@@ -56,7 +56,7 @@ export function registerUser(user: UserProfile) {
   cache.remove(USERS_CACHE_KEY);
 }
 
-export function loginUser(email: string, password: string, remember: boolean = true) {
+export async function loginUser(email: string, password: string, remember: boolean = true) {
   const users = getUsers();
   const salt = getSalt();
 
@@ -67,7 +67,7 @@ export function loginUser(email: string, password: string, remember: boolean = t
   if (!user) return null;
 
   // Verify password using the stored salt and hash
-  const isValid = verifyPassword(password, salt, user.password);
+  const isValid = await verifyPassword(password, salt, user.password);
 
   if (!isValid) return null;
 
