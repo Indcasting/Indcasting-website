@@ -4,7 +4,7 @@ import { cache } from "./cache";
 const STORAGE_KEY = "casting_posts";
 const CACHE_KEY = "casting_posts_list";
 
-export function getPosts(): CastingPost[] {
+function getPosts(): CastingPost[] {
   if (typeof window === "undefined") return [];
 
   // 1. Try to get from cache first
@@ -24,41 +24,11 @@ export function getPosts(): CastingPost[] {
   return posts;
 }
 
-export function savePosts(posts: CastingPost[]) {
+function savePosts(posts: CastingPost[]) {
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify(posts)
   );
   cache.remove(CACHE_KEY);
 }
-
-export function addPost(post: CastingPost) {
-
-  const posts = getPosts();
-
-  posts.unshift(post);
-
-  savePosts(posts);
-}
-
-export function deletePost(id: string) {
-
-  const posts = getPosts().filter(
-    post => post.id !== id
-  );
-
-  savePosts(posts);
-}
-
-export function updatePost(updated: CastingPost) {
-
-  const posts = getPosts().map(post =>
-
-    post.id === updated.id
-      ? updated
-      : post
-
-  );
-
-  savePosts(posts);
-}
+

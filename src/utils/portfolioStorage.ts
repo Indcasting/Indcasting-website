@@ -4,7 +4,7 @@ import { cache } from "./cache";
 const PORTFOLIOS_KEY = "indcasting_portfolios";
 const PORTFOLIOS_CACHE_KEY = "portfolios_list";
 
-export function getPortfolios(): PortfolioData[] {
+function getPortfolios(): PortfolioData[] {
   if (typeof window === "undefined") return [];
 
   const cached = cache.get<PortfolioData[]>(PORTFOLIOS_CACHE_KEY);
@@ -17,7 +17,7 @@ export function getPortfolios(): PortfolioData[] {
   return portfolios;
 }
 
-export function savePortfolios(portfolios: PortfolioData[]) {
+function savePortfolios(portfolios: PortfolioData[]) {
   if (typeof window === "undefined") return;
   localStorage.setItem(PORTFOLIOS_KEY, JSON.stringify(portfolios));
   cache.remove(PORTFOLIOS_CACHE_KEY);
@@ -46,10 +46,6 @@ export function saveUserPortfolio(portfolio: PortfolioData) {
   savePortfolios(portfolios);
 }
 
-export function deleteUserPortfolio(userId: string) {
-  const portfolios = getPortfolios().filter(p => p.userId !== userId);
-  savePortfolios(portfolios);
-}
 
 export function generateSlug(name: string): string {
   // Simple slug generation: lowercases, removes non-alphanumeric, spaces to hyphens

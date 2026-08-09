@@ -112,7 +112,7 @@ const getInitialData = (): Audition[] => {
   ];
 };
 
-export const getAllAuditions = (): Audition[] => {
+const getAllAuditions = (): Audition[] => {
   if (typeof window === 'undefined') return [];
 
   const cached = cache.get<Audition[]>(CACHE_KEY);
@@ -148,13 +148,3 @@ export const updateAuditionStatus = (id: string, newStatus: Audition['status']) 
   }
 };
 
-export const rescheduleAudition = (id: string, newDate: string, newStartTime: string, newEndTime: string) => {
-  const all = getAllAuditions();
-  const updated = all.map(a => a.id === id ? { ...a, date: newDate, startTime: newStartTime, endTime: newEndTime, status: 'Scheduled' } : a);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  cache.remove(CACHE_KEY);
-
-  if (typeof window !== 'undefined') {
-    window.dispatchEvent(new Event('auditionsUpdated'));
-  }
-};

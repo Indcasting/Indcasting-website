@@ -28,7 +28,7 @@ async function verifyPassword(password: string, salt: string, hash: string): Pro
   return computedHash === hash;
 }
 
-export function getUsers(): UserProfile[] {
+function getUsers(): UserProfile[] {
   if (typeof window === "undefined") return [];
 
   const cached = cache.get<UserProfile[]>(USERS_CACHE_KEY);

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Search, MapPin, Calendar, Clock, ChevronRight, X, Briefcase, Film, Flame, Star, Sparkles, Filter, IndianRupee, LayoutGrid, List, Bookmark, Users, Globe, PlayCircle, Share2, Trash2, CheckCircle, Info, Languages, Plus } from "lucide-react";
 import Link from "next/link";
+import NeobrutalistCard from "@/components/ui/NeobrutalistCard";
 
 export default function SavedJobsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "timeline">("grid");
@@ -832,101 +833,69 @@ function CastingCard({ job, handleApplyClick, handleDelete, setHoveredJobId, hov
   const isHovered = hoveredJobId === job.id;
 
   return (
-    <div 
-      className="layered-card"
-      onMouseEnter={() => setHoveredJobId(job.id)}
-      onMouseLeave={() => setHoveredJobId(null)}
+    <NeobrutalistCard
       onClick={() => handleApplyClick(job)}
-    >
-      <div className="bookmark-ribbon">
-        <Bookmark size={20} color="#000" fill="#000" />
-      </div>
-
-      <div className="card-header">
-        <div className="company-logo">
-          <Film size={28} color="var(--gold)" />
+      tags={
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '100px', border: '1px solid var(--gold, #c9a84c)', backgroundColor: 'transparent', color: 'var(--gold, #c9a84c)', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <Bookmark size={12} fill="currentColor" /> Saved {job.savedDate}
         </div>
-        <div style={{ paddingRight: '40px' }}>
-          <h3 className="card-title">{job.title}</h3>
-          <div className="card-company">
-            {job.company} {job.verified && <CheckCircle size={14} color="#22c55e" />}
+      }
+      title={
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          <div style={{ padding: '8px', border: '2px solid var(--dash-border, #333)', borderRadius: '12px', flexShrink: 0, boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}>
+            <Film size={24} color="var(--gold, #c9a84c)" />
+          </div>
+          <div>
+            <span style={{ display: 'block', fontSize: '1.4rem', fontWeight: 800, color: 'var(--dash-text-main, #fff)', lineHeight: 1.2 }}>{job.title}</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem', color: '#888', marginTop: '4px', fontWeight: 600 }}>
+              {job.company} {job.verified && <CheckCircle size={14} color="#22c55e" />}
+            </span>
           </div>
         </div>
-      </div>
-
-      <p style={{ color: '#aaa', fontSize: '1rem', lineHeight: 1.6, marginBottom: '24px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-        {job.description}
-      </p>
-
-      <div className="metadata-grid">
-        <div className="meta-item"><MapPin size={16} color="var(--gold)" /> <span>{job.location}</span></div>
-        <div className="meta-item"><IndianRupee size={16} color="#22c55e" /> <strong>{job.compensation}</strong></div>
-        <div className="meta-item"><Briefcase size={16} /> <span>{job.experience}</span></div>
-        <div className="meta-item"><Languages size={16} /> <span>{job.language}</span></div>
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <div className="deadline-badge" style={{ color: job.deadlineColor, borderColor: 'rgba(255,255,255,0.08)' }}>
-          <Clock size={14} /> {job.deadline}
-        </div>
-        <div style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
-          Saved {job.savedDate}
-        </div>
-      </div>
-
-      <div className="card-actions" onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', gap: '20px', marginLeft: 'auto' }}>
-          <button className="btn-text" style={{ color: '#888' }}>
+      }
+      metadata={
+        <>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Location</span>
+            <span style={{ fontSize: '0.9rem', color: '#ccc', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={14} color="var(--gold, #c9a84c)" /> {job.location}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Compensation</span>
+            <span style={{ fontSize: '0.9rem', color: '#22c55e', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}><IndianRupee size={14} /> {job.compensation}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Experience</span>
+            <span style={{ fontSize: '0.9rem', color: '#ccc', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}><Briefcase size={14} color="#888" /> {job.experience}</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Deadline</span>
+            <span style={{ fontSize: '0.9rem', color: job.deadlineColor || '#ccc', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}><Clock size={14} /> {job.deadline}</span>
+          </div>
+        </>
+      }
+      content={job.description}
+      actions={
+        <div style={{ display: 'flex', gap: '12px', marginLeft: 'auto' }}>
+          <button 
+            style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+            title="Share"
+          >
             <Share2 size={16} />
           </button>
           <button 
-            className="btn-text btn-remove" 
             onClick={(e) => { e.stopPropagation(); handleDelete(job.id); }}
+            style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px #ef4444'; e.currentTarget.style.borderColor = '#ef4444'; e.currentTarget.style.color = '#ef4444' }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = '#ef4444' }}
             title="Remove from Collection"
           >
             <Trash2 size={16} />
           </button>
         </div>
-      </div>
-
-      {/* Subtle Hover Quick Preview Info */}
-      <div className="quick-preview" style={{ opacity: isHovered ? 1 : 0, pointerEvents: 'none' }}>
-        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div className="company-logo" style={{ margin: '0 auto 16px auto', transform: isHovered ? 'scale(1.2)' : 'scale(1)' }}>
-            <Film size={32} color="var(--gold)" />
-          </div>
-          <h4 style={{ fontSize: '1.4rem', color: '#fff', margin: '0 0 8px 0' }}>{job.title}</h4>
-          <p style={{ color: '#aaa', margin: '0 0 16px 0' }}>Directed by {job.director}</p>
-          <div style={{ display: 'inline-flex', padding: '6px 16px', background: 'rgba(212,175,55,0.2)', borderRadius: '100px', color: 'var(--gold)', fontWeight: 600, fontSize: '0.85rem' }}>
-            Click to View Details
-          </div>
-        </div>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', background: 'rgba(0,0,0,0.5)', padding: '20px', borderRadius: '16px' }}>
-          <div>
-            <p style={{ fontSize: '0.8rem', color: '#666', textTransform: 'uppercase', marginBottom: '4px' }}>Genre</p>
-            <p style={{ color: '#fff', margin: 0, fontWeight: 600 }}>{job.genre}</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.8rem', color: '#666', textTransform: 'uppercase', marginBottom: '4px' }}>Role Type</p>
-            <p style={{ color: '#fff', margin: 0, fontWeight: 600 }}>{job.type}</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.8rem', color: '#666', textTransform: 'uppercase', marginBottom: '4px' }}>Age Range</p>
-            <p style={{ color: '#fff', margin: 0, fontWeight: 600 }}>{job.ageRange}</p>
-          </div>
-          <div>
-            <p style={{ fontSize: '0.8rem', color: '#666', textTransform: 'uppercase', marginBottom: '4px' }}>Status</p>
-            <p style={{ color: '#fff', margin: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: job.status === 'Pending' ? '#f59e0b' : '#3b82f6' }}></span>
-              {job.status}
-            </p>
-          </div>
-        </div>
-        
-        {/* We keep the preview above the card content, but below the action buttons (z-index 30) */}
-      </div>
-    </div>
+      }
+    />
   );
 }
 

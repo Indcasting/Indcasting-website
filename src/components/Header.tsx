@@ -105,14 +105,29 @@ export default function Header() {
     const paths = pathname.split('/').filter(Boolean);
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--dash-text-muted)', fontSize: '14px', fontWeight: 500, whiteSpace: 'nowrap' }}>
-        {paths.map((p, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {i > 0 && <ChevronRight size={14} style={{ opacity: 0.5 }} />}
-            <span style={{ textTransform: 'capitalize', color: i === paths.length - 1 ? 'var(--dash-text-main)' : 'inherit' }}>
-              {p.replace(/-/g, ' ')}
-            </span>
-          </div>
-        ))}
+        {paths.map((p, i) => {
+          const href = "/" + paths.slice(0, i + 1).join('/');
+          const isLast = i === paths.length - 1;
+          return (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {i > 0 && <ChevronRight size={14} style={{ opacity: 0.5 }} />}
+              {isLast ? (
+                <span style={{ textTransform: 'capitalize', color: 'var(--dash-text-main)' }}>
+                  {p.replace(/-/g, ' ')}
+                </span>
+              ) : (
+                <Link 
+                  href={href} 
+                  style={{ textTransform: 'capitalize', color: 'inherit', textDecoration: 'none', transition: 'color 0.2s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--gold)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'inherit'}
+                >
+                  {p.replace(/-/g, ' ')}
+                </Link>
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   };
