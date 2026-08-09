@@ -166,7 +166,7 @@ export default function SeekerCastingCalls() {
       <style dangerouslySetInnerHTML={{__html: `
         .pcc-container {
           padding: 20px 0 80px 0;
-          color: #f1f1f1;
+          color: var(--dash-text-main, #000);
           position: relative;
           min-height: 100vh;
         }
@@ -197,9 +197,7 @@ export default function SeekerCastingCalls() {
           font-weight: 800;
           margin: 0 0 8px 0;
           letter-spacing: -0.03em;
-          background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: var(--dash-text-main, #fff);
         }
         .pcc-subtitle {
           font-size: 1.1rem;
@@ -214,8 +212,8 @@ export default function SeekerCastingCalls() {
           gap: 16px;
         }
         .pcc-stat-card {
-          background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.3));
-          border: 1px solid rgba(255,255,255,0.05);
+          background: var(--dash-surface, linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.3)));
+          border: 1px solid var(--dash-border, rgba(255,255,255,0.05));
           border-radius: 16px;
           padding: 20px;
           min-width: 160px;
@@ -223,34 +221,34 @@ export default function SeekerCastingCalls() {
           -webkit-backdrop-filter: blur(10px);
           display: flex; flex-direction: column; gap: 8px;
         }
-        .pcc-stat-val { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; }
-        .pcc-stat-label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; display: flex; alignItems: center; gap: 6px; }
+        .pcc-stat-val { font-size: 1.8rem; font-weight: 800; color: var(--dash-text-main, #fff); line-height: 1; }
+        .pcc-stat-label { font-size: 0.8rem; color: var(--dash-text-muted, #888); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; display: flex; alignItems: center; gap: 6px; }
 
         /* Floating Controls */
         .pcc-controls {
           position: sticky; top: 80px; z-index: 100; margin-bottom: 40px;
-          background: rgba(15, 15, 15, 0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px;
+          background: var(--dash-surface, rgba(15, 15, 15, 0.75)); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+          border: 1px solid var(--dash-border, rgba(255, 255, 255, 0.08)); border-radius: 20px;
           padding: 16px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
           display: flex; flex-direction: column; gap: 20px;
         }
         .pcc-search-row { display: flex; align-items: center; gap: 16px; }
         .pcc-search-wrap {
           flex: 1; display: flex; align-items: center; gap: 12px;
-          background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+          background: var(--dash-surface, rgba(0,0,0,0.4)); border: 1px solid var(--dash-border, rgba(255,255,255,0.1));
           border-radius: 12px; padding: 12px 20px; transition: all 0.3s ease;
         }
         .pcc-search-wrap:focus-within { border-color: rgba(212, 175, 55, 0.4); box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
-        .pcc-search-input { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; outline: none; }
+        .pcc-search-input { flex: 1; background: transparent; border: none; color: var(--dash-text-main, #fff); font-size: 1rem; outline: none; }
         
-        .pcc-view-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 10px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); }
-        .pcc-view-btn { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: #888; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s; }
-        .pcc-view-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .pcc-view-toggle { display: flex; background: var(--dash-surface, rgba(0,0,0,0.5)); border-radius: 10px; padding: 4px; border: 1px solid var(--dash-border, rgba(255,255,255,0.05)); }
+        .pcc-view-btn { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: var(--dash-text-muted, #888); font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        .pcc-view-btn.active { background: var(--dash-hover-bg, rgba(255,255,255,0.1)); color: var(--dash-text-main, #fff); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
         .pcc-filter-chips { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
         .pcc-filter-chips::-webkit-scrollbar { display: none; }
-        .pcc-chip { padding: 8px 20px; border-radius: 100px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #aaa; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.3s; }
-        .pcc-chip:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .pcc-chip { padding: 8px 20px; border-radius: 100px; background: var(--dash-surface, rgba(255,255,255,0.03)); border: 1px solid var(--dash-border, rgba(255,255,255,0.1)); color: var(--dash-text-muted, #aaa); font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.3s; }
+        .pcc-chip:hover { background: var(--dash-hover-bg, rgba(255,255,255,0.08)); color: var(--dash-text-main, #fff); }
         .pcc-chip.active { background: rgba(212, 175, 55, 0.15); border-color: rgba(212, 175, 55, 0.5); color: var(--gold); }
 
         /* Dashboard Layout */
@@ -266,13 +264,13 @@ export default function SeekerCastingCalls() {
 
         /* Kanban View */
         .pcc-kanban { display: flex; gap: 24px; overflow-x: auto; padding-bottom: 24px; }
-        .pcc-kanban-col { min-width: 350px; flex: 1; background: rgba(0,0,0,0.2); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.03); }
-        .pcc-kanban-header { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pcc-kanban-col { min-width: 350px; flex: 1; background: var(--dash-surface, rgba(0,0,0,0.2)); border-radius: 24px; padding: 20px; border: 1px solid var(--dash-border, rgba(255,255,255,0.03)); }
+        .pcc-kanban-header { font-size: 1rem; font-weight: 700; color: var(--dash-text-main, #fff); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* Production Card */
         .prod-card {
-          background: linear-gradient(145deg, #181818, #0a0a0a);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: var(--dash-surface, linear-gradient(145deg, #181818, #0a0a0a));
+          border: 1px solid var(--dash-border, rgba(255,255,255,0.06));
           border-radius: 20px;
           padding: 24px;
           position: relative;
@@ -280,9 +278,9 @@ export default function SeekerCastingCalls() {
           overflow: hidden;
         }
         .prod-card:hover {
-          transform: translateY(-4px);
-          border-color: rgba(212, 175, 55, 0.3);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+          transform: translate(-2px, -2px);
+          border-color: var(--gold, #c9a84c);
+          box-shadow: 6px 6px 0px 0px var(--gold, #c9a84c);
         }
         .prod-card::after {
           content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
@@ -293,11 +291,11 @@ export default function SeekerCastingCalls() {
 
         .prod-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .prod-logo-wrap { display: flex; gap: 16px; align-items: center; }
-        .prod-logo { width: 48px; height: 48px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); }
+        .prod-logo { width: 48px; height: 48px; border-radius: 12px; background: var(--dash-surface, rgba(255,255,255,0.05)); display: flex; align-items: center; justify-content: center; border: 1px solid var(--dash-border, rgba(255,255,255,0.1)); }
         .prod-card:hover .prod-logo { transform: rotate(5deg) scale(1.05); border-color: rgba(212,175,55,0.3); }
         
-        .prod-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin: 0 0 4px 0; letter-spacing: -0.01em; }
-        .prod-company { font-size: 0.95rem; color: #888; }
+        .prod-title { font-size: 1.4rem; font-weight: 800; color: var(--dash-text-main, #fff); margin: 0 0 4px 0; letter-spacing: -0.01em; }
+        .prod-company { font-size: 0.95rem; color: var(--dash-text-muted, #888); }
         
         .prod-status-badge {
           display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 100px;
@@ -305,10 +303,10 @@ export default function SeekerCastingCalls() {
         }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        .prod-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        .prod-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 0; border-top: 1px solid var(--dash-border, rgba(255,255,255,0.05)); border-bottom: 1px solid var(--dash-border, rgba(255,255,255,0.05)); margin-bottom: 20px; }
         .meta-col { display: flex; flex-direction: column; gap: 4px; }
-        .meta-lbl { font-size: 0.8rem; color: #666; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; }
-        .meta-val { font-size: 0.95rem; color: #eee; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .meta-lbl { font-size: 0.8rem; color: var(--dash-text-muted, #666); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; }
+        .meta-val { font-size: 0.95rem; color: var(--dash-text-main, #eee); font-weight: 500; display: flex; align-items: center; gap: 6px; }
 
         /* Metric Bar */
         .metric-wrap { margin-bottom: 12px; }
@@ -317,8 +315,8 @@ export default function SeekerCastingCalls() {
         .metric-bar-fill { height: 100%; background: var(--gold); border-radius: 10px; transition: width 1s ease; }
 
         .prod-actions { display: flex; justify-content: space-between; align-items: center; }
-        .action-btn { background: none; border: none; color: #aaa; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; }
-        .action-btn:hover { color: #fff; }
+        .action-btn { background: none; border: none; color: var(--dash-text-muted, #aaa); font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; }
+        .action-btn:hover { color: var(--dash-text-main, #fff); }
         
         .btn-view-apps { background: rgba(212, 175, 55, 0.1); color: var(--gold); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(212,175,55,0.2); }
         .btn-view-apps:hover { background: var(--gold); color: #000; box-shadow: 0 5px 15px rgba(212,175,55,0.3); transform: translateY(-2px); }
@@ -331,17 +329,17 @@ export default function SeekerCastingCalls() {
         .qa-btn.delete:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4); }
 
         /* Insights Sidebar */
-        .insights-panel { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; height: fit-content; position: sticky; top: 230px; }
-        .insights-header { font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
+        .insights-panel { background: var(--dash-surface, rgba(0,0,0,0.3)); border: 1px solid var(--dash-border, rgba(255,255,255,0.05)); border-radius: 24px; padding: 24px; height: fit-content; position: sticky; top: 230px; }
+        .insights-header { font-size: 1.1rem; font-weight: 800; color: var(--dash-text-main, #fff); margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
         .insight-block { margin-bottom: 24px; }
-        .insight-lbl { font-size: 0.8rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 12px; }
-        .insight-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.03); margin-bottom: 8px; transition: background 0.2s; }
-        .insight-item:hover { background: rgba(255,255,255,0.05); }
+        .insight-lbl { font-size: 0.8rem; color: var(--dash-text-muted, #888); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .insight-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--dash-surface, rgba(255,255,255,0.02)); border-radius: 12px; border: 1px solid var(--dash-border, rgba(255,255,255,0.03)); margin-bottom: 8px; transition: background 0.2s; color: var(--dash-text-main) }
+        .insight-item:hover { background: var(--dash-hover-bg, rgba(255,255,255,0.05)); }
         .insight-icon { width: 32px; height: 32px; border-radius: 8px; background: rgba(212, 175, 55, 0.1); display: flex; align-items: center; justify-content: center; color: var(--gold); }
         
         /* Modals */
         .cine-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999; display: flex; alignItems: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease-out; }
-        .cine-modal-content { background-color: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; width: 100%; max-width: 600px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column; }
+        .cine-modal-content { background-color: var(--dash-surface, #111); border: 1px solid var(--dash-border, rgba(255,255,255,0.1)); border-radius: 24px; width: 100%; max-width: 600px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}} />
 

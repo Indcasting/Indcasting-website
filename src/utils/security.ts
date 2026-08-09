@@ -14,8 +14,9 @@ export function validateUrl(url: string, fallback = '#'): string {
       return url;
     }
   } catch {
-    return '#';
+    return fallback;
   }
+  return fallback;
 }
 
 /**

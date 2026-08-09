@@ -31,8 +31,8 @@ export default function SignUpPage() {
     setIsLoading(true);
     
     // Simulate network request for premium feel
-    setTimeout(() => {
-      registerUser({
+    setTimeout(async () => {
+      await registerUser({
         id: Date.now().toString(),
         name,
         email,

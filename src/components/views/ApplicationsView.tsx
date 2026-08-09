@@ -89,7 +89,7 @@ export default function ApplicationsView() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', flexWrap: 'wrap', gap: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
            <Heart size={24} color="#c9a84c" />
-           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: '#fff' }}>Application Queue</h2>
+           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: 'var(--dash-text-main, #fff)' }}>Application Queue</h2>
         </div>
         
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -101,31 +101,26 @@ export default function ApplicationsView() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
-                padding: '10px 16px 10px 40px',
-                borderRadius: '999px',
-                border: '1px solid rgba(255,255,255,0.1)',
-                backgroundColor: '#111',
-                color: '#fff',
-                fontSize: '0.9rem',
-                outline: 'none',
-                width: '240px'
+                width: '300px', padding: '12px 16px 12px 42px', borderRadius: '12px', border: '1px solid var(--dash-border, #333)', backgroundColor: 'var(--dash-surface, #111)', color: 'var(--dash-text-main, #fff)', fontSize: '0.95rem'
               }}
             />
           </div>
           <div style={{ position: 'relative' }}>
             <button 
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '999px', border: '1px solid rgba(255,255,255,0.1)', background: '#111', color: '#ccc', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', borderRadius: '12px', border: '1px solid var(--dash-border, #333)', backgroundColor: 'var(--dash-surface, #111)', color: 'var(--dash-text-main, #fff)', cursor: 'pointer', fontWeight: 600 }}
             >
               <Filter size={16} /> {filterStatus === "All" ? "Filter" : filterStatus}
             </button>
             {isFilterOpen && (
-              <div style={{ position: 'absolute', top: '50px', right: 0, backgroundColor: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', zIndex: 50, minWidth: '150px' }}>
+              <div style={{ position: 'absolute', top: '50px', right: 0, backgroundColor: 'var(--dash-surface, #1a1a1a)', border: '1px solid var(--dash-border, rgba(255,255,255,0.1))', borderRadius: '12px', padding: '8px', zIndex: 50, minWidth: '150px' }}>
                 {["All", "Pending", "Shortlisted", "Accepted", "Rejected"].map(status => (
                   <button 
-                    key={status}
-                    onClick={() => { setFilterStatus(status); setIsFilterOpen(false); }}
-                    style={{ width: '100%', padding: '10px 12px', background: filterStatus === status ? 'rgba(255,255,255,0.05)' : 'transparent', border: 'none', color: '#fff', textAlign: 'left', cursor: 'pointer', borderRadius: '6px' }} 
+                    key={status} 
+                    onClick={() => { setFilterStatus(status); setIsFilterOpen(false); }} 
+                    style={{ width: '100%', textAlign: 'left', padding: '10px 16px', background: 'transparent', border: 'none', color: status === filterStatus ? '#c9a84c' : 'var(--dash-text-main, #ccc)', cursor: 'pointer', fontWeight: status === filterStatus ? 700 : 500 }} 
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--dash-border, rgba(255,255,255,0.05))'} 
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     {status}
                   </button>
@@ -147,7 +142,7 @@ export default function ApplicationsView() {
               image={
                 <>
                   <img src={app.avatar} alt={app.candidateName} style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0 }} />
-                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to right, rgba(17,17,17,0) 0%, rgba(17,17,17,0.4) 80%, rgba(17,17,17,1) 100%)' }} />
+                  <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(to right, transparent 0%, var(--dash-surface, rgba(17,17,17,0.4)) 80%, var(--dash-surface, rgba(17,17,17,1)) 100%)' }} />
                 </>
               }
               tags={
@@ -197,23 +192,23 @@ export default function ApplicationsView() {
       {/* Application Details Modal */}
       {selectedApp && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setSelectedApp(null)}>
-          <div style={{ backgroundColor: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', width: '100%', maxWidth: '650px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+          <div style={{ backgroundColor: 'var(--dash-surface, #111)', border: '1px solid var(--dash-border, rgba(255,255,255,0.1))', borderRadius: '24px', width: '100%', maxWidth: '650px', maxHeight: '90vh', overflowY: 'auto', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
             <div style={{ padding: '32px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 8px 0', color: '#fff' }}>{selectedApp.candidateName}</h2>
+                <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main, #fff)' }}>{selectedApp.candidateName}</h2>
                 <p style={{ color: '#c9a84c', fontSize: '1.1rem', margin: 0, fontWeight: 600 }}>{selectedApp.professionalTitle}</p>
               </div>
               <button onClick={() => setSelectedApp(null)} style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer' }}><X size={24} /></button>
             </div>
             <div style={{ padding: '32px', flex: 1 }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
-                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Location</p><p style={{ margin: 0, fontWeight: 600, color: '#ddd' }}>{selectedApp.location}</p></div>
-                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Experience</p><p style={{ margin: 0, fontWeight: 600, color: '#ddd' }}>{selectedApp.experience}</p></div>
-                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Applied For</p><p style={{ margin: 0, fontWeight: 600, color: '#ddd' }}>{selectedApp.title}</p></div>
-                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Applied On</p><p style={{ margin: 0, fontWeight: 600, color: '#ddd' }}>{selectedApp.time}</p></div>
+                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Location</p><p style={{ margin: 0, fontWeight: 600, color: 'var(--dash-text-main, #ddd)' }}>{selectedApp.location}</p></div>
+                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Experience</p><p style={{ margin: 0, fontWeight: 600, color: 'var(--dash-text-main, #ddd)' }}>{selectedApp.experience}</p></div>
+                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Applied For</p><p style={{ margin: 0, fontWeight: 600, color: 'var(--dash-text-main, #ddd)' }}>{selectedApp.title}</p></div>
+                <div><p style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#666' }}>Applied On</p><p style={{ margin: 0, fontWeight: 600, color: 'var(--dash-text-main, #ddd)' }}>{selectedApp.time}</p></div>
               </div>
               <div style={{ marginBottom: '32px' }}>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 16px 0', color: '#fff' }}>Cover Letter / Pitch</h3>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: '0 0 16px 0', color: 'var(--dash-text-main, #fff)' }}>Cover Letter / Pitch</h3>
                 <p style={{ color: '#888', lineHeight: 1.6, margin: 0 }}>"{selectedApp.coverLetter}"</p>
               </div>
               <div style={{ display: 'flex', gap: '16px' }}>

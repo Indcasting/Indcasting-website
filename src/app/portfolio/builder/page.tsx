@@ -413,7 +413,7 @@ function LivePreview({ data, theme }: { data: PortfolioData, theme: string }) {
               {data.projects.slice(0, 2).map((p, i) => (
                 <div key={i} style={{ padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
                   <h4 style={{ margin: '0 0 4px 0', fontSize: '0.85rem', color: '#eee' }}>{p.title}</h4>
-                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#888' }}>{p.role}</p>
+                  <p style={{ margin: 0, fontSize: '0.75rem', color: '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.description}</p>
                 </div>
               ))}
             </div>

@@ -45,8 +45,8 @@ export default function LoginPage() {
     setError("");
 
     // Simulate network request for premium feel
-    setTimeout(() => {
-      const user = loginUser(email, password, rememberMe);
+    setTimeout(async () => {
+      const user = await loginUser(email, password, rememberMe);
 
       if (!user) {
         setError("Invalid email or password.");
