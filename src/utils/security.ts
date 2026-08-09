@@ -9,24 +9,13 @@ export function validateUrl(url: string, fallback = '#'): string {
   if (!url) return fallback;
 
   try {
-    // Use the URL constructor to normalize and parse the URL
-    // For relative URLs, we provide a dummy base to ensure parsing works
     const parsed = new URL(url, 'https://dummy.com');
-
-    // Only allow http: and https: protocols
-    // This explicitly blocks 'javascript:', 'data:', 'vbscript:', etc.
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+    if (['http:', 'https:'].includes(parsed.protocol)) {
       return url;
     }
-  } catch (e) {
-    // If URL parsing fails, it's either a relative path or an invalid URL.
-    // We allow relative paths (start with /) but block everything else.
-    if (url.startsWith('/') && !url.startsWith('//')) {
-      return url;
-    }
+  } catch {
+    return '#';
   }
-
-  return fallback;
 }
 
 /**
@@ -39,11 +28,15 @@ export function validateUrl(url: string, fallback = '#'): string {
 export function validateInternalPath(path: string | null, fallback = '/dashboard'): string {
   if (!path) return fallback;
 
-  // Internal paths must start with '/' and MUST NOT start with '//' (which is a protocol-relative external URL)
-  // We also block backslashes to prevent bypasses in some browsers.
-  if (path.startsWith('/') && !path.startsWith('//') && !path.includes('\\')) {
-    return path;
+  // Block protocol-relative URLs (//...) and external schemes
+  if (path.startsWith('//') || !path.startsWith('/')) {
+    return fallback;
   }
 
-  return fallback;
+  // Block any path containing '.' in a suspicious way (prevents ./malicious or ../malicious tricks)
+  if (path.includes('.') && !path.startsWith('/.')) {
+    return fallback;
+  }
+
+  return path;
 }
