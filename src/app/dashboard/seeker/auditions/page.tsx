@@ -105,7 +105,7 @@ export default function SeekerAuditions() {
       <style dangerouslySetInnerHTML={{__html: `
         .aud-container {
           padding: 20px 0 80px 0;
-          color: #f1f1f1;
+          color: var(--dash-text-main, #000);
           position: relative;
           min-height: 100vh;
         }
@@ -136,13 +136,11 @@ export default function SeekerAuditions() {
           font-weight: 800;
           margin: 0 0 8px 0;
           letter-spacing: -0.03em;
-          background: linear-gradient(135deg, #fff 0%, #aaa 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
+          color: var(--dash-text-main, #fff);
         }
         .aud-subtitle {
           font-size: 1.1rem;
-          color: #888;
+          color: var(--dash-text-muted, #888);
           max-width: 500px;
           line-height: 1.6;
         }
@@ -153,8 +151,8 @@ export default function SeekerAuditions() {
           gap: 16px;
         }
         .aud-stat-card {
-          background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.3));
-          border: 1px solid rgba(255,255,255,0.05);
+          background: var(--dash-surface, linear-gradient(145deg, rgba(255,255,255,0.03), rgba(0,0,0,0.3)));
+          border: 1px solid var(--dash-border, rgba(255,255,255,0.05));
           border-radius: 16px;
           padding: 20px;
           min-width: 150px;
@@ -162,34 +160,34 @@ export default function SeekerAuditions() {
           -webkit-backdrop-filter: blur(10px);
           display: flex; flex-direction: column; gap: 8px;
         }
-        .aud-stat-val { font-size: 1.8rem; font-weight: 800; color: #fff; line-height: 1; }
-        .aud-stat-label { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; display: flex; alignItems: center; gap: 6px; }
+        .aud-stat-val { font-size: 1.8rem; font-weight: 800; color: var(--dash-text-main, #fff); line-height: 1; }
+        .aud-stat-label { font-size: 0.8rem; color: var(--dash-text-muted, #888); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; display: flex; alignItems: center; gap: 6px; }
 
         /* Floating Controls */
         .aud-controls {
           position: sticky; top: 80px; z-index: 100; margin-bottom: 40px;
-          background: rgba(15, 15, 15, 0.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-          border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px;
+          background: var(--dash-surface, rgba(15, 15, 15, 0.75)); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+          border: 1px solid var(--dash-border, rgba(255, 255, 255, 0.08)); border-radius: 20px;
           padding: 16px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
           display: flex; flex-direction: column; gap: 20px;
         }
         .aud-search-row { display: flex; align-items: center; gap: 16px; }
         .aud-search-wrap {
           flex: 1; display: flex; align-items: center; gap: 12px;
-          background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+          background: var(--dash-surface, rgba(0,0,0,0.4)); border: 1px solid var(--dash-border, rgba(255,255,255,0.1));
           border-radius: 12px; padding: 12px 20px; transition: all 0.3s ease;
         }
         .aud-search-wrap:focus-within { border-color: rgba(212, 175, 55, 0.4); box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
-        .aud-search-input { flex: 1; background: transparent; border: none; color: #fff; font-size: 1rem; outline: none; }
+        .aud-search-input { flex: 1; background: transparent; border: none; color: var(--dash-text-main, #fff); font-size: 1rem; outline: none; }
         
-        .aud-view-toggle { display: flex; background: rgba(0,0,0,0.5); border-radius: 10px; padding: 4px; border: 1px solid rgba(255,255,255,0.05); }
-        .aud-view-btn { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: #888; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s; }
-        .aud-view-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .aud-view-toggle { display: flex; background: var(--dash-surface, rgba(0,0,0,0.5)); border-radius: 10px; padding: 4px; border: 1px solid var(--dash-border, rgba(255,255,255,0.05)); }
+        .aud-view-btn { padding: 8px 16px; border-radius: 6px; border: none; background: transparent; color: var(--dash-text-muted, #888); font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.3s; }
+        .aud-view-btn.active { background: var(--dash-hover-bg, rgba(255,255,255,0.1)); color: var(--dash-text-main, #fff); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
 
         .aud-filter-chips { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
         .aud-filter-chips::-webkit-scrollbar { display: none; }
-        .aud-chip { padding: 8px 20px; border-radius: 100px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: #aaa; font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.3s; }
-        .aud-chip:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .aud-chip { padding: 8px 20px; border-radius: 100px; background: var(--dash-surface, rgba(255,255,255,0.03)); border: 1px solid var(--dash-border, rgba(255,255,255,0.1)); color: var(--dash-text-muted, #aaa); font-size: 0.85rem; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.3s; }
+        .aud-chip:hover { background: var(--dash-hover-bg, rgba(255,255,255,0.08)); color: var(--dash-text-main, #fff); }
         .aud-chip.active { background: rgba(212, 175, 55, 0.15); border-color: rgba(212, 175, 55, 0.5); color: var(--gold); }
 
         /* Dashboard Layout */
@@ -205,40 +203,40 @@ export default function SeekerAuditions() {
 
         /* Kanban View */
         .aud-kanban { display: flex; gap: 24px; overflow-x: auto; padding-bottom: 24px; }
-        .aud-kanban-col { min-width: 320px; flex: 1; background: rgba(0,0,0,0.2); border-radius: 24px; padding: 20px; border: 1px solid rgba(255,255,255,0.03); }
-        .aud-kanban-header { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .aud-kanban-col { min-width: 320px; flex: 1; background: var(--dash-surface, rgba(0,0,0,0.2)); border-radius: 24px; padding: 20px; border: 1px solid var(--dash-border, rgba(255,255,255,0.03)); }
+        .aud-kanban-header { font-size: 1rem; font-weight: 700; color: var(--dash-text-main, #fff); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
 
         /* Timeline View */
         .aud-timeline { display: flex; flex-direction: column; gap: 0; padding-left: 20px; position: relative; }
-        .aud-timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.05); }
+        .aud-timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: var(--dash-border, rgba(255,255,255,0.05)); }
         .timeline-item { display: flex; gap: 32px; position: relative; padding-bottom: 40px; }
-        .timeline-time { width: 100px; font-weight: 700; color: #aaa; text-align: right; margin-top: 4px; }
+        .timeline-time { width: 100px; font-weight: 700; color: var(--dash-text-muted, #aaa); text-align: right; margin-top: 4px; }
         .timeline-dot { position: absolute; left: -2px; top: 8px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
         .timeline-content { flex: 1; }
 
         /* Audition Card */
         .aud-card {
-          background: linear-gradient(145deg, #161616, #0a0a0a);
-          border: 1px solid rgba(255,255,255,0.06);
+          background: var(--dash-surface, linear-gradient(145deg, #161616, #0a0a0a));
+          border: 2px solid var(--dash-border, rgba(255,255,255,0.06));
           border-radius: 20px;
           padding: 24px;
           position: relative;
           transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .aud-card:hover {
-          transform: translateY(-4px);
-          border-color: rgba(212, 175, 55, 0.3);
-          box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+          transform: translate(-2px, -2px);
+          box-shadow: 6px 6px 0px 0px var(--gold, #c9a84c);
+          border-color: var(--gold, #c9a84c);
         }
         
         .aud-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
         .aud-avatar-wrap { display: flex; gap: 16px; align-items: center; }
-        .aud-avatar { width: 56px; height: 56px; border-radius: 14px; background: #222; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; }
+        .aud-avatar { width: 56px; height: 56px; border-radius: 14px; background: var(--dash-surface, #222); border: 1px solid var(--dash-border, rgba(255,255,255,0.1)); overflow: hidden; }
         .aud-avatar img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
         .aud-card:hover .aud-avatar img { transform: scale(1.1); }
         
-        .aud-name { font-size: 1.3rem; font-weight: 800; color: #fff; margin: 0 0 4px 0; letter-spacing: -0.01em; }
-        .aud-role { font-size: 0.95rem; color: #888; display: flex; align-items: center; gap: 6px; }
+        .aud-name { font-size: 1.3rem; font-weight: 800; color: var(--dash-text-main, #fff); margin: 0 0 4px 0; letter-spacing: -0.01em; }
+        .aud-role { font-size: 0.95rem; color: var(--dash-text-muted, #888); display: flex; align-items: center; gap: 6px; }
         
         .aud-status-badge {
           display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 100px;
@@ -246,34 +244,36 @@ export default function SeekerAuditions() {
         }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; }
 
-        .aud-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
+        .aud-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 20px 0; border-top: 1px solid var(--dash-border, rgba(255,255,255,0.05)); border-bottom: 1px solid var(--dash-border, rgba(255,255,255,0.05)); margin-bottom: 20px; }
         .meta-col { display: flex; flex-direction: column; gap: 4px; }
+        .meta-lbl { font-size: 0.8rem; color: var(--dash-text-muted, #666); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; }
+        .meta-val { font-size: 0.95rem; color: var(--dash-text-main, #eee); font-weight: 500; display: flex; align-items: center; gap: 6px; }
         .meta-lbl { font-size: 0.75rem; color: #666; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; }
         .meta-val { font-size: 0.95rem; color: #eee; font-weight: 500; display: flex; align-items: center; gap: 6px; }
 
         .aud-actions { display: flex; justify-content: space-between; align-items: center; }
         .action-icon-group { display: flex; gap: 8px; }
-        .icon-btn { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); color: #aaa; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
-        .icon-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .icon-btn { width: 36px; height: 36px; border-radius: 10px; background: var(--dash-surface, rgba(255,255,255,0.03)); border: 1px solid var(--dash-border, rgba(255,255,255,0.05)); color: var(--dash-text-muted, #aaa); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .icon-btn:hover { background: var(--dash-hover-bg, rgba(255,255,255,0.1)); color: var(--dash-text-main, #fff); }
         
         .btn-start { background: rgba(59, 130, 246, 0.15); color: #3b82f6; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(59, 130, 246, 0.3); font-weight: 700; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: all 0.2s; }
         .btn-start:hover { background: #3b82f6; color: #fff; box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4); transform: translateY(-2px); }
 
         /* Insights Sidebar */
-        .insights-panel { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 24px; height: fit-content; position: sticky; top: 230px; }
-        .insights-header { font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
+        .insights-panel { background: var(--dash-surface, rgba(0,0,0,0.3)); border: 1px solid var(--dash-border, rgba(255,255,255,0.05)); border-radius: 24px; padding: 24px; height: fit-content; position: sticky; top: 230px; }
+        .insights-header { font-size: 1.1rem; font-weight: 800; color: var(--dash-text-main, #fff); margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
         .insight-block { margin-bottom: 24px; }
-        .insight-lbl { font-size: 0.8rem; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 12px; }
-        .insight-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .insight-lbl { font-size: 0.8rem; color: var(--dash-text-muted, #888); text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .insight-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--dash-border, rgba(255,255,255,0.03)); }
         .insight-item:last-child { border-bottom: none; }
         .insight-time { font-size: 0.85rem; color: var(--gold); font-weight: 700; width: 60px; }
         .insight-info { flex: 1; }
-        .insight-title { font-size: 0.9rem; color: #fff; font-weight: 600; }
-        .insight-desc { font-size: 0.8rem; color: #888; }
+        .insight-title { font-size: 0.9rem; color: var(--dash-text-main, #fff); font-weight: 600; }
+        .insight-desc { font-size: 0.8rem; color: var(--dash-text-muted, #888); }
         
         /* Modals */
         .cine-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999; display: flex; alignItems: center; justify-content: center; padding: 20px; animation: fadeIn 0.2s ease-out; }
-        .cine-modal-content { background-color: #111; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; width: 100%; max-width: 480px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column; }
+        .cine-modal-content { background-color: var(--dash-surface, #111); border: 1px solid var(--dash-border, rgba(255,255,255,0.1)); border-radius: 24px; width: 100%; max-width: 480px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); overflow: hidden; display: flex; flex-direction: column; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}} />
 
