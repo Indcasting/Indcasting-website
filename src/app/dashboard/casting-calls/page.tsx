@@ -518,7 +518,7 @@ export default function CastingCallsPage() {
       {/* Featured Cinematic Hero */}
       {featuredJob && (
         <div className="cine-hero">
-          <div className="cine-hero-bg" style={{ backgroundImage: `url(${featuredJob.image || 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2000&auto=format&fit=crop'})` }}></div>
+          <div className="cine-hero-bg" style={{ backgroundImage: `url(${featuredJob.image || '/images/signin.jpg'})` }}></div>
           <div className="cine-hero-overlay"></div>
           
           <div className="cine-hero-content">

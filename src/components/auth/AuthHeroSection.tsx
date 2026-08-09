@@ -12,7 +12,7 @@ export default function AuthHeroSection() {
       <div style={{ 
         width: '100%', 
         height: '100%', 
-        backgroundImage: 'linear-gradient(rgba(10, 10, 10, 0.4), rgba(10, 10, 10, 0.8)), url("https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop")',
+        backgroundImage: 'linear-gradient(rgba(10, 10, 10, 0.4), rgba(10, 10, 10, 0.8)), url("/images/signin.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
