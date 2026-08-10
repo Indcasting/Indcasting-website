@@ -169,24 +169,6 @@ export default function HeroCarousel() {
           </span>
         </div>
 
-        {/* Brand label */}
-        <div
-          style={{
-            position: "absolute",
-            top: 24,
-            left: isMobile ? 16 : 32,
-            zIndex: 60,
-            fontSize: 12,
-            fontWeight: 600,
-            textTransform: "uppercase",
-            color: "white",
-            opacity: 0.9,
-            letterSpacing: "0.18em",
-          }}
-        >
-          INDCASTING
-        </div>
-
         {/* Carousel */}
         <div style={{ position: "absolute", inset: 0, zIndex: 3 }}>
           {IMAGES.map((img, i) => (
