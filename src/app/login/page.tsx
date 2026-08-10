@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { loginUser, getCurrentUser } from "@/utils/auth";
+import { validateInternalPath } from "@/utils/security";
 import { Mail, Lock } from "lucide-react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthHeroSection from "@/components/auth/AuthHeroSection";
@@ -13,7 +14,7 @@ import AuthButton from "@/components/auth/AuthButton";
 import AuthDivider from "@/components/auth/AuthDivider";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
@@ -29,7 +30,7 @@ export default function LoginPage() {
     const user = getCurrentUser();
     if (user) {
       if (redirect) {
-        router.push(redirect);
+        router.push(validateInternalPath(redirect));
       } else if (user.role === "talent") {
         router.push("/dashboard/talent");
       } else {
@@ -44,8 +45,8 @@ export default function LoginPage() {
     setError("");
 
     // Simulate network request for premium feel
-    setTimeout(() => {
-      const user = loginUser(email, password, rememberMe);
+    setTimeout(async () => {
+      const user = await loginUser(email, password, rememberMe);
 
       if (!user) {
         setError("Invalid email or password.");
@@ -54,7 +55,7 @@ export default function LoginPage() {
       }
 
       if (redirect) {
-        router.push(redirect);
+        router.push(validateInternalPath(redirect));
       } else if (user.role === "talent") {
         router.push("/dashboard/talent");
       } else {
@@ -123,5 +124,13 @@ export default function LoginPage() {
 
       </AuthCard>
     </AuthLayout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#111' }}></div>}>
+      <LoginContent />
+    </Suspense>
   );
 }

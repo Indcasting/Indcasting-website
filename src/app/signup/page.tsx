@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { registerUser } from "@/utils/auth";
+import { validateInternalPath } from "@/utils/security";
 import { User, Mail, Phone, MapPin, Lock, Camera, Sparkles } from "lucide-react";
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthHeroSection from "@/components/auth/AuthHeroSection";
@@ -12,7 +13,7 @@ import AuthButton from "@/components/auth/AuthButton";
 import AuthDivider from "@/components/auth/AuthDivider";
 import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
-export default function SignUpPage() {
+function SignUpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect");
@@ -30,8 +31,8 @@ export default function SignUpPage() {
     setIsLoading(true);
     
     // Simulate network request for premium feel
-    setTimeout(() => {
-      registerUser({
+    setTimeout(async () => {
+      await registerUser({
         id: Date.now().toString(),
         name,
         email,
@@ -42,7 +43,7 @@ export default function SignUpPage() {
       });
       alert("Account Created Successfully!");
       if (redirect) {
-        router.push(`/login?redirect=${encodeURIComponent(redirect)}`);
+        router.push(`/login?redirect=${encodeURIComponent(validateInternalPath(redirect))}`);
       } else {
         router.push("/login");
       }
@@ -150,5 +151,13 @@ export default function SignUpPage() {
         
       </AuthCard>
     </AuthLayout>
+  );
+}
+
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#111' }}></div>}>
+      <SignUpContent />
+    </Suspense>
   );
 }

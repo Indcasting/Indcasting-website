@@ -2,26 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import "../components/ui/fonts.css";
 import "../components/ui/theme.css";
 
-declare global {
-  interface Window {
-    gsap: {
-      registerPlugin: (...args: unknown[]) => void;
-      from: (targets: unknown, vars: Record<string, unknown>) => void;
-      fromTo: (targets: unknown, fromVars: Record<string, unknown>, toVars: Record<string, unknown>) => void;
-      to: (targets: unknown, vars: Record<string, unknown>) => void;
-      set: (targets: unknown, vars: Record<string, unknown>) => void;
-      utils: { toArray: <T = Element>(targets: string) => T[] };
-      context: (fn: () => void, scope?: Element | null) => { revert: () => void };
-    };
-    ScrollTrigger: {
-      getAll: () => Array<{ kill: (revert?: boolean) => void }>;
-      create: (vars: Record<string, unknown>) => unknown;
-      refresh: () => void;
-    };
-  }
+// Register GSAP plugin once outside the component
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
 }
 
 interface StepItem     { n: string; h: string; p: string }
@@ -54,17 +42,6 @@ const STEPS: StepItem[] = [
 
 const VIDEO_URL = "/home.mp4";
 const VIDEO_FADE = 0.5;
-
-function loadScript(src: string): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
-    const s = document.createElement("script");
-    s.src = src;
-    s.onload  = () => resolve();
-    s.onerror = () => reject(new Error(`Failed: ${src}`));
-    document.head.appendChild(s);
-  });
-}
 
 const CARD_PIN_TOP = 100;
 
@@ -123,16 +100,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (gsapLoaded.current) return;
-    gsapLoaded.current = true;
-
     (async (): Promise<void> => {
-      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
-      await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js");
-
-      const { gsap, ScrollTrigger } = window;
-      gsap.registerPlugin(ScrollTrigger);
-
       gsapCtxRef.current = gsap.context(() => {
 
         gsap.to(".progress-bar", {
@@ -179,7 +147,17 @@ export default function Home() {
         const eyebrow = document.querySelector<HTMLElement>(".tiles-eyebrow");
         if (eyebrow) {
           const text = eyebrow.textContent ?? "";
-          eyebrow.innerHTML = text.split("").map(c => c === " " ? " " : `<span class="e-ch">${c}</span>`).join("");
+          eyebrow.textContent = "";
+          text.split("").forEach(c => {
+            if (c === " ") {
+              eyebrow.appendChild(document.createTextNode(" "));
+            } else {
+              const span = document.createElement("span");
+              span.className = "e-ch";
+              span.textContent = c;
+              eyebrow.appendChild(span);
+            }
+          });
           gsap.from(".e-ch", {
             opacity: 0, y: 10, stagger: 0.025, duration: 0.4, ease: "power2.out",
             scrollTrigger: { trigger: eyebrow, start: "top 90%" },
@@ -238,8 +216,8 @@ export default function Home() {
             trigger: card,
             start: `top ${CARD_PIN_TOP}px`,
             end: isLast
-  ? `+=${card.offsetHeight * 0.4}`
-  : `+=180`,
+              ? `+=${card.offsetHeight * 0.4}`
+              : `+=180`,
             pin: true,
             pinSpacing: !isLast,
             anticipatePin: 1,
@@ -282,7 +260,7 @@ export default function Home() {
 
         gsap.from(".cta-sub, .cta-label", {
           y: 30, opacity: 0, stagger: 0.1, duration: 0.7, ease: "power3.out",
-          scrollTrigger: { trigger: ".cta-section", start: "top 78%", toggleActions: "play none none none" },
+          scrollTrigger: { trigger: ".cta-section", start: "top 88%", toggleActions: "play none none none" },
         });
 
         document.querySelectorAll<HTMLElement>(".cta-btns button").forEach((btn) => {
@@ -696,6 +674,7 @@ export default function Home() {
             muted
             playsInline
             preload="auto"
+            suppressHydrationWarning
           />
 
           {/* Dark overlay for legibility */}

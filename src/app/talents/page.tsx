@@ -7,6 +7,7 @@ import {
   Heart, Share2, PlayCircle, Filter, Sparkles, Award
 } from "lucide-react";
 import Link from "next/link";
+import NeobrutalistCard from "@/components/ui/NeobrutalistCard";
 
 // 1. Extended Mock Data
 const MOCK_TALENTS = [
@@ -21,7 +22,7 @@ const MOCK_TALENTS = [
     verified: true,
     available: true,
     featured: true,
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800",
+    image: "/images/img1.jpg",
     languages: ["English", "Hindi", "Marathi"],
     skills: ["Method Acting", "Dance", "Action"],
     projects: 24,
@@ -40,7 +41,7 @@ const MOCK_TALENTS = [
     verified: true,
     available: true,
     featured: false,
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=800",
+    image: "/images/img_7.png",
     languages: ["English", "Hindi"],
     skills: ["Runway", "Editorial", "Commercial"],
     projects: 45,
@@ -59,7 +60,7 @@ const MOCK_TALENTS = [
     verified: true,
     available: false,
     featured: false,
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=800",
+    image: "/images/img3.jpg",
     languages: ["English", "Hindi", "Telugu", "Tamil"],
     skills: ["Dubbing", "Audiobooks", "Commercials"],
     projects: 120,
@@ -69,7 +70,7 @@ const MOCK_TALENTS = [
   },
   {
     id: "t4",
-    name: "Rohan Das",
+    name: "Rohani Das",
     profession: "Cinematographer",
     location: "Mumbai, Maharashtra",
     experience: "10 Years",
@@ -78,7 +79,7 @@ const MOCK_TALENTS = [
     verified: true,
     available: true,
     featured: true,
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800",
+    image: "/images/img4.jpg",
     languages: ["English", "Bengali"],
     skills: ["RED", "ARRI", "Steadicam", "Lighting"],
     projects: 18,
@@ -97,7 +98,7 @@ const MOCK_TALENTS = [
     verified: false,
     available: true,
     featured: false,
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=800",
+    image: "/images/img5.jpg",
     languages: ["English", "Hindi", "Urdu"],
     skills: ["Prosthetics", "Bridal", "Editorial"],
     projects: 80,
@@ -116,7 +117,7 @@ const MOCK_TALENTS = [
     verified: true,
     available: true,
     featured: false,
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=800",
+    image: "/images/img9.jpg",
     languages: ["English", "Hindi"],
     skills: ["Feature Films", "Ad Films", "Scripting"],
     projects: 12,
@@ -568,29 +569,48 @@ export default function TalentDiscoveryPage() {
             <h2 className="section-title"><Award color="var(--gold)" /> Featured Professionals</h2>
             <div className="featured-carousel">
               {featuredTalents.map(talent => (
-                <div key={talent.id} className="featured-card">
-                  <div className="featured-img">
-                    <img src={talent.image} alt={talent.name} />
-                  </div>
-                  <div className="featured-content">
-                    <div className="badge badge-verified" style={{ width: 'fit-content', marginBottom: '16px' }}>
+                <NeobrutalistCard
+                  key={talent.id}
+                  image={<img src={talent.image} alt={talent.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                  tags={
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '100px', border: '2px solid rgba(16,185,129,0.3)', backgroundColor: 'transparent', color: '#10b981', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                       <CheckCircle size={12} /> Spotlight
                     </div>
-                    <h3 style={{ fontSize: '1.8rem', fontWeight: 800, margin: '0 0 4px 0' }}>{talent.name}</h3>
-                    <p style={{ color: 'var(--gold)', fontWeight: 600, margin: '0 0 16px 0' }}>{talent.profession}</p>
-                    <p style={{ color: '#888', fontSize: '0.9rem', lineHeight: 1.6, marginBottom: '24px' }}>{talent.bio}</p>
-                    
-                    <div className="card-actions" style={{ borderTop: 'none', padding: 0 }}>
-                      <button className="btn-primary" onClick={() => alert(`Navigating to ${talent.name}'s portfolio`)}>
-                        <PlayCircle size={18} /> View Portfolio
+                  }
+                  title={talent.name}
+                  subtitle={talent.profession}
+                  content={talent.bio}
+                  actions={
+                    <>
+                      <button 
+                        onClick={() => alert(`Navigating to ${talent.name}'s portfolio`)}
+                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px 16px', borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+                      >
+                        <PlayCircle size={16} /> View Portfolio
                       </button>
-                      <div className="action-icons">
-                        <button className="icon-btn" title="Message"><MessageSquare size={18} /></button>
-                        <button className="icon-btn" title="Save"><Heart size={18} /></button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                      <button 
+                        onClick={() => alert(`Messaging ${talent.name}`)}
+                        style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+                        title="Message"
+                      >
+                        <MessageSquare size={16} />
+                      </button>
+                      <button 
+                        onClick={() => alert(`${talent.name} saved to shortlist!`)}
+                        style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+                        title="Save"
+                      >
+                        <Heart size={16} />
+                      </button>
+                    </>
+                  }
+                />
               ))}
             </div>
           </div>
@@ -613,61 +633,95 @@ export default function TalentDiscoveryPage() {
         ) : (
           <div className="talent-grid">
             {filteredTalents.map(talent => (
-              <div key={talent.id} className="profile-card">
-                <div className="card-image-wrap">
-                  <div className="badges-top">
-                    {talent.verified && (
-                      <div className="badge badge-verified"><CheckCircle size={12} /> Verified</div>
-                    )}
-                    <div className="badge" style={{ background: talent.available ? 'rgba(16,185,129,0.8)' : 'rgba(0,0,0,0.6)' }}>
-                      {talent.available ? 'Available' : 'Busy'}
+                <NeobrutalistCard
+                  key={talent.id}
+                  className="vertical-layout"
+                  image={<img src={talent.image} alt={talent.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />}
+                  tags={
+                    <>
+                      {talent.verified && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '100px', border: '2px solid rgba(16,185,129,0.3)', backgroundColor: 'transparent', color: '#10b981', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                          <CheckCircle size={12} /> Verified
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '100px', border: `2px solid ${talent.available ? 'rgba(16,185,129,0.3)' : 'rgba(255,255,255,0.1)'}`, backgroundColor: 'transparent', color: talent.available ? '#10b981' : '#888', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                        {talent.available ? 'Available' : 'Busy'}
+                      </div>
+                    </>
+                  }
+                  title={talent.name}
+                  subtitle={
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Star size={14} fill="currentColor" /> {talent.profession} • {talent.rating}
+                    </span>
+                  }
+                  metadata={
+                    <>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Location</span>
+                        <span style={{ fontSize: '0.9rem', color: '#ccc', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={14} color="#888" /> {talent.location.split(',')[0]}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Experience</span>
+                        <span style={{ fontSize: '0.9rem', color: '#ccc', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}><Briefcase size={14} color="#888" /> {talent.experience}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Expected Fee</span>
+                        <span style={{ fontSize: '0.9rem', color: '#10b981', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>{talent.fee}</span>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <span style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.05em' }}>Languages</span>
+                        <span style={{ fontSize: '0.9rem', color: '#ccc', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>{talent.languages.slice(0,2).join(', ')}</span>
+                      </div>
+                    </>
+                  }
+                  content={
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {talent.skills.map(skill => (
+                        <span key={skill} style={{ backgroundColor: 'transparent', border: '1px solid var(--dash-border, #333)', padding: '4px 10px', borderRadius: '6px', fontSize: '0.75rem', color: '#888' }}>{skill}</span>
+                      ))}
                     </div>
-                  </div>
-                  <img src={talent.image} alt={talent.name} className="card-image" />
-                  <div className="card-image-overlay"></div>
-                </div>
-                
-                <div className="card-content">
-                  <h3 className="card-name">{talent.name}</h3>
-                  <div className="card-prof"><Star size={14} fill="currentColor" /> {talent.profession} • {talent.rating}</div>
-                  
-                  <div className="card-meta">
-                    <div className="meta-item">
-                      <span className="meta-lbl">Location</span>
-                      <span className="meta-val"><MapPin size={14} color="#888" /> {talent.location.split(',')[0]}</span>
-                    </div>
-                    <div className="meta-item">
-                      <span className="meta-lbl">Experience</span>
-                      <span className="meta-val"><Briefcase size={14} color="#888" /> {talent.experience}</span>
-                    </div>
-                    <div className="meta-item">
-                      <span className="meta-lbl">Expected Fee</span>
-                      <span className="meta-val" style={{ color: '#10b981' }}>{talent.fee}</span>
-                    </div>
-                    <div className="meta-item">
-                      <span className="meta-lbl">Languages</span>
-                      <span className="meta-val">{talent.languages.slice(0,2).join(', ')}</span>
-                    </div>
-                  </div>
-
-                  <div className="card-skills">
-                    {talent.skills.map(skill => (
-                      <span key={skill} className="skill-tag">{skill}</span>
-                    ))}
-                  </div>
-
-                  <div className="card-actions">
-                    <button className="btn-primary" onClick={() => alert(`Navigating to ${talent.name}'s portfolio`)}>
-                      View Profile
-                    </button>
-                    <div className="action-icons">
-                      <button className="icon-btn" title="Message" onClick={() => alert(`Messaging ${talent.name}`)}><MessageSquare size={16} /></button>
-                      <button className="icon-btn" title="Save" onClick={() => alert(`${talent.name} saved to shortlist!`)}><Heart size={16} /></button>
-                      <button className="icon-btn" title="Share" onClick={() => alert(`Link copied!`)}><Share2 size={16} /></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                  }
+                  actions={
+                    <>
+                      <button 
+                        onClick={() => alert(`Navigating to ${talent.name}'s portfolio`)}
+                        style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px 16px', borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+                      >
+                        View Profile
+                      </button>
+                      <button 
+                        onClick={() => alert(`Messaging ${talent.name}`)}
+                        style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+                        title="Message"
+                      >
+                        <MessageSquare size={16} />
+                      </button>
+                      <button 
+                        onClick={() => alert(`${talent.name} saved to shortlist!`)}
+                        style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+                        title="Save"
+                      >
+                        <Heart size={16} />
+                      </button>
+                      <button 
+                        onClick={() => alert(`Link copied!`)}
+                        style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: 'var(--dash-text-main, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = 'var(--dash-text-main, #fff)' }}
+                        title="Share"
+                      >
+                        <Share2 size={16} />
+                      </button>
+                    </>
+                  }
+                />
             ))}
           </div>
         )}

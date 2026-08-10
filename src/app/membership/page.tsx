@@ -52,14 +52,14 @@ const FAQ: FaqItem[] = [
 ];
 
 const COMPARE: CompareRow[] = [
-  { feature: "Create Portfolio",        basic: true,  pro: true,  seeker: true  },
-  { feature: "Unlimited Applications",  basic: false, pro: true,  seeker: true  },
-  { feature: "Unlimited Messaging",     basic: false, pro: true,  seeker: true  },
-  { feature: "Featured Portfolio",      basic: false, pro: true,  seeker: false },
-  { feature: "Priority Search",         basic: false, pro: true,  seeker: true  },
-  { feature: "Create Casting Calls",    basic: false, pro: false, seeker: true  },
-  { feature: "Advanced Talent Filters", basic: false, pro: false, seeker: true  },
-  { feature: "Priority Support",        basic: false, pro: true,  seeker: true  },
+  { feature: "Create Portfolio", basic: true, pro: true, seeker: true },
+  { feature: "Unlimited Applications", basic: false, pro: true, seeker: true },
+  { feature: "Unlimited Messaging", basic: false, pro: true, seeker: true },
+  { feature: "Featured Portfolio", basic: false, pro: true, seeker: false },
+  { feature: "Priority Search", basic: false, pro: true, seeker: true },
+  { feature: "Create Casting Calls", basic: false, pro: false, seeker: true },
+  { feature: "Advanced Talent Filters", basic: false, pro: false, seeker: true },
+  { feature: "Priority Support", basic: false, pro: true, seeker: true },
 ];
 
 function loadScript(src: string): Promise<void> {
@@ -74,9 +74,9 @@ function loadScript(src: string): Promise<void> {
 
 function Stars({ n }: { n: number }) {
   return (
-    <div style={{ display:"flex", gap:"2px" }}>
+    <div style={{ display: "flex", gap: "2px" }}>
       {Array.from({ length: n }).map((_, i) => (
-        <span key={i} style={{ color:"var(--gold)", fontSize:"0.75rem" }}>★</span>
+        <span key={i} style={{ color: "var(--gold)", fontSize: "0.75rem" }}>★</span>
       ))}
     </div>
   );
@@ -110,23 +110,23 @@ function PlanCard({ plan }: { plan: Plan }) {
       </button>
 
       <div className="plan-toggle">
-  <span className="plan-chevron">
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-    >
-      <path
-        d="M4 6l4 4 4-4"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </span>
-</div>
+        <span className="plan-chevron">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
+            <path
+              d="M4 6l4 4 4-4"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </div>
 
       <div className="plan-features-wrap">
         <ul className="plan-features">
@@ -214,7 +214,7 @@ export default function Membership() {
       const heroImg = document.querySelector<HTMLElement>(".m-hero-img");
       if (heroImg) {
         gsap.from(heroImg, { x: 60, opacity: 0, duration: 1, ease: "power3.out", delay: 0.3 });
-        gsap.to(heroImg,   { y: -18, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.3 });
+        gsap.to(heroImg, { y: -18, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.3 });
       }
 
       gsap.utils.toArray<HTMLElement>(".plan-card").forEach((el, i) => {
@@ -248,13 +248,13 @@ export default function Membership() {
           y: 30, opacity: 0, duration: 0.55, delay: i * 0.1, ease: "power2.out",
           scrollTrigger: { trigger: ".faq-list", start: "top 84%", toggleActions: "play none none none" },
         });
-        const qEl  = item.querySelector<HTMLElement>(".faq-q");
-        const aEl  = item.querySelector<HTMLElement>(".faq-a");
+        const qEl = item.querySelector<HTMLElement>(".faq-q");
+        const aEl = item.querySelector<HTMLElement>(".faq-a");
         const icon = item.querySelector<HTMLElement>(".faq-icon");
         if (!qEl || !aEl || !icon) return;
-        aEl.style.height   = "0px";
+        aEl.style.height = "0px";
         aEl.style.overflow = "hidden";
-        aEl.style.opacity  = "0";
+        aEl.style.opacity = "0";
         qEl.addEventListener("click", () => {
           const isOpen = item.classList.contains("faq-open");
           document.querySelectorAll<HTMLElement>(".faq-item.faq-open").forEach((other) => {
@@ -269,7 +269,7 @@ export default function Membership() {
             aEl.style.height = "auto";
             const naturalH = aEl.scrollHeight;
             aEl.style.height = "0px";
-            gsap.to(aEl,  { height: naturalH, opacity: 1, duration: 0.4, ease: "power2.out" });
+            gsap.to(aEl, { height: naturalH, opacity: 1, duration: 0.4, ease: "power2.out" });
             gsap.to(icon, { rotation: 45, duration: 0.3 });
           }
         });
@@ -293,8 +293,8 @@ export default function Membership() {
       if (upgradeBtn) {
         upgradeBtn.addEventListener("mousemove", (e: MouseEvent) => {
           const r = upgradeBtn.getBoundingClientRect();
-          const bx = (e.clientX - r.left - r.width  / 2) * 0.4;
-          const by = (e.clientY - r.top  - r.height / 2) * 0.4;
+          const bx = (e.clientX - r.left - r.width / 2) * 0.4;
+          const by = (e.clientY - r.top - r.height / 2) * 0.4;
           gsap.to(upgradeBtn, { x: bx, y: by, duration: 0.3, ease: "power2.out" });
         });
         upgradeBtn.addEventListener("mouseleave", () => {
@@ -316,8 +316,8 @@ export default function Membership() {
 
   return (
     <>
-      <div style={{ position:"fixed", top:0, left:0, right:0, height:"2px", background:"rgba(201,168,76,0.15)", zIndex:200 }}>
-        <div className="progress-bar" style={{ height:"100%", background:"var(--gold)", transformOrigin:"left", transform:"scaleX(0)" }} />
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "2px", background: "rgba(201,168,76,0.15)", zIndex: 200 }}>
+        <div className="progress-bar" style={{ height: "100%", background: "var(--gold)", transformOrigin: "left", transform: "scaleX(0)" }} />
       </div>
 
       <style>{`
@@ -1519,90 +1519,90 @@ html.dark .upgrade-tagline{
         {/* ── HERO ── */}
         <section className="m-hero">
 
-    <div className="hero-rings">
+          <div className="hero-rings">
 
-        <MagicRings
-            color={dark ? "#C9A84C" : "#C49A2E"}
-            colorTwo={dark ? "#F5E6A8" : "#F2D98C"}
+            <MagicRings
+              color={dark ? "#C9A84C" : "#C49A2E"}
+              colorTwo={dark ? "#F5E6A8" : "#F2D98C"}
 
-            ringCount={8}
-            speed={0.35}
+              ringCount={8}
+              speed={0.35}
 
-            attenuation={16}
+              attenuation={16}
 
-            lineThickness={2}
+              lineThickness={2}
 
-            baseRadius={0.48}
+              baseRadius={0.48}
 
-            radiusStep={0.11}
+              radiusStep={0.11}
 
-            scaleRate={0.05}
+              scaleRate={0.05}
 
-            opacity={dark ? 0.65 : 0.7}
+              opacity={dark ? 0.65 : 0.7}
 
-            blur={dark ? 1.2 : 0.5}
+              blur={dark ? 1.2 : 0.5}
 
-            noiseAmount={0.03}
+              noiseAmount={0.03}
 
-            rotation={-8}
+              rotation={-8}
 
-            ringGap={1.8}
+              ringGap={1.8}
 
-            fadeIn={0.85}
+              fadeIn={0.85}
 
-            fadeOut={0.8}
+              fadeOut={0.8}
 
-            mouseInfluence={0.05}
+              mouseInfluence={0.05}
 
-            hoverScale={1.05}
+              hoverScale={1.05}
 
-            parallax={0.02}
+              parallax={0.02}
 
-            followMouse={false}
+              followMouse={false}
 
-            clickBurst={false}
-        />
+              clickBurst={false}
+            />
 
-    </div>
+          </div>
 
-    <div className="hero-overlay"></div>
+          <div className="hero-overlay"></div>
 
-    <div className="hero-content">
+          <div className="hero-content">
 
-        <div className="m-hero-badge">
-            <span className="badge-scramble">
+            <div className="m-hero-badge">
+              <span className="badge-scramble">
                 ✨ Premium Membership
-            </span>
-        </div>
+              </span>
+            </div>
 
-        <h1 className="m-hero-title">
-            {"Unlock Your Full Casting Potential".split(" ").map((w, i) => (
+            <h1 className="m-hero-title">
+              {"Unlock Your Full Casting Potential".split(" ").map((w, i) => (
                 <span key={i} className="m-hero-word">
-                    {w === "Potential" ? <em>{w}</em> : w}&nbsp;
+                  {w === "Potential" ? <em>{w}</em> : w}&nbsp;
                 </span>
-            ))}
-        </h1>
+              ))}
+            </h1>
 
-        <p className="m-hero-sub">
-            Whether you're an aspiring artist or a casting professional,
-            our premium memberships provide better visibility,
-            unlimited connections,
-            and powerful casting tools.
-        </p>
+            <p className="m-hero-sub">
+              Whether you're an aspiring artist or a casting professional,
+              our premium memberships provide better visibility,
+              unlimited connections,
+              and powerful casting tools.
+            </p>
 
-        <div className="m-hero-btns">
-            <button className="btn-gold">
+            <div className="m-hero-btns">
+              <button className="btn-gold">
                 Join as Talent
-            </button>
+              </button>
 
-            <button className="btn-ink">
+              <button className="btn-ink">
                 Hire Talent
-            </button>
-        </div>
+              </button>
+            </div>
 
-    </div>
+          </div>
 
-</section>
+        </section>
 
         {/* ── PRICING ── */}
         <section className="pricing-section">
@@ -1631,8 +1631,8 @@ html.dark .upgrade-tagline{
                 {COMPARE.map(({ feature, basic, pro, seeker }) => (
                   <tr className="compare-row" key={feature}>
                     <td>{feature}</td>
-                    <td><span className={basic  ? "cell-yes" : "cell-no"}>{basic  ? "✔" : "✖"}</span></td>
-                    <td><span className={pro    ? "cell-yes" : "cell-no"}>{pro    ? "✔" : "✖"}</span></td>
+                    <td><span className={basic ? "cell-yes" : "cell-no"}>{basic ? "✔" : "✖"}</span></td>
+                    <td><span className={pro ? "cell-yes" : "cell-no"}>{pro ? "✔" : "✖"}</span></td>
                     <td><span className={seeker ? "cell-yes" : "cell-no"}>{seeker ? "✔" : "✖"}</span></td>
                   </tr>
                 ))}
