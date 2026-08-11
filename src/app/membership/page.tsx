@@ -917,137 +917,272 @@ html.dark .testi-header .section-title{
 
 /* Cards */
 
-.testi-card{
+/* ─────────────────────────────────────
+   FILM REEL TESTIMONIAL CARDS
+───────────────────────────────────── */
 
-    flex-shrink:0;
+.testi-card {
+    flex-shrink: 0;
 
-    width:320px;
+    width: 320px;
 
-    border-radius:20px;
+    /*
+     * Film-frame proportions
+     */
+    min-height: 260px;
 
-    padding:1.7rem 1.8rem;
+    padding: 48px 34px 48px;
 
-    background:var(--white);
+    background: var(--white);
 
-    border:1.5px solid var(--mist);
+    /*
+     * Film frame border
+     */
+    border: 3px solid var(--ink);
 
-    display:flex;
-    flex-direction:column;
-    gap:1rem;
+    border-radius: 2px;
 
-    cursor:default;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    position: relative;
+    overflow: hidden;
+
+    cursor: default;
 
     transition:
         transform .3s ease,
         border-color .3s ease,
         background .3s ease,
         box-shadow .3s ease;
-}
-
-.testi-card:hover{
-
-    transform:translateY(-8px);
-
-    border-color:var(--gold);
 
     box-shadow:
-        0 18px 40px rgba(201,168,76,.15);
-
-}
-
-/* Quote */
-
-.testi-quote{
-
-    flex:1;
-
-    font-size:.92rem;
-
-    line-height:1.8;
-
-    color:var(--mid);
-
-}
-
-/* Footer */
-
-.testi-footer{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:.35rem;
-
-}
-
-.testi-name{
-
-    font-size:.95rem;
-
-    font-weight:700;
-
-    color:var(--ink);
-
-}
-
-.testi-role{
-
-    font-size:.74rem;
-
-    color:var(--gold);
-
-    font-weight:700;
-
-    text-transform:uppercase;
-
-    letter-spacing:.08em;
-
+        0 8px 0 rgba(15, 14, 13, 0.10),
+        0 16px 35px rgba(0, 0, 0, 0.08);
 }
 
 
+/* ─────────────────────────────────────
+   FILM PERFORATIONS — TOP
+───────────────────────────────────── */
 
-/* -------------------------
+.testi-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 30px;
+
+    background-color: var(--ink);
+
+    background-image:
+        repeating-linear-gradient(
+            to right,
+            transparent 0px,
+            transparent 7px,
+            var(--cream) 7px,
+            var(--cream) 17px,
+            transparent 17px,
+            transparent 29px
+        );
+
+    background-size: 29px 13px;
+    background-repeat: repeat-x;
+    background-position: center;
+
+    border-bottom: 2px solid var(--ink);
+
+    z-index: 2;
+}
+
+
+/* ─────────────────────────────────────
+   FILM PERFORATIONS — BOTTOM
+───────────────────────────────────── */
+
+.testi-card::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    height: 30px;
+
+    background-color: var(--ink);
+
+    background-image:
+        repeating-linear-gradient(
+            to right,
+            transparent 0px,
+            transparent 7px,
+            var(--cream) 7px,
+            var(--cream) 17px,
+            transparent 17px,
+            transparent 29px
+        );
+
+    background-size: 29px 13px;
+    background-repeat: repeat-x;
+    background-position: center;
+
+    border-top: 2px solid var(--ink);
+
+    z-index: 2;
+}
+
+
+/* ─────────────────────────────────────
+   QUOTE
+───────────────────────────────────── */
+
+.testi-quote {
+    flex: 1;
+
+    font-size: .92rem;
+
+    line-height: 1.8;
+
+    color: var(--mid);
+
+    position: relative;
+    z-index: 3;
+}
+
+
+/* ─────────────────────────────────────
+   FOOTER
+───────────────────────────────────── */
+
+.testi-footer {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .35rem;
+
+    position: relative;
+    z-index: 3;
+}
+
+
+.testi-name {
+    font-size: .95rem;
+
+    font-weight: 700;
+
+    color: var(--ink);
+
+    position: relative;
+    z-index: 3;
+}
+
+
+.testi-role {
+    font-size: .74rem;
+
+    color: var(--gold);
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .08em;
+
+    position: relative;
+    z-index: 3;
+}
+
+
+/* ─────────────────────────────────────
+   STARS
+───────────────────────────────────── */
+
+.testi-card > div:first-child {
+    position: relative;
+    z-index: 3;
+}
+
+
+/* ─────────────────────────────────────
+   HOVER
+───────────────────────────────────── */
+
+.testi-card:hover {
+    transform: translateY(-8px);
+
+    border-color: var(--ink);
+
+    box-shadow:
+        0 14px 0 rgba(15, 14, 13, 0.12),
+        0 24px 45px rgba(201,168,76,.18);
+}
+
+
+/* ─────────────────────────────────────
    DARK MODE
--------------------------- */
+───────────────────────────────────── */
 
-html.dark .testi-card{
+html.dark .testi-card {
+    background: #171717;
 
-    background:#171717;
-
-    border-color:#2c2c2c;
-
-    box-shadow:none;
-
-}
-
-html.dark .testi-card:hover{
-
-    border-color:var(--gold);
-
-    background:#1d1d1d;
+    border-color: #f6f6f6;
 
     box-shadow:
-        0 20px 45px rgba(0,0,0,.45);
-
+        0 8px 0 rgba(255,255,255,0.05),
+        0 16px 35px rgba(0,0,0,0.35);
 }
 
-html.dark .testi-quote{
 
-    color:#bdbdbd;
+html.dark .testi-card::before,
+html.dark .testi-card::after {
+    background-color: #f6f6f6;
 
+    background-image:
+        repeating-linear-gradient(
+            to right,
+            transparent 0px,
+            transparent 7px,
+            #171717 7px,
+            #171717 17px,
+            transparent 17px,
+            transparent 29px
+        );
+
+    border-color: #f6f6f6;
 }
 
-html.dark .testi-name{
 
-    color:#f5f5f5;
+html.dark .testi-card:hover {
+    border-color: var(--gold);
 
+    background: #1d1d1d;
+
+    box-shadow:
+        0 14px 0 rgba(255,255,255,0.04),
+        0 24px 45px rgba(201,168,76,.16);
 }
 
-html.dark .testi-role{
 
-    color:var(--gold);
+html.dark .testi-quote {
+    color: #bdbdbd;
+}
 
+
+html.dark .testi-name {
+    color: #f5f5f5;
+}
+
+
+html.dark .testi-role {
+    color: var(--gold);
 }
         /* ================= FAQ ================= */
 

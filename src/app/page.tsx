@@ -475,25 +475,289 @@ export default function Home() {
         .cat-track { display: flex; gap: 1.5rem; width: max-content; animation: catMarquee 28s linear infinite; }
         .cat-track:hover { animation-play-state: paused; }
         @keyframes catMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        .cat-card {
-          width: 420px; min-width: 420px; min-height: 290px; padding: 42px;
-          display: flex; flex-direction: column; justify-content: space-between;
-          border-radius: 26px; background: var(--white); border: 1px solid var(--mist);
-          position: relative; overflow: hidden; flex-shrink: 0; cursor: pointer;
-          transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
-        }
-        .cat-card:hover { transform: translateY(-8px); border-color: var(--gold); box-shadow: 0 18px 40px rgba(201,168,76,.18); }
-        .cat-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-        .cat-card-label { font-size: 2.2rem; font-weight: 800; line-height:1.05; letter-spacing:-0.04em; color: var(--ink); margin-bottom: 10px;transition:.3s; }
-        .cat-card-count { font-size: 1rem; color: var(--gold); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 20px; }
-        .cat-card-desc { color: var(--mid); line-height: 1.85; font-size: 1rem; flex: 1; }
-        .cat-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
-        .cat-card-arrow {
-          width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
-          border-radius: 50%; background: var(--mist); color: var(--ink);
-          font-size: 20px; font-weight: 700; transition: .3s;
-        }
-        .cat-card:hover .cat-card-arrow { background: var(--gold); color: #111; }
+        /* ── FILM REEL CATEGORY CARDS ── */
+
+.cat-card {
+  width: 420px;
+  min-width: 420px;
+  min-height: 290px;
+
+  padding: 58px 48px 54px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+
+  /*
+   * Film frame
+   */
+  background: var(--white);
+
+  border: 3px solid var(--ink);
+  border-radius: 2px;
+
+  /*
+   * Keep the existing hover behaviour.
+   */
+  transition:
+    transform .35s ease,
+    box-shadow .35s ease,
+    border-color .35s ease;
+
+  /*
+   * Slight film-frame depth
+   */
+  box-shadow:
+    0 8px 0 rgba(15, 14, 13, 0.10),
+    0 16px 35px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ─────────────────────────────────────
+   FILM STRIP — TOP
+───────────────────────────────────── */
+
+.cat-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 34px;
+
+  background-color: var(--ink);
+
+  /*
+   * Perforated film holes
+   */
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0px,
+      transparent 8px,
+      var(--cream) 8px,
+      var(--cream) 18px,
+      transparent 18px,
+      transparent 30px
+    );
+
+  background-position: center;
+  background-size: 30px 14px;
+  background-repeat: repeat-x;
+
+  border-bottom: 2px solid var(--ink);
+
+  z-index: 2;
+}
+
+
+/* ─────────────────────────────────────
+   FILM STRIP — BOTTOM
+───────────────────────────────────── */
+
+.cat-card::after {
+  content: "";
+
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  height: 34px;
+
+  background-color: var(--ink);
+
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0px,
+      transparent 8px,
+      var(--cream) 8px,
+      var(--cream) 18px,
+      transparent 18px,
+      transparent 30px
+    );
+
+  background-position: center;
+  background-size: 30px 14px;
+  background-repeat: repeat-x;
+
+  border-top: 2px solid var(--ink);
+
+  z-index: 2;
+}
+
+
+/* ─────────────────────────────────────
+   CARD CONTENT
+───────────────────────────────────── */
+
+.cat-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  margin-bottom: 22px;
+
+  position: relative;
+  z-index: 3;
+}
+
+
+.cat-card-label {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+
+  color: var(--ink);
+
+  margin-bottom: 10px;
+
+  transition: .3s;
+
+  position: relative;
+  z-index: 3;
+}
+
+
+.cat-card-count {
+  font-size: 0.85rem;
+
+  color: var(--gold);
+
+  font-weight: 800;
+
+  letter-spacing: .12em;
+
+  text-transform: uppercase;
+
+  margin-bottom: 20px;
+
+  position: relative;
+  z-index: 3;
+}
+
+
+.cat-card-desc {
+  color: var(--mid);
+
+  line-height: 1.75;
+
+  font-size: 0.95rem;
+
+  flex: 1;
+
+  position: relative;
+  z-index: 3;
+}
+
+
+.cat-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 24px;
+
+  position: relative;
+  z-index: 3;
+}
+
+
+.cat-card-arrow {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--mist);
+  color: var(--ink);
+
+  font-size: 20px;
+  font-weight: 700;
+
+  transition: .3s;
+}
+
+
+/* ─────────────────────────────────────
+   HOVER
+───────────────────────────────────── */
+
+.cat-card:hover {
+  transform: translateY(-8px);
+
+  border-color: var(--ink);
+
+  box-shadow:
+    0 14px 0 rgba(15, 14, 13, 0.12),
+    0 24px 45px rgba(201,168,76,.18);
+}
+
+
+.cat-card:hover .cat-card-arrow {
+  background: var(--gold);
+  color: #111;
+
+  transform: translateX(4px);
+}
+
+
+/* ─────────────────────────────────────
+   DARK MODE
+───────────────────────────────────── */
+
+html.dark .cat-card {
+  background: #161616;
+
+  border-color: #f6f6f6;
+
+  box-shadow:
+    0 8px 0 rgba(255,255,255,0.05),
+    0 16px 35px rgba(0,0,0,0.35);
+}
+
+
+html.dark .cat-card::before,
+html.dark .cat-card::after {
+  background-color: #f6f6f6;
+
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      transparent 0px,
+      transparent 8px,
+      #161616 8px,
+      #161616 18px,
+      transparent 18px,
+      transparent 30px
+    );
+
+  border-color: #f6f6f6;
+}
+
+
+html.dark .cat-card:hover {
+  border-color: var(--gold);
+
+  box-shadow:
+    0 14px 0 rgba(255,255,255,0.04),
+    0 24px 45px rgba(201,168,76,.16);
+}
 
         /* ── TILES ── */
         .tiles-section { padding: 40px 4vw 2px; overflow: hidden; }

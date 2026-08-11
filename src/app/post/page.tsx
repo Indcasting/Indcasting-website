@@ -364,7 +364,7 @@ function CastingFormSection({
     <section className="post-form-section">
       <div className="post-form-header">
         <h2 style={{ fontSize: "clamp(1.4rem,2.5vw,1.8rem)", fontWeight: 800, color: "var(--ink)" }}>
-          {editing ? "Edit Casting Call" : "✦ Post a Casting Call"}
+          {editing ? "Edit Casting Call" : "Post a Casting Call"}
         </h2>
         <p style={{ color: "var(--mid)", marginTop: "0.4rem" }}>
           {editing ? "Update the details below." : "Fill in the details to reach the right talent."}
@@ -534,37 +534,76 @@ function CastingCard({
   onDelete: (id: string) => void;
   onView: (p: CastingPost) => void;
 }) {
+  const budget = Number(post.budget || 0);
+  const statusText = post.status === "Open" ? "Now Casting" : "Wrapped";
+
   return (
-    <div className="casting-post-card" onClick={() => onView(post)}>
-      <div className="post-top">
-        <div className="post-meta">
-          <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
-            {post.status}
-          </span>
-        </div>
-        <div style={{ marginTop: "14px" }}>
-          <h3 style={{ fontSize: "1.35rem", fontWeight: 900, color: "var(--ink)", lineHeight: 1.2, marginBottom: "6px" }}>
-            {post.title}
-          </h3>
-          <p className="company-name">{post.company}</p>
-        </div>
+    <div
+      className={`casting-post-card${post.status === "Closed" ? " casting-closed" : ""}`}
+      onClick={() => onView(post)}
+    >
+      <div className="casting-rail casting-rail-left" aria-hidden="true">
+        {Array.from({ length: 9 }).map((_, i) => <span key={i} />)}
       </div>
 
-      <div className="casting-info">
-        <div><strong>Location</strong><p>{post.location}</p></div>
-        <div><strong>Age</strong><p>{post.age || "—"}</p></div>
-        <div><strong>Budget</strong><p>₹{Number(post.budget || 0).toLocaleString("en-IN")}</p></div>
+      <div className="casting-slate-content">
+        <div className="casting-clapper" aria-hidden="true">
+          {Array.from({ length: 7 }).map((_, i) => <span key={i} />)}
+        </div>
+
+        <p className="casting-eyebrow">{statusText}</p>
+
+        <h3 className="casting-slate-title">{post.title}</h3>
+
+        <p className="casting-slate-sub">
+          {post.company} <span>·</span> {post.location}
+        </p>
+
+        <div className="casting-slate">
+          <div className="casting-slate-row">
+            <label>Role</label>
+            <p>{post.category || "Casting"}</p>
+          </div>
+
+          <div className="casting-slate-row">
+            <label>Age</label>
+            <p>{post.age || "ANY"}</p>
+          </div>
+
+          <div className="casting-slate-row">
+            <label>Gender</label>
+            <p>{post.gender || "ANY"}</p>
+          </div>
+
+          <div className="casting-slate-row">
+            <label>Budget</label>
+            <p>₹{budget.toLocaleString("en-IN")}</p>
+          </div>
+
+          {post.deadline && (
+            <div className="casting-slate-row">
+              <label>Deadline</label>
+              <p>{fmt(post.deadline)}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="casting-slate-footer">
+          <span>PROD. <b>{post.company}</b></span>
+          <span>CAT. <b>{post.category}</b></span>
+        </div>
+
+        {isOwn && (
+          <div className="casting-slate-actions" onClick={e => e.stopPropagation()}>
+            <button onClick={() => onEdit(post)}>Edit</button>
+            <button onClick={() => onDelete(post.id)}>Delete</button>
+          </div>
+        )}
       </div>
 
-      <p className="description-preview">{post.description}</p>
-      <small>Posted {fmt(post.createdAt)}{post.deadline ? ` · Deadline ${fmt(post.deadline)}` : ""}</small>
-
-      {isOwn && (
-        <div className="post-actions" onClick={e => e.stopPropagation()}>
-          <button onClick={() => onEdit(post)}>Edit</button>
-          <button onClick={() => onDelete(post.id)}>Delete</button>
-        </div>
-      )}
+      <div className="casting-rail casting-rail-right" aria-hidden="true">
+        {Array.from({ length: 9 }).map((_, i) => <span key={i} />)}
+      </div>
     </div>
   );
 }
@@ -581,31 +620,43 @@ function CastingListRow({
   onView: (p: CastingPost) => void;
 }) {
   return (
-    <div className="list-row" onClick={() => onView(post)}>
-      <div className="list-row-left">
-        <div>
-          <span style={{ fontWeight: 800, color: "var(--ink)", fontSize: "1rem" }}>{post.title}</span>
-          <span style={{ color: "var(--mid)", fontSize: "0.85rem", marginLeft: "0.6rem" }}>{post.company}</span>
-        </div>
-        <div style={{ display: "flex", gap: "1rem", marginTop: "0.3rem", fontSize: "0.8rem", color: "var(--mid)", flexWrap: "wrap" }}>
-          <span>{post.location}</span>
-          <span>{post.age || "—"}</span>
-          <span>₹{Number(post.budget || 0).toLocaleString("en-IN")}</span>
-          <span>{fmt(post.createdAt)}</span>
-        </div>
+    <div className={`list-row${post.status === "Closed" ? " list-row-closed" : ""}`} onClick={() => onView(post)}>
+      <div className="list-film-rail" aria-hidden="true">
+        {Array.from({ length: 5 }).map((_, i) => <span key={i} />)}
       </div>
-
-      <div className="list-row-right" onClick={e => e.stopPropagation()}>
-        <span className={`status ${post.status === "Open" ? "open" : "closed"}`}>{post.status}</span>
-        <div className="post-actions">
-          <button className="row-view-btn" onClick={() => onView(post)}>View</button>
-          {isOwn && (
-            <>
+      <div className="list-row-main">
+        <div className="list-clapper" aria-hidden="true">
+          {Array.from({ length: 7 }).map((_, i) => <span key={i} />)}
+        </div>
+        <div className="list-row-kicker">{post.status === "Open" ? "Now Casting" : "Wrapped"}</div>
+        <div className="list-row-title-line">
+          <div className="list-row-left">
+            <span className="list-row-title">{post.title}</span>
+            <span className="list-row-company">{post.company}</span>
+          </div>
+          <span className={`list-status ${post.status === "Open" ? "open" : "closed"}`}>{post.status}</span>
+        </div>
+        <div className="list-row-meta">
+          <span><b>ROLE</b>{post.category || "Casting"}</span>
+          <span><b>LOCATION</b>{post.location}</span>
+          <span><b>AGE</b>{post.age || "Any"}</span>
+          <span><b>BUDGET</b>₹{Number(post.budget || 0).toLocaleString("en-IN")}</span>
+          {post.deadline && <span><b>DEADLINE</b>{fmt(post.deadline)}</span>}
+        </div>
+        <div className="list-row-bottom">
+          <span>PROD. <b>{post.company}</b></span>
+          <span>POSTED. <b>{fmt(post.createdAt)}</b></span>
+          <div className="post-actions" onClick={e => e.stopPropagation()}>
+            <button className="row-view-btn" onClick={() => onView(post)}>View</button>
+            {isOwn && <>
               <button onClick={() => onEdit(post)}>Edit</button>
               <button onClick={() => onDelete(post.id)}>Delete</button>
-            </>
-          )}
+            </>}
+          </div>
         </div>
+      </div>
+      <div className="list-film-rail" aria-hidden="true">
+        {Array.from({ length: 5 }).map((_, i) => <span key={i} />)}
       </div>
     </div>
   );
@@ -884,64 +935,530 @@ export default function PostPage() {
         html.dark .post-status.open { background: rgba(46,125,50,0.2); color: #6fcf87; }
         html.dark .post-status.closed { background: rgba(198,40,40,0.2); color: #f28b82; }
 
-        /* ─── CASTING CARD ─── */
-        .casting-post-card { background: var(--card-bg); border: 2.5px solid var(--nb-border); border-radius: 0; padding: 1.5rem; box-shadow: 4px 4px 0px var(--nb-border); transition: transform 0.15s ease, box-shadow 0.15s ease; cursor: pointer; }
-        .casting-post-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--nb-border); }
+        /* ─── FILM SLATE CASTING CARD ─── */
+        .casting-post-card {
+          --film-card-1: #141313;
+          --film-card-2: #0c0b0b;
+          --film-ink: #f4f1e9;
+          --film-muted: #a19b8d;
+          --film-accent: #f0a70a;
+          --film-line: rgba(244,241,233,0.16);
+          --film-glow: rgba(240,167,10,0.06);
+          --film-shadow: rgba(0,0,0,0.75);
+          --film-ring: rgba(240,167,10,0.16);
 
-        .post-meta { display: flex; align-items: center; justify-content: flex-end; padding-bottom: 1rem; margin-bottom: 0; border-bottom: 2px solid var(--nb-border); }
-        .post-top { display: block; margin-bottom: 1rem; }
-        .company-name { color: var(--gold); font-weight: 700; font-size: 0.85rem; margin-top: 3px; }
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          min-height: 0;
+          display: flex;
+          background:
+            radial-gradient(circle at 50% 0%, var(--film-glow), transparent 55%),
+            linear-gradient(180deg,var(--film-card-1) 0%,var(--film-card-2) 100%);
+          border: 1px solid var(--film-ring);
+          border-radius: 10px;
+          box-shadow: 0 20px 42px -16px var(--film-shadow), 0 0 0 1px rgba(240,167,10,0.05);
+          overflow: hidden;
+          cursor: pointer;
+          padding: 0;
+          transition: transform .22s ease, box-shadow .22s ease;
+        }
 
-        .casting-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin: 1rem 0; }
-        .casting-info div { background: #0f0e0d; border-radius: 0; padding: 8px 10px; }
-        html.dark .casting-info div { background: #f0eeea; }
-        .casting-info strong { display: block; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 3px; font-weight: 900; }
-        html.dark .casting-info strong { color: rgba(15,14,13,0.5); }
-        .casting-info p { font-size: 0.82rem; font-weight: 800; color: #fff; margin: 0; }
-        html.dark .casting-info p { color: #0f0e0d; }
+        .casting-post-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 28px 52px -18px var(--film-shadow), 0 0 0 1px rgba(240,167,10,0.22);
+        }
 
-        .description-preview { color: var(--mid); font-size: 0.85rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        small { display: block; margin-top: 0.6rem; margin-bottom: 1rem; color: var(--mid); font-size: 0.72rem; font-weight: 600; }
+        .casting-post-card.casting-closed { filter: saturate(.72); }
 
-        /* ─── ACTION BUTTONS ─── */
-        .post-actions { display: flex; width: max-content; border: 2px solid var(--nb-border); border-radius: 0; background: transparent; overflow: hidden; }
-        .post-actions button { border: none; background: transparent; padding: 7px 16px; cursor: pointer; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; font-family: inherit; transition: background 0.15s, color 0.15s; border-right: 2px solid var(--nb-border); color: var(--ink); }
-        .post-actions button:last-child { border-right: none; }
-        .post-actions .row-view-btn { background: #fef3c7; color: #92400e; }
-        html.dark .post-actions .row-view-btn { background: rgba(201,168,76,0.15); color: var(--gold); }
-        .post-actions .row-view-btn:hover { background: var(--gold); color: #111; }
-        .post-actions button:not(.row-view-btn):not(:last-child) { color: var(--ink); }
-        .post-actions button:not(.row-view-btn):not(:last-child):hover { background: var(--gold); color: #111; }
-        .post-actions button:last-child:not(.row-view-btn) { color: #991b1b; }
-        html.dark .post-actions button:last-child:not(.row-view-btn) { color: #f28b82; }
-        .post-actions button:last-child:not(.row-view-btn):hover { background: #fee2e2; }
+        .casting-rail {
+          width: 25px;
+          min-width: 25px;
+          flex-shrink: 0;
+          position: relative;
+          background: #090909;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 12px 0;
+        }
 
-        /* ─── LIST ROW ─── */
-        .list-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem 1.6rem; background: var(--card-bg); border: 2.5px solid var(--nb-border); border-radius: 0; margin-bottom: 0.6rem; cursor: pointer; box-shadow: 3px 3px 0px var(--nb-border); transition: transform 0.15s ease, box-shadow 0.15s ease; }
-        .list-row:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0px var(--nb-border); }
-        .list-row-left { flex: 1; min-width: 0; }
-        .list-row-right { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+        .casting-rail-left { border-right: 1px solid rgba(240,167,10,.16); }
+        .casting-rail-right { border-left: 1px solid rgba(240,167,10,.16); }
 
-        .status { padding: 4px 12px; border-radius: 0; border: 1.5px solid var(--nb-border); font-size: 0.62rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
-        .status.open { background: #d1fae5; color: #065f46; }
-        .status.closed { background: #fee2e2; color: #991b1b; }
-        html.dark .status.open { background: rgba(46,125,50,0.2); color: #6fcf87; }
-        html.dark .status.closed { background: rgba(198,40,40,0.2); color: #f28b82; }
+        .casting-rail span {
+          display: block;
+          width: 13px;
+          height: 15px;
+          margin: 0 auto;
+          background: #f4f1e9;
+          border-radius: 3px;
+          box-shadow: 0 0 0 1px rgba(255,255,255,.06);
+        }
 
-        /* ─── EMPTY STATE ─── */
-        .empty-state { text-align: center; padding: 5rem 2rem; background: var(--card-bg); border-radius: var(--rad-lg); border: 1.5px solid var(--mist); }
-        .empty-state-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
-        .empty-state h3 { font-size: 1.3rem; font-weight: 800; color: var(--ink); margin-bottom: 0.5rem; }
-        .empty-state p { color: var(--mid); margin-bottom: 1.5rem; }
+        .casting-slate-content {
+          position: relative;
+          flex: 1;
+          min-width: 0;
+          padding: 16px 17px 13px;
+          color: var(--film-ink);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        }
 
-        /* ─── FORM ─── */
-        .post-form-section { padding: 3rem 6vw 4rem; }
-        .post-form-header { margin-bottom: 2rem; }
-        .post-form { background: var(--card-bg); border: 1.5px solid var(--mist); border-radius: var(--rad-lg); padding: 2.5rem; box-shadow: var(--shadow); display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; max-width: 900px; transition: background 0.35s; }
-        .form-field { display: flex; flex-direction: column; gap: 6px; }
-        .form-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--mid); }
-        .form-full { grid-column: 1 / 3; }
-        .form-actions { display: flex; gap: 1rem; align-items: center; justify-content: flex-start; padding-top: 0.5rem; }
+        .casting-clapper {
+          display: flex;
+          height: 13px;
+          margin: 0 -17px 13px;
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        .casting-clapper span { flex: 1; transform: skewX(-22deg); margin: 0 -3px; }
+        .casting-clapper span:nth-child(odd) { background: var(--film-ink); }
+        .casting-clapper span:nth-child(even) { background: var(--film-card-2); border: 1px solid var(--film-line); border-left: none; border-right: none; }
+
+        .casting-eyebrow {
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 8px;
+          font-weight: 700;
+          letter-spacing: .24em;
+          text-transform: uppercase;
+          color: var(--film-accent);
+          margin: 0 0 5px;
+          flex-shrink: 0;
+        }
+
+        .casting-slate-title {
+          font-family: 'Bebas Neue',Impact,sans-serif;
+          font-weight: 400;
+          font-size: clamp(1.65rem, 2.3vw, 2.25rem);
+          letter-spacing: .025em;
+          line-height: .91;
+          text-transform: uppercase;
+          color: var(--film-ink);
+          margin: 0 0 5px;
+          overflow-wrap: anywhere;
+          max-height: 3.8em;
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        .casting-slate-sub {
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 9px;
+          color: var(--film-muted);
+          margin: 0 0 9px;
+          letter-spacing: .01em;
+          line-height: 1.3;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex-shrink: 0;
+        }
+
+        .casting-slate-sub span { color: var(--film-accent); margin: 0 3px; }
+
+        .casting-slate {
+          border: 1px solid var(--film-line);
+          border-radius: 4px;
+          padding: 8px 10px 1px;
+          margin-bottom: 9px;
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .casting-slate-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          gap: 8px;
+          padding-bottom: 5px;
+          border-bottom: 1px dashed var(--film-line);
+          margin-bottom: 5px;
+        }
+
+        .casting-slate-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 4px; }
+
+        .casting-slate-row label {
+          flex-shrink: 0;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 7px;
+          font-weight: 700;
+          letter-spacing: .14em;
+          text-transform: uppercase;
+          color: var(--film-muted);
+        }
+
+        .casting-slate-row p {
+          margin: 0;
+          min-width: 0;
+          text-align: right;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 10px;
+          font-weight: 700;
+          line-height: 1.1;
+          color: var(--film-ink);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .casting-slate-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 6.5px;
+          letter-spacing: .08em;
+          line-height: 1.2;
+          text-transform: uppercase;
+          color: var(--film-muted);
+          flex-shrink: 0;
+        }
+
+        .casting-slate-footer span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .casting-slate-footer b { color: var(--film-accent); font-weight: 700; }
+
+        .casting-slate-actions {
+          display: flex;
+          width: max-content;
+          margin-top: 7px;
+          border: 1px solid var(--film-line);
+          background: rgba(0,0,0,.18);
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        .casting-slate-actions button {
+          border: 0;
+          border-right: 1px solid var(--film-line);
+          background: transparent;
+          color: var(--film-muted);
+          padding: 4px 8px;
+          cursor: pointer;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 7px;
+          font-weight: 700;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+          transition: background .15s,color .15s;
+        }
+        .casting-slate-actions button:last-child { border-right: 0; }
+        .casting-slate-actions button:hover { background: var(--film-accent); color: #111; }
+
+        /* ─── FILM LIST VIEW ─── */
+        .list-row {
+          --film-card-1:#141313;
+          --film-card-2:#0c0b0b;
+          --film-ink:#f4f1e9;
+          --film-muted:#a19b8d;
+          --film-accent:#f0a70a;
+          --film-line:rgba(244,241,233,.16);
+          display:flex;
+          align-items:stretch;
+          width:100%;
+          min-height:145px;
+          margin-bottom:12px;
+          background:radial-gradient(circle at 50% 0%,rgba(240,167,10,.05),transparent 55%),linear-gradient(180deg,var(--film-card-1),var(--film-card-2));
+          border:1px solid rgba(240,167,10,.18);
+          border-radius:9px;
+          overflow:hidden;
+          cursor:pointer;
+          box-shadow:0 16px 35px -18px rgba(0,0,0,.7);
+          transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+        }
+        .list-row:hover { transform:translateY(-3px); box-shadow:0 22px 42px -18px rgba(0,0,0,.78); border-color:rgba(240,167,10,.3); }
+        .list-row-closed { filter:saturate(.72); }
+
+        .list-film-rail {
+          width:25px;
+          min-width:25px;
+          background:#090909;
+          border-right:1px solid rgba(240,167,10,.16);
+          display:flex;
+          flex-direction:column;
+          justify-content:space-around;
+          padding:8px 0;
+        }
+        .list-film-rail:last-child { border-right:0; border-left:1px solid rgba(240,167,10,.16); }
+        .list-film-rail span { width:13px; height:15px; margin:0 auto; background:#f4f1e9; border-radius:3px; }
+
+        .list-row-main { flex:1; min-width:0; padding:0 18px 12px; color:var(--film-ink); }
+        .list-clapper { display:flex; height:12px; margin:0 -18px 11px; overflow:hidden; }
+        .list-clapper span { flex:1; transform:skewX(-22deg); margin:0 -3px; }
+        .list-clapper span:nth-child(odd) { background:var(--film-ink); }
+        .list-clapper span:nth-child(even) { background:var(--film-card-2); border:1px solid var(--film-line); border-left:0; border-right:0; }
+        .list-row-kicker { font:700 8px/1 'Courier Prime','Courier New',monospace; letter-spacing:.24em; text-transform:uppercase; color:var(--film-accent); margin-bottom:5px; }
+        .list-row-title-line { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+        .list-row-left { min-width:0; flex:1; }
+        .list-row-title { display:block; color:var(--film-ink); font:400 clamp(1.35rem,2.1vw,2rem)/.95 'Bebas Neue',Impact,sans-serif; letter-spacing:.02em; text-transform:uppercase; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .list-row-company { display:block; margin-top:3px; color:var(--film-muted); font:9px/1.2 'Courier Prime','Courier New',monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .list-status { padding:3px 7px; border:1px solid var(--film-line); font:700 7px/1 'Courier Prime','Courier New',monospace; letter-spacing:.1em; text-transform:uppercase; flex-shrink:0; }
+        .list-status.open { color:var(--film-accent); border-color:rgba(240,167,10,.3); }
+        .list-status.closed { color:#d58d84; }
+        .list-row-meta { display:flex; gap:14px; flex-wrap:wrap; margin-top:10px; padding:9px 0; border-top:1px dashed var(--film-line); border-bottom:1px dashed var(--film-line); }
+        .list-row-meta span { display:flex; gap:5px; align-items:baseline; color:var(--film-ink); font:9px/1.2 'Courier Prime','Courier New',monospace; }
+        .list-row-meta b { color:var(--film-muted); font-size:6px; letter-spacing:.12em; }
+        .list-row-bottom { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:9px; color:var(--film-muted); font:7px/1.2 'Courier Prime','Courier New',monospace; letter-spacing:.08em; text-transform:uppercase; }
+        .list-row-bottom b { color:var(--film-accent); }
+        .list-row-bottom .post-actions { display:flex; gap:0; margin-left:auto; border:1px solid var(--film-line); }
+        .list-row-bottom .post-actions button { border:0; border-right:1px solid var(--film-line); background:transparent; color:var(--film-muted); padding:4px 8px; font:700 7px/1 'Courier Prime','Courier New',monospace; text-transform:uppercase; cursor:pointer; }
+        .list-row-bottom .post-actions button:last-child { border-right:0; }
+        .list-row-bottom .post-actions button:hover { background:var(--film-accent); color:#111; }
+
+        /* ─── FILM SLATE FORM ─── */
+        .post-form-section { padding:2.2rem 6vw 4rem; }
+        .post-form-header { max-width:900px; margin-bottom:1rem; }
+        .post-form-header h2 { font-family:'Bebas Neue',Impact,sans-serif !important; text-transform:uppercase; letter-spacing:.04em; font-weight:400 !important; font-size:clamp(2rem,4vw,3.2rem) !important; }
+        .post-form-header p { font-family:'Courier Prime','Courier New',monospace; font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; }
+        .post-form {
+          --form-bg:#11100f;
+          max-width:900px;
+          position:relative;
+          overflow:hidden;
+          background:linear-gradient(180deg,#171514 0%,#0c0b0b 100%);
+          border:1px solid rgba(240,167,10,.2);
+          border-radius:8px;
+          padding:42px 28px 24px;
+          box-shadow:0 24px 50px -22px rgba(0,0,0,.7),0 0 0 1px rgba(240,167,10,.04);
+          display:grid;
+          grid-template-columns:1fr 1fr;
+          gap:1rem;
+        }
+        .post-form::before {
+          content:"";
+          position:absolute;
+          top:0;left:0;right:0;height:25px;
+          background:repeating-linear-gradient(120deg,#f4f1e9 0 42px,#11100f 42px 84px);
+          border-bottom:1px solid rgba(244,241,233,.16);
+        }
+        .post-form::after {
+          content:"PRODUCTION SLATE";
+          position:absolute;right:18px;top:31px;
+          color:#f0a70a;font:700 7px 'Courier Prime','Courier New',monospace;letter-spacing:.22em;text-transform:uppercase;
+        }
+        .form-field { display:flex; flex-direction:column; gap:5px; }
+        .form-label { font:700 .68rem 'Courier Prime','Courier New',monospace; text-transform:uppercase; letter-spacing:.13em; color:#a19b8d; }
+        .form-full { grid-column:1 / 3; }
+        .form-actions { display:flex; gap:.7rem; align-items:center; justify-content:flex-start; padding-top:.4rem; }
+        .post-form .hf-inp { width:100%; background:#0b0b0b !important; border:1px solid rgba(244,241,233,.16) !important; border-radius:3px !important; color:#f4f1e9 !important; padding:10px 11px !important; font-family:'Courier Prime','Courier New',monospace !important; font-size:.82rem !important; outline:none; }
+        .post-form .hf-inp::placeholder { color:#706b61 !important; }
+        .post-form .hf-inp:focus { border-color:rgba(240,167,10,.55) !important; box-shadow:0 0 0 2px rgba(240,167,10,.08); }
+        .post-form .csd-trigger { min-height:40px; background:#0b0b0b; border:1px solid rgba(244,241,233,.16); border-radius:3px; color:#f4f1e9; font-family:'Courier Prime','Courier New',monospace; }
+        .post-form .csd-trigger.open,.post-form .csd-trigger:hover { border-color:rgba(240,167,10,.55); }
+        .post-form .csd-menu { background:#11100f; border-color:rgba(240,167,10,.25); border-radius:3px; }
+        .post-form .csd-option { color:#f4f1e9; font-family:'Courier Prime','Courier New',monospace; }
+        .post-form .csd-option:hover,.post-form .csd-option.selected { background:rgba(240,167,10,.1); color:#f0a70a; }
+        .post-form .lang-menu-title,.post-form .lang-clear,.post-form .lang-chip { font-family:'Courier Prime','Courier New',monospace; }
+        .post-form .lang-chip { border-radius:2px; }
+        .post-form .btn-gold { border-radius:3px !important; font-family:'Courier Prime','Courier New',monospace; text-transform:uppercase; letter-spacing:.08em; font-size:.72rem; }
+        .post-form .btn-outline-sm { border-radius:3px !important; font-family:'Courier Prime','Courier New',monospace; text-transform:uppercase; letter-spacing:.08em; font-size:.72rem; }
+
+        @media (max-width: 700px) {
+          .casting-rail {
+            width: 22px;
+            min-width: 22px;
+            padding: 14px 0;
+          }
+
+          .casting-rail span {
+            width: 13px;
+            height: 16px;
+            margin: 0 auto;
+          }
+
+          .casting-slate-content {
+            padding: 18px 16px 16px;
+          }
+
+          .casting-clapper {
+            margin-left: -16px;
+            margin-right: -16px;
+          }
+
+          .casting-slate-title {
+            font-size: clamp(1.8rem, 8vw, 2.6rem);
+          }
+
+          .casting-slate {
+            padding-left: 13px;
+            padding-right: 13px;
+          }
+
+          .casting-slate-row {
+            gap: 10px;
+          }
+
+          .casting-slate-footer {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .casting-post-card { aspect-ratio: 1 / 1; }
+          .casting-slate-title { font-size: clamp(1.5rem, 7vw, 2rem); }
+          .casting-slate-row p { font-size: 9px; }
+          .list-row-title { white-space: normal; }
+        }
+
+        /* ─── BALANCED FILM SLATE SIZING ─── */
+        /* The card stays compact/square, but the information is readable. */
+        .casting-post-card {
+          aspect-ratio: 1 / 1;
+        }
+
+        .casting-slate-content {
+          padding: 17px 18px 15px;
+        }
+
+        .casting-clapper {
+          height: 14px;
+          margin-left: -18px;
+          margin-right: -18px;
+          margin-bottom: 14px;
+        }
+
+        .casting-eyebrow {
+          font-size: 10px;
+          letter-spacing: .22em;
+          margin-bottom: 7px;
+        }
+
+        .casting-slate-title {
+          font-size: clamp(1.35rem, 1.65vw, 1.75rem);
+          line-height: .94;
+          letter-spacing: .02em;
+          margin-bottom: 7px;
+          max-height: 3.8em;
+        }
+
+        .casting-slate-sub {
+          font-size: 11px;
+          line-height: 1.35;
+          margin-bottom: 11px;
+        }
+
+        .casting-slate {
+          padding: 10px 12px 2px;
+          margin-bottom: 11px;
+        }
+
+        .casting-slate-row {
+          gap: 10px;
+          padding-bottom: 7px;
+          margin-bottom: 7px;
+        }
+
+        .casting-slate-row label {
+          font-size: 9px;
+          letter-spacing: .13em;
+        }
+
+        .casting-slate-row p {
+          font-size: 13px;
+          line-height: 1.2;
+        }
+
+        .casting-slate-footer {
+          font-size: 8px;
+          letter-spacing: .07em;
+        }
+
+        .casting-slate-actions {
+          margin-top: 8px;
+        }
+
+        .casting-slate-actions button {
+          padding: 5px 10px;
+          font-size: 8px;
+        }
+
+        /* ─── BALANCED FILM LIST VIEW ─── */
+        .list-row {
+          min-height: 132px;
+        }
+
+        .list-row-main {
+          padding: 0 20px 14px;
+        }
+
+        .list-clapper {
+          height: 14px;
+          margin-left: -20px;
+          margin-right: -20px;
+          margin-bottom: 12px;
+        }
+
+        .list-row-kicker {
+          font-size: 9px;
+          margin-bottom: 6px;
+        }
+
+        .list-row-title {
+          font-size: clamp(1.25rem, 1.8vw, 1.7rem);
+          line-height: .98;
+          letter-spacing: .015em;
+        }
+
+        .list-row-company {
+          margin-top: 4px;
+          font-size: 10px;
+        }
+
+        .list-status {
+          padding: 4px 9px;
+          font-size: 8px;
+        }
+
+        .list-row-meta {
+          gap: 16px;
+          margin-top: 11px;
+          padding: 10px 0;
+        }
+
+        .list-row-meta span {
+          gap: 6px;
+          font-size: 10px;
+        }
+
+        .list-row-meta b {
+          font-size: 7px;
+        }
+
+        .list-row-bottom {
+          margin-top: 10px;
+          font-size: 8px;
+        }
+
+        .list-row-bottom .post-actions button {
+          padding: 5px 9px;
+          font-size: 8px;
+        }
+
+        @media (max-width: 700px) {
+          .casting-slate-title {
+            font-size: clamp(1.3rem, 7vw, 1.8rem);
+          }
+
+          .casting-slate-row label {
+            font-size: 8px;
+          }
+
+          .casting-slate-row p {
+            font-size: 12px;
+          }
+
+          .list-row-title {
+            font-size: 1.35rem;
+          }
+
+          .list-row-meta span {
+            font-size: 9px;
+          }
+        }
 
         /* ─── MODAL — neobrutalist ─── */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 24px; }
@@ -976,8 +1493,10 @@ export default function PostPage() {
           .casting-info { grid-template-columns: repeat(2, 1fr); }
           .filter-grid { grid-template-columns: 1fr 1fr; }
           .posts-grid { grid-template-columns: 1fr; }
-          .list-row { flex-direction: column; align-items: flex-start; }
-          .list-row-right { flex-wrap: wrap; }
+          .casting-post-card { aspect-ratio: 1 / 1; }
+          .list-row { min-height: 0; }
+          .list-row-bottom { flex-wrap: wrap; }
+          .list-row-bottom .post-actions { width: 100%; margin-left: 0; }
           .search-input { width: 260px; }
           .search-input:focus { width: 300px; }
         }
@@ -989,6 +1508,231 @@ export default function PostPage() {
           .search-input { width: 200px; }
           .search-input:focus { width: 220px; }
         }
+
+        /* =========================================================
+   FILM-SLATE SIZING — readable, balanced, square
+========================================================= */
+
+/* ── Grid cards ── */
+.posts-grid {
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.casting-post-card {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  max-height: 440px;
+  border-radius: 10px;
+}
+
+.casting-rail {
+  width: 28px;
+  min-width: 28px;
+  padding: 14px 0;
+}
+
+.casting-rail span {
+  width: 16px;
+  height: 18px;
+  border-radius: 3px;
+}
+
+.casting-slate-content {
+  padding: 18px 20px 15px;
+}
+
+.casting-clapper {
+  height: 16px;
+  margin: 0 -20px 16px;
+}
+
+.casting-eyebrow {
+  font-size: 10px;
+  letter-spacing: .22em;
+  margin-bottom: 6px;
+}
+
+.casting-slate-title {
+  font-size: clamp(1.7rem, 2.4vw, 2.4rem);
+  line-height: .92;
+  max-height: 2.76em;
+  margin-bottom: 7px;
+}
+
+.casting-slate-sub {
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+.casting-slate {
+  padding: 10px 12px 2px;
+  margin-bottom: 10px;
+}
+
+.casting-slate-row {
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+  gap: 10px;
+}
+
+.casting-slate-row label {
+  font-size: 9px;
+  letter-spacing: .14em;
+}
+
+.casting-slate-row p {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.casting-slate-footer {
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+
+.casting-slate-actions {
+  margin-top: 8px;
+}
+
+.casting-slate-actions button {
+  padding: 5px 10px;
+  font-size: 8px;
+}
+
+/* ── List rows ── */
+.list-row {
+  min-height: 160px;
+  margin-bottom: 12px;
+  border-radius: 9px;
+}
+
+.list-film-rail {
+  width: 28px;
+  min-width: 28px;
+  padding: 10px 0;
+}
+
+.list-film-rail span {
+  width: 16px;
+  height: 18px;
+  border-radius: 3px;
+}
+
+.list-row-main {
+  padding: 0 22px 16px;
+}
+
+.list-clapper {
+  height: 14px;
+  margin: 0 -22px 13px;
+}
+
+.list-row-kicker {
+  font-size: 9px;
+  letter-spacing: .22em;
+  margin-bottom: 5px;
+}
+
+.list-row-title {
+  font-size: clamp(1.45rem, 2vw, 2rem);
+  line-height: .96;
+  letter-spacing: .02em;
+}
+
+.list-row-company {
+  margin-top: 4px;
+  font-size: 10px;
+}
+
+.list-status {
+  padding: 4px 10px;
+  font-size: 8px;
+}
+
+.list-row-meta {
+  gap: 16px;
+  margin-top: 10px;
+  padding: 10px 0;
+}
+
+.list-row-meta span {
+  font-size: 11px;
+  gap: 6px;
+}
+
+.list-row-meta b {
+  font-size: 7.5px;
+}
+
+.list-row-bottom {
+  margin-top: 9px;
+  font-size: 8px;
+}
+
+.list-row-bottom .post-actions button {
+  padding: 5px 10px;
+  font-size: 8px;
+}
+
+/* ── Form ── */
+.post-form-section {
+  padding: 1.8rem 6vw 3.5rem;
+}
+
+.post-form-header {
+  max-width: 860px;
+  margin-bottom: 1rem;
+}
+
+.post-form {
+  max-width: 860px;
+  padding: 42px 28px 24px;
+  gap: 1rem;
+}
+
+.form-label {
+  font-size: .66rem;
+}
+
+.post-form .hf-inp {
+  padding: 10px 12px !important;
+  font-size: .82rem !important;
+}
+
+.post-form .csd-trigger {
+  min-height: 40px;
+  font-size: .82rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .posts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .casting-post-card { max-height: none; }
+}
+
+@media (max-width: 700px) {
+  .posts-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .casting-post-card {
+    width: min(100%, 420px);
+    justify-self: center;
+  }
+  .casting-slate-title {
+    font-size: clamp(1.6rem, 8vw, 2.2rem);
+  }
+  .casting-slate-row label { font-size: 8px; }
+  .casting-slate-row p { font-size: 12px; }
+  .list-row-title { font-size: 1.4rem; white-space: normal; }
+  .list-row-meta span { font-size: 10px; }
+  .casting-slate-footer { flex-direction: column; align-items: flex-start; }
+}
+
       `}</style>
 
       <main>
