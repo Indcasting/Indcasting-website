@@ -21,7 +21,7 @@ const NAV_LINKS_AUTHED = [
   { label: "Home",         href: "/" },
   { label: "Posts",        href: "/post" },
   { label: "Applications", href: "/applications" },
-  { label: "Messages",     href: "/messages" },
+  { label: "Messages",     href: "/dashboard/messages" },
   { label: "Membership",   href: "/membership" },
 ];
 

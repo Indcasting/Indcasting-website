@@ -238,11 +238,20 @@ export default function DashboardSidebar() {
 
   return (
     <aside
-      className="dashboard-sidebar"
-      style={{
-        position: "relative",
-      }}
-    >
+  className="dashboard-sidebar"
+  style={{
+    position: "sticky",
+    top: 0,
+    left: 0,
+    width: "260px",
+    height: "100vh",
+    flexShrink: 0,
+    zIndex: 1000,
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+  }}
+>
 
       {/* =====================================================
           SIDEBAR HEADER
