@@ -15,15 +15,15 @@ import { Bell, Menu, X, ChevronDown } from "lucide-react";
 const NAV_LINKS_PUBLIC = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/post" },
-  { label: "Applications", href: "/applications" },
+  { label: "Talent Directory", href: "/applications" },
   { label: "Membership", href: "/membership" },
 ];
 
 const NAV_LINKS_AUTHED = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/post" },
-  { label: "Applications", href: "/applications" },
   { label: "Messages", href: "/dashboard/messages" },
+  { label: "Talent Directory", href: "/applications" },
   { label: "Membership", href: "/membership" },
 ];
 
@@ -1724,6 +1724,16 @@ export default function Header() {
                       }
                     >
                       My Portfolio
+                    </Link>
+
+                    <Link
+                      href="/applications"
+                      className="ic-dd-link"
+                      onClick={() =>
+                        setProfileOpen(false)
+                      }
+                    >
+                      Talent Directory
                     </Link>
 
                     <Link
