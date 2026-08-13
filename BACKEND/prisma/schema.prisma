@@ -1,0 +1,126 @@
+// Prisma schema - Auto-generated from TypeORM entities
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../generated/prisma"
+}
+
+// Database connection configured in prisma.config.ts
+// Ensure DATABASE_URL is set in your .env file
+
+model User {
+  id         String @id @default(cuid())
+  name       String
+  email      String  @unique
+  password   String
+  phone      String?
+  city       String?
+  role       Role    @default(TALENT)
+  bio        String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relational fields
+  applications  Application[]
+  talentProfile TalentProfile?
+  messages      Message[]
+  notifications Notification[]
+  reviews       Review[]
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  type      String
+  status    String   @default("draft")
+  createdAt DateTime @default(now())
+
+  userId      String
+  user      User     @relation(fields: [userId], references: [id])
+
+  castings   CastingCall[]
+  media      MediaAsset[]
+  messages   Message[]
+  notifications Notification[]
+  reviews    Review[]
+}
+
+model CastingCall {
+  id          String   @id @default(cuid())
+  type        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  applications Application[]
+  mediaAssets  MediaAsset[]
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  url       String
+  fileName  String
+  mimeType  String
+  createdAt DateTime @default(now())
+
+  applications Application[]
+  reviews     Review[]
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  content    String
+  sentAt     DateTime @default(now())
+  senderId   String
+  receiverId String
+
+  sender   User   @relation("Sender", fields: [senderId], references: [id])
+  receiver User   @relation("Receiver", fields: [receiverId], references: [id])
+
+  applications Application[]
+  notifications Notification[]
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  type       String   @default("info")
+  messageId  String?
+  createdAt  DateTime @default(now())
+
+  senderId   String?
+  sender     User?     @relation(fields: [senderId], references: [id])
+
+  message    Message?  @relation(fields: [messageId], references: [id])
+
+  applications Application[]
+}
+
+model TalentProfile {
+  id          String   @id @default(cuid())
+  headline    String
+  profileType String   @default("talent")
+  createdAt   DateTime @default(now())
+
+  userId String @unique
+  user  User   @relation(fields: [userId], references: [id])
+
+  applications Application[]
+  reviews     Review[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      @default(5)
+  comment   String?
+  createdAt DateTime @default(now())
+
+  userId     String
+  userId2    String
+
+  applicantId String?
+  receiverId  String?
+}
+
+// Enums
+enum Role {
+  TALENT
+  SEEKER
+}

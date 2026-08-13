@@ -1,0 +1,36 @@
+{
+  "stack": {
+    "framework": "NestJS",
+    "language": "TypeScript",
+    "runtime": "Node.js",
+    "database": "PostgreSQL with TypeORM",
+    "auth": "JWT + Passport.js with bcrypt password hashing",
+    "security": [
+      "Helmet (HTTP headers)",
+      "Throttler (rate limiting)",
+      "Passport strategy integration"
+    ],
+    "packages": [
+      "@nestjs/jwt",
+      "@nestjs/passport",
+      "@nestjs/typeorm",
+      "bcrypt",
+      "pg",
+      "class-validator",
+      "joi"
+    ]
+  },
+  "project_info": {
+    "name": "indcasting-api",
+    "version": "0.0.1",
+    "description": "Backend API for Indcasting platform with authentication and user management"
+  },
+  "key_features": [
+    "JWT-based stateless authentication",
+    "Password hashing with bcrypt",
+    "TypeORM ORM for PostgreSQL",
+    "NestJS modular architecture",
+    "Rate limiting to prevent brute-force attacks",
+    "JWT token refresh strategy"
+  ]
+}
