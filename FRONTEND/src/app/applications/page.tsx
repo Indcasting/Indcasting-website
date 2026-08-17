@@ -17,6 +17,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import HeroCarousel from "@/components/ui/Herocarousel";
+import { talentHeroSlides } from "@/data/heroSlides";
 import { PortfolioData } from "@/types/portfolio";
 
 /* ─────────────────────────────────────────
@@ -649,82 +650,44 @@ export default function ApplicationsPage() {
   }, [allPortfolios, search, category]);
 
   useEffect(() => {
-    if (gsapLoaded.current) return;
+  if (gsapLoaded.current) return;
 
-    gsapLoaded.current = true;
-    gsap.registerPlugin(ScrollTrigger);
+  gsapLoaded.current = true;
+  gsap.registerPlugin(ScrollTrigger);
 
-    gsap.to(".applications-progress-bar", {
-      scaleX: 1,
-      ease: "none",
-      scrollTrigger: {
-        trigger: "body",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 0,
-      },
+  // Keep only the top scroll progress animation.
+  // Do NOT animate the application cards because
+  // opacity: 0 can make them disappear on initial render.
+  gsap.to(".applications-progress-bar", {
+    scaleX: 1,
+    ease: "none",
+    scrollTrigger: {
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0,
+    },
+  });
+
+  const onLoad = () => {
+    ScrollTrigger.refresh();
+  };
+
+  window.addEventListener("load", onLoad);
+
+  const refreshTimer = window.setTimeout(() => {
+    ScrollTrigger.refresh();
+  }, 500);
+
+  return () => {
+    window.removeEventListener("load", onLoad);
+    window.clearTimeout(refreshTimer);
+
+    ScrollTrigger.getAll().forEach((trigger) => {
+      trigger.kill();
     });
-
-    gsap.utils.toArray<HTMLElement>(".application-stat-card").forEach(
-      (card, index) => {
-        gsap.from(card, {
-          y: 40,
-          opacity: 0,
-          scale: 0.92,
-          duration: 0.6,
-          delay: index * 0.1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: ".applications-overview",
-            start: "top 85%",
-            toggleActions: "play none none none",
-          },
-        });
-      }
-    );
-
-    gsap.utils.toArray<Element>(
-      ".application-card, .application-list-row"
-    ).forEach((element, index) => {
-      gsap.from(element, {
-        y: 30,
-        opacity: 0,
-        duration: 0.5,
-        delay: (index % 6) * 0.07,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: element,
-          start: "top 88%",
-          toggleActions: "play none none none",
-        },
-      });
-    });
-
-    gsap.utils.toArray<Element>(".applications-reveal").forEach((element) => {
-      gsap.from(element, {
-        y: 35,
-        opacity: 0,
-        duration: 0.7,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: element,
-          start: "top 88%",
-          toggleActions: "play none none none",
-        },
-      });
-    });
-
-    const onLoad = () => ScrollTrigger.refresh();
-    window.addEventListener("load", onLoad);
-
-    const refreshTimer = window.setTimeout(() => ScrollTrigger.refresh(), 500);
-
-    return () => {
-      window.removeEventListener("load", onLoad);
-      window.clearTimeout(refreshTimer);
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
-  }, []);
+  };
+}, []);
 
   const resetFilters = useCallback(() => {
     setSearch("");
@@ -1504,7 +1467,7 @@ export default function ApplicationsPage() {
         }
 
         .application-modal-cover {
-          height: 180px;
+          height: 80px;
           background: linear-gradient(135deg,#24211d,#0d0c0c);
           overflow: hidden;
         }
@@ -1524,7 +1487,7 @@ export default function ApplicationsPage() {
         .application-avatar {
           width: 84px;
           height: 84px;
-          margin-top: -70px;
+          margin-top: -45px;
           margin-bottom: 16px;
           display: flex;
           align-items: center;
@@ -1711,7 +1674,7 @@ export default function ApplicationsPage() {
       `}</style>
 
       <main className="applications-page">
-        <HeroCarousel />
+        <HeroCarousel slides={talentHeroSlides} />
 
         <section className="applications-overview">
           <div className="application-stat-grid">

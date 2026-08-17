@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import HeroCarousel from "@/components/ui/Herocarousel";
+import { postHeroSlides } from "@/data/heroSlides";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -252,56 +253,134 @@ function LanguageMultiSelect({
    No category badge. Info cells match card
    black-block style. Hard border + shadow.
 ───────────────────────────────────────── */
-function DetailsModal({ post, onClose }: { post: CastingPost; onClose: () => void }) {
+function DetailsModal({
+  post,
+  onClose,
+}: {
+  post: CastingPost;
+  onClose: () => void;
+}) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    const esc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+
+    const esc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
     window.addEventListener("keydown", esc);
-    return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", esc); };
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", esc);
+    };
   }, [onClose]);
 
   const infoItems: [string, string][] = [
-    ["Location", post.location],
-    ["Age Range", post.age],
-    ["Gender", post.gender ?? "Any"],
-    ["Experience", post.experience ?? "Any"],
-    ["Languages", post.languages ?? "—"],
-    ["Budget", `₹${Number(post.budget).toLocaleString("en-IN")}`],
-    ...(post.deadline ? [["Deadline", fmt(post.deadline)] as [string, string]] : []),
-    ["Posted", fmt(post.createdAt)],
+    ["ROLE", post.category || "Casting"],
+    ["LOCATION", post.location || "Not specified"],
+    ["AGE", post.age || "Any"],
+    ["GENDER", post.gender || "Any"],
+    ["EXPERIENCE", post.experience || "Any"],
+    ["LANGUAGES", post.languages || "—"],
+    ["BUDGET", `₹${Number(post.budget || 0).toLocaleString("en-IN")}`],
+    ...(post.deadline
+      ? [["DEADLINE", fmt(post.deadline)] as [string, string]]
+      : []),
   ];
 
   return (
-    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div
+      className="modal-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div className="casting-modal">
-        <button className="close-btn" onClick={onClose}>×</button>
+        {/* FILM STRIPE */}
+        <div className="modal-slate-strip" />
 
-        {/* Status badge — top right, matching card style */}
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
-          <span className={`post-status ${post.status === "Open" ? "open" : "closed"}`}>
-            {post.status}
-          </span>
-        </div>
+        {/* CLOSE */}
+        <button
+          className="close-btn"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          ×
+        </button>
 
-        <h2 className="modal-title">{post.title}</h2>
-        <p className="modal-company">{post.company}</p>
+        {/* COMPACT COVER — matches application popup */}
+        <div className="casting-modal-cover" aria-hidden="true" />
 
-        {/* Info grid — black cells matching casting-info */}
-        <div className="modal-info">
-          {infoItems.map(([k, v]) => (
-            <div className="modal-info-item" key={k}>
-              <strong>{k}</strong>
-              <p>{v}</p>
-            </div>
-          ))}
-        </div>
+        <div className="casting-modal-content">
+          {/* AVATAR — matches application popup */}
+          <div className="casting-modal-avatar" aria-hidden="true">
+            {(post.title || post.category || "C")[0].toUpperCase()}
+          </div>
 
-        <h3 className="modal-desc-heading">About this role</h3>
-        <div className="modal-description">{post.description}</div>
+          {/* STATUS */}
+          <div className="modal-status-row">
+            <span
+              className={`post-status ${
+                post.status === "Open" ? "open" : "closed"
+              }`}
+            >
+              {post.status === "Open" ? "NOW CASTING" : "WRAPPED"}
+            </span>
+          </div>
 
-        <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", flexWrap: "wrap" }}>
-          <button className="btn-gold">Apply Now</button>
-          <button className="btn-outline-sm" onClick={onClose}>Close</button>
+          {/* KICKER */}
+          <p className="modal-film-kicker">CASTING OPPORTUNITY</p>
+
+          {/* TITLE */}
+          <h2 className="modal-title">{post.title}</h2>
+
+          {/* COMPANY */}
+          <p className="modal-company">{post.company}</p>
+
+          {/* LOCATION */}
+          <div className="modal-location">
+            <span>LOCATION</span>
+            <strong>{post.location || "Not specified"}</strong>
+          </div>
+
+          {/* ABOUT */}
+          <div className="modal-section">
+            <h3>ABOUT THIS ROLE</h3>
+            <p>
+              {post.description ||
+                "No description has been provided for this casting opportunity."}
+            </p>
+          </div>
+
+          {/* INFO GRID */}
+          <div className="modal-info">
+            {infoItems.map(([label, value]) => (
+              <div className="modal-info-item" key={label}>
+                <strong>{label}</strong>
+                <span>{value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* POSTED */}
+          <div className="modal-posted">
+            POSTED <b>{fmt(post.createdAt)}</b>
+          </div>
+
+          {/* ACTIONS */}
+          <div className="modal-actions">
+            <button className="film-btn film-btn-gold" type="button">
+              APPLY NOW
+            </button>
+
+            <button
+              className="film-btn film-btn-outline"
+              type="button"
+              onClick={onClose}
+            >
+              CLOSE
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -688,46 +767,60 @@ export default function PostPage() {
   }, []);
 
   useEffect(() => {
-    if (gsapLoaded.current) return;
-    gsapLoaded.current = true;
+  if (gsapLoaded.current) return;
+  gsapLoaded.current = true;
 
-    gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(ScrollTrigger);
 
-    gsap.to(".progress-bar", {
-      scaleX: 1, ease: "none",
-      scrollTrigger: { trigger: "body", start: "top top", end: "bottom bottom", scrub: 0 },
-    });
-    gsap.utils.toArray<HTMLElement>(".overview-card").forEach((card, i) => {
-      gsap.from(card, {
-        y: 40, opacity: 0, scale: 0.92, duration: 0.6, delay: i * 0.1, ease: "power3.out",
-        scrollTrigger: { trigger: ".dashboard-overview", start: "top 85%", toggleActions: "play none none none" },
-      });
-    });
-    gsap.utils.toArray<Element>(".casting-post-card, .list-row").forEach((el, i) => {
+  // ─────────────────────────────────────────
+  // PROGRESS BAR
+  // ─────────────────────────────────────────
+  gsap.to(".progress-bar", {
+    scaleX: 1,
+    ease: "none",
+    scrollTrigger: {
+      trigger: "body",
+      start: "top top",
+      end: "bottom bottom",
+      scrub: 0,
+    },
+  });
+
+
+  gsap.utils
+    .toArray<Element>(".casting-post-card, .list-row")
+    .forEach((el, i) => {
       gsap.from(el, {
-        y: 30, opacity: 0, duration: 0.5, delay: (i % 6) * 0.07, ease: "power2.out",
-        scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
-      });
-    });
-    gsap.utils.toArray<Element>(".reveal").forEach((el) => {
-      gsap.from(el, {
-        y: 40, opacity: 0, duration: 0.8, ease: "power2.out",
-        scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
+        y: 30,
+        opacity: 0,
+        duration: 0.5,
+        delay: (i % 6) * 0.07,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 88%",
+          toggleActions: "play none none none",
+        },
       });
     });
 
-    // Layout can still shift after HeroCarousel / late images settle,
-    // so recalc trigger offsets once the page has fully loaded.
-    const onLoad = () => ScrollTrigger.refresh();
-    window.addEventListener("load", onLoad);
-    const refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 500);
+  const onLoad = () => {
+    ScrollTrigger.refresh();
+  };
 
-    return () => {
-      window.removeEventListener("load", onLoad);
-      clearTimeout(refreshTimer);
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, []);
+  window.addEventListener("load", onLoad);
+
+  const refreshTimer = setTimeout(() => {
+    ScrollTrigger.refresh();
+  }, 500);
+
+  return () => {
+    window.removeEventListener("load", onLoad);
+    clearTimeout(refreshTimer);
+
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+  };
+}, []);
 
   function handleSave(post: CastingPost) {
     const updated = editing ? posts.map(p => p.id === post.id ? post : p) : [post, ...posts];
@@ -810,6 +903,7 @@ export default function PostPage() {
 
   return (
     <>
+    <HeroCarousel slides={postHeroSlides} />
       <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "2px", background: "rgba(201,168,76,0.15)", zIndex: 300 }}>
         <div className="progress-bar" style={{ height: "100%", background: "var(--gold)", transformOrigin: "left", transform: "scaleX(0)" }} />
       </div>
@@ -1460,53 +1554,333 @@ export default function PostPage() {
           }
         }
 
-        /* ─── MODAL — neobrutalist ─── */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 24px; }
-        html.dark .modal-overlay { background: rgba(0,0,0,0.75); }
-        .casting-modal { background: var(--card-bg); color: var(--ink); width: 100%; max-width: 820px; max-height: 88vh; overflow-y: auto; border-radius: 0; padding: 2.5rem; position: relative; padding-top: 4.5rem; border: 2.5px solid var(--nb-border); box-shadow: 8px 8px 0px var(--nb-border); animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
-        @keyframes popIn { from { opacity: 0; transform: scale(0.93) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-        .close-btn { position: absolute; right: 20px; top: 18px; border: 2px solid var(--nb-border); background: transparent; color: var(--ink); width: 32px; height: 32px; border-radius: 0; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, color 0.15s; }
-        .close-btn:hover { background: var(--gold); color: #111; border-color: var(--nb-border); }
+        /* ─── COMPACT APPLICATION-STYLE VIEW POPUP ─── */
 
-        .modal-title { font-size: clamp(1.4rem,3vw,1.9rem); font-weight: 900; color: var(--ink); line-height: 1.2; margin-bottom: 6px; }
-        .modal-company { color: var(--gold); font-weight: 700; font-size: 0.95rem; margin-bottom: 1.5rem; }
-
-        .modal-info { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 1.5rem 0; }
-        .modal-info-item { background: #0f0e0d; border-radius: 0; padding: 10px 12px; }
-        html.dark .modal-info-item { background: #f0eeea; }
-        .modal-info-item strong { display: block; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin-bottom: 4px; font-weight: 900; }
-        html.dark .modal-info-item strong { color: rgba(15,14,13,0.5); }
-        .modal-info-item p { font-size: 0.85rem; font-weight: 800; color: #fff; margin: 0; }
-        html.dark .modal-info-item p { color: #0f0e0d; }
-
-        .modal-desc-heading { font-size: 0.82rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.1em; color: var(--mid); margin-bottom: 0.6rem; border-top: 2px solid var(--nb-border); padding-top: 1.2rem; }
-        .modal-description { color: var(--mid); font-size: 0.92rem; line-height: 1.75; }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 1000px) { .dashboard-overview { grid-template-columns: repeat(2, 1fr); } .filter-grid { grid-template-columns: repeat(3, 1fr); } .modal-info { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 768px) {
-          .post-toolbar { flex-direction: column; align-items: flex-start; }
-          .post-form { grid-template-columns: 1fr; padding: 1.6rem; }
-          .form-full { grid-column: auto; }
-          .form-actions { flex-direction: column; }
-          .casting-info { grid-template-columns: repeat(2, 1fr); }
-          .filter-grid { grid-template-columns: 1fr 1fr; }
-          .posts-grid { grid-template-columns: 1fr; }
-          .casting-post-card { aspect-ratio: 1 / 1; }
-          .list-row { min-height: 0; }
-          .list-row-bottom { flex-wrap: wrap; }
-          .list-row-bottom .post-actions { width: 100%; margin-left: 0; }
-          .search-input { width: 260px; }
-          .search-input:focus { width: 300px; }
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 2000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 24px;
+          background: rgba(0,0,0,.68);
+          backdrop-filter: blur(5px);
         }
+
+        html.dark .modal-overlay {
+          background: rgba(0,0,0,.75);
+        }
+
+        .casting-modal {
+          position: relative;
+          width: 100%;
+          max-width: 820px;
+          max-height: 88vh;
+          overflow-y: auto;
+          background: var(--card-bg);
+          color: var(--ink);
+          border: 2px solid var(--nb-border);
+          box-shadow: 8px 8px 0 var(--nb-border);
+          border-radius: 0;
+          padding: 0;
+          animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
+        }
+
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(.93) translateY(16px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .close-btn {
+          position: absolute;
+          z-index: 5;
+          top: 14px;
+          right: 14px;
+          width: 34px;
+          height: 34px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid #f4f1e9;
+          background: #11100f;
+          color: #f4f1e9;
+          border-radius: 0;
+          font-size: 1.25rem;
+          line-height: 1;
+          cursor: pointer;
+        }
+
+        .close-btn:hover {
+          background: #11100f;
+          color: #f4f1e9;
+          border-color: #f4f1e9;
+        }
+
+        .modal-slate-strip {
+          height: 26px;
+          background: repeating-linear-gradient(
+            120deg,
+            #f4f1e9 0 42px,
+            #11100f 42px 84px
+          );
+        }
+
+        .casting-modal-cover {
+          height: 80px;
+          background: linear-gradient(135deg,#24211d,#0d0c0c);
+          overflow: hidden;
+        }
+
+        .casting-modal-content {
+          position: relative;
+          padding: 28px;
+        }
+
+        .casting-modal-avatar {
+          width: 84px;
+          height: 84px;
+          margin-top: -45px;
+          margin-bottom: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 4px solid var(--card-bg);
+          border-radius: 50%;
+          background: #11100f;
+          color: #a19b8d;
+          font: 700 2.4rem/1 Impact, sans-serif;
+          box-shadow: 0 0 0 2px #11100f;
+        }
+
+        .modal-status-row {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          margin-bottom: 8px;
+        }
+
+        .modal-film-kicker {
+          margin: 0 0 6px;
+          color: var(--gold);
+          font: 700 10px/1 'Courier New', monospace;
+          letter-spacing: .22em;
+          text-transform: uppercase;
+        }
+
+        .modal-title {
+          margin: 0;
+          color: var(--ink);
+          font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+          font-size: clamp(2rem,4vw,3rem);
+          line-height: .95;
+          letter-spacing: .02em;
+          text-transform: uppercase;
+        }
+
+        .modal-company {
+          margin: 8px 0 5px;
+          color: var(--gold);
+          font-weight: 800;
+          font-size: .9rem;
+        }
+
+        .modal-location {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          margin: 0;
+          color: var(--mid);
+          font-size: .85rem;
+        }
+
+        .modal-location span {
+          font: 700 9px/1 'Courier New', monospace;
+          letter-spacing: .12em;
+          color: var(--mid);
+        }
+
+        .modal-location strong {
+          color: var(--ink);
+          font-size: .85rem;
+        }
+
+        .modal-section {
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 2px solid var(--nb-border);
+        }
+
+        .modal-section h3 {
+          margin: 0 0 .65rem;
+          padding: 0;
+          border: 0;
+          color: var(--ink);
+          font: 900 .72rem/1 'Courier New', monospace;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+        }
+
+        .modal-section p {
+          margin: 0;
+          color: var(--mid);
+          line-height: 1.7;
+          font-size: .92rem;
+        }
+
+        .modal-info {
+          display: grid;
+          grid-template-columns: repeat(4,1fr);
+          gap: 6px;
+          margin-top: 1.5rem;
+        }
+
+        .modal-info-item {
+          min-width: 0;
+          padding: 12px;
+          background: #11100f;
+          color: #fff;
+          border-radius: 0;
+        }
+
+        html.dark .modal-info-item {
+          background: #f0eeea;
+          color: #0f0e0d;
+        }
+
+        .modal-info-item strong {
+          display: block;
+          margin-bottom: 5px;
+          color: rgba(255,255,255,.55);
+          font: 900 8px/1 'Courier New', monospace;
+          letter-spacing: .05em;
+        }
+
+        .modal-info-item span {
+          display: block;
+          color: #fff;
+          font: 800 13px/1.2 'Courier New', monospace;
+          overflow-wrap: anywhere;
+        }
+
+        html.dark .modal-info-item strong {
+          color: rgba(15,14,13,.5);
+        }
+
+        html.dark .modal-info-item span {
+          color: #0f0e0d;
+        }
+
+        .modal-posted {
+          margin-top: 1.2rem;
+          color: var(--mid);
+          font: 8px/1 'Courier New', monospace;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+        }
+
+        .modal-posted b {
+          color: var(--ink);
+        }
+
+        .modal-actions {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          margin-top: 1.8rem;
+          flex-wrap: wrap;
+        }
+
+        .film-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 9px 15px;
+          border-radius: 3px;
+          font: 700 9px/1 'Courier New', monospace;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+
+        .film-btn-gold {
+          border: 1px solid var(--gold);
+          background: var(--gold);
+          color: #111;
+        }
+
+        .film-btn-outline {
+          border: 1px solid var(--ink);
+          background: transparent;
+          color: var(--ink);
+        }
+
+        .film-btn-gold:hover {
+          background: var(--gold2);
+        }
+
+        .film-btn-outline:hover {
+          border-color: var(--gold);
+          background: rgba(201,168,76,.07);
+        }
+
+        /* ─── MODAL RESPONSIVE ─── */
+
+        @media (max-width: 1000px) {
+          .modal-info {
+            grid-template-columns: repeat(2,1fr);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .modal-overlay {
+            padding: 16px;
+          }
+
+          .casting-modal {
+            max-height: 92vh;
+            box-shadow: 6px 6px 0 var(--nb-border);
+          }
+
+          .casting-modal-content {
+            padding: 22px;
+          }
+
+          .close-btn {
+            right: 14px;
+            top: 14px;
+          }
+        }
+
         @media (max-width: 520px) {
-          .dashboard-overview { grid-template-columns: 1fr 1fr; }
-          .filter-grid { grid-template-columns: 1fr; }
-          .casting-info { grid-template-columns: 1fr; }
-          .modal-info { grid-template-columns: 1fr 1fr; }
-          .search-input { width: 200px; }
-          .search-input:focus { width: 220px; }
+          .modal-info {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .casting-modal-content {
+            padding: 18px;
+          }
+
+          .casting-modal-avatar {
+            width: 76px;
+            height: 76px;
+            margin-top: -40px;
+            font-size: 2.1rem;
+          }
+
+          .modal-title {
+            font-size: 1.8rem;
+          }
+
+          .modal-actions {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .film-btn {
+            width: 100%;
+          }
         }
 
         /* =========================================================
@@ -1735,10 +2109,8 @@ export default function PostPage() {
 
       `}</style>
 
-      <main>
-        <HeroCarousel />
+      <section className="overview-strip">
 
-        <div className="overview-strip">
           <div className="dashboard-overview">
             <div className="overview-card">
               <div className="overview-meta"><span></span><small>THIS MONTH</small></div>
@@ -1764,7 +2136,7 @@ export default function PostPage() {
               <p>All-time casting calls</p>
             </div>
           </div>
-        </div>
+      </section>
 
         <div className="post-toolbar">
           <div className="toolbar-left">
@@ -1775,9 +2147,6 @@ export default function PostPage() {
               <input className="search-input" placeholder="Search casting calls…" value={search}
                 onChange={e => setSearch(e.target.value)} />
             </div>
-            <button className="btn-gold new-post-btn" onClick={handleNewPost}>
-              + New Casting Call
-            </button>
           </div>
           <div className="toolbar-right">
             <button className={`filter-btn${showFilters ? " active" : ""}`} onClick={() => setShowFilters(s => !s)}>
@@ -1831,7 +2200,6 @@ export default function PostPage() {
             </div>
           )}
         </section>
-      </main>
 
       {selectedPost && (
         <DetailsModal post={selectedPost} onClose={() => setSelectedPost(null)} />
