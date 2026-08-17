@@ -3,34 +3,23 @@
     "framework": "NestJS",
     "language": "TypeScript",
     "runtime": "Node.js",
-    "database": "PostgreSQL with TypeORM",
-    "auth": "JWT + Passport.js with bcrypt password hashing",
-    "security": [
-      "Helmet (HTTP headers)",
-      "Throttler (rate limiting)",
-      "Passport strategy integration"
-    ],
-    "packages": [
-      "@nestjs/jwt",
-      "@nestjs/passport",
-      "@nestjs/typeorm",
-      "bcrypt",
-      "pg",
-      "class-validator",
-      "joi"
-    ]
+    "database": "PostgreSQL",
+    "orm": "Prisma",
+    "auth": "JWT + Passport.js + HttpOnly cookie + bcrypt",
+    "security": ["Helmet", "ValidationPipe", "server-side authorization", "ownership checks", "CORS credentials"],
+    "packages": ["prisma", "@prisma/client", "@nestjs/jwt", "@nestjs/passport", "passport-jwt", "bcrypt", "pg", "class-validator", "dotenv"]
   },
   "project_info": {
     "name": "indcasting-api",
     "version": "0.0.1",
-    "description": "Backend API for Indcasting platform with authentication and user management"
+    "description": "NestJS backend API for IndCasting"
   },
-  "key_features": [
-    "JWT-based stateless authentication",
-    "Password hashing with bcrypt",
-    "TypeORM ORM for PostgreSQL",
-    "NestJS modular architecture",
-    "Rate limiting to prevent brute-force attacks",
-    "JWT token refresh strategy"
+  "rules": [
+    "Prisma is the only ORM; do not reintroduce TypeORM.",
+    "Do not run database migrations or db push without reviewing the SQL diff first.",
+    "Never store passwords in plaintext or trust frontend-supplied user IDs for ownership decisions.",
+    "Use HttpOnly authentication cookies for browser sessions.",
+    "Keep database models aligned with the frontend data contracts.",
+    "Do not commit .env or secrets."
   ]
 }

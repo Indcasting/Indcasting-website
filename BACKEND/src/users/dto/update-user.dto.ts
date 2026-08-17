@@ -1,28 +1,15 @@
-import { PartialType } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEmail } from 'class-validator';
+import { IsBoolean, IsEmail, IsIn, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class UpdateUserDto extends PartialType(
-  OmitType<User, 'password' | 'createdAt'>()
-) {}
-
-import { IsString, IsOptional, IsEmail, Matches } from 'class-validator';
-
-export class RegisterDto {
-  @IsString()
-  name: string;
-
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  password: string;
-
-  @IsString()
-  phone: string;
-
-  @IsString()
-  city: string;
-
-  @IsString()
-  role: 'talent' | 'seeker';
+export class UpdateUserDto {
+  @IsOptional() @IsString() name?: string;
+  @IsOptional() @IsEmail() email?: string;
+  @IsOptional() @IsString() @MinLength(8) password?: string;
+  @IsOptional() @IsString() phone?: string;
+  @IsOptional() @IsString() city?: string;
+  @IsOptional() @IsIn(['talent', 'seeker']) role?: 'talent' | 'seeker';
+  @IsOptional() @IsString() bio?: string;
+  @IsOptional() @IsString() skill?: string;
+  @IsOptional() @IsString() companyName?: string;
+  @IsOptional() @IsString() experience?: string;
+  @IsOptional() @IsBoolean() available?: boolean;
 }

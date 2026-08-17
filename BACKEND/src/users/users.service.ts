@@ -1,64 +1,48 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from '../database/prisma.service';
+import { UpdateUserDto } from './dto/update-user.dto';
+
+const safeSelect = {
+  id: true, name: true, email: true, mobile: true, city: true, region: true, role: true,
+  plan: true, language: true, companyName: true, primarySkill: true, experience: true,
+  verified: true, available: true, joinedDate: true, skill: true, bio: true, tags: true,
+  avatarUrl: true, instagram: true, youtube: true, website: true, portfolio: true, createdAt: true,
+} as const;
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private usersRepository: Repository<User>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(userData: Partial<User>): Promise<User> {
-    // Check if user with email already exists
-    const existingUser = await this.usersRepository.findOneBy({
-      email: userData.email
-    });
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email: email.trim().toLowerCase() } });
+  }
 
-    if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+  async findById(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id }, select: safeSelect });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  async findAll() {
+    return this.prisma.user.findMany({ select: safeSelect, orderBy: { createdAt: 'desc' } });
+  }
+
+  async update(id: string, dto: UpdateUserDto) {
+    const data: Record<string, unknown> = { ...dto };
+    if (dto.email) {
+      data.email = dto.email.trim().toLowerCase();
+      const existing = await this.prisma.user.findFirst({ where: { email: data.email as string, NOT: { id } } });
+      if (existing) throw new ConflictException('Email is already in use');
     }
-
-    // Hash password if provided
-    if (userData.password) {
-      const saltOrRounds = 12;
-      userData.password = await bcrypt.hash(userData.password, saltOrRounds);
-    }
-
-    const user = this.usersRepository.create(userData);
-    return this.usersRepository.save(user);
+    if (dto.phone !== undefined) { data.mobile = dto.phone; delete data.phone; }
+    if (dto.city !== undefined) { data.region = dto.city; delete data.city; }
+    if (dto.password) data.password = await bcrypt.hash(dto.password, 12);
+    return this.prisma.user.update({ where: { id }, data: data as any, select: safeSelect });
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ email });
-  }
-
-  async findById(id: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
-  }
-
-  async findAll(): Promise<User[]> {
-    return this.usersRepository.find();
-  }
-
-  async update(id: string, userData: Partial<User>): Promise<User> {
-    // Hash password if provided
-    if (userData.password) {
-      const saltOrRounds = 12;
-      userData.password = await bcrypt.hash(userData.password, saltOrRounds);
-    }
-
-    await this.usersRepository.update(id, userData);
-    const updatedUser = await this.findById(id);
-    if (!updatedUser) {
-      throw new Error('User not found after update');
-    }
-    return updatedUser;
-  }
-
-  async remove(id: string): Promise<void> {
-    await this.usersRepository.delete(id);
+  async remove(id: string) {
+    await this.prisma.user.delete({ where: { id } });
+    return { success: true };
   }
 }

@@ -1,9 +1,26 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { JwtStrategy } from './strategies/jwt.strategy';
+
+function jwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error('JWT_SECRET is required');
+  return secret;
+}
 
 @Module({
+  imports: [
+    PassportModule,
+    JwtModule.register({
+      secret: jwtSecret(),
+      signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as any },
+    }),
+  ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService, JwtModule, JwtStrategy],
 })
 export class AuthModule {}

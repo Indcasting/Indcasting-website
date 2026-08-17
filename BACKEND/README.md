@@ -96,3 +96,45 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## Phase 1: Prisma + frontend-aligned schema
+
+The backend now uses Prisma as the only ORM. The Prisma schema is designed from the current frontend contracts and the existing PostgreSQL table structure.
+
+### Before connecting PostgreSQL
+1. Copy `.env.example` to `.env`.
+2. Set a strong `JWT_SECRET`.
+3. Set `DATABASE_URL` only when the local PostgreSQL connection is ready.
+4. Run `npm install`.
+5. Run `npx prisma generate`.
+6. Run `npx prisma validate`.
+7. Review the migration SQL before applying any database change.
+
+**Do not run `prisma migrate reset` or `prisma db push` against the existing database without reviewing the generated SQL first.**
+
+### Current API foundation
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/logout`
+- `GET /auth/me`
+- `GET /users/profile`
+- `PUT /users/profile`
+- `GET /users`
+- `GET /users/:id`
+- `GET /casting-calls`
+- `GET /casting-calls/:id`
+- `POST /casting-calls` (seeker)
+- `PATCH /casting-calls/:id` (owner/seeker)
+- `DELETE /casting-calls/:id` (owner/seeker)
+- `POST /applications/:jobId` (talent)
+- `GET /applications/mine` (talent)
+- `GET /applications/received` (seeker)
+- `PATCH /applications/:id/status` (seeker)
+- `GET /portfolio/me`
+- `PATCH /portfolio/me`
+- `POST /portfolio/me/publish`
+- `POST /portfolio/me/unpublish`
+- `GET /portfolio/public/:slug`
+
+Authentication uses an HttpOnly cookie named `access_token`; the browser should not store the JWT in localStorage.
