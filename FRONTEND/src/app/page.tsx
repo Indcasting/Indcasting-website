@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
@@ -13,7 +13,7 @@ if (typeof window !== "undefined") {
 }
 
 interface StepItem     { n: string; h: string; p: string }
-interface CategoryItem { label: string; count: string; desc: string; color: string }
+interface CategoryItem { label: string; count: string; desc: string; color: string; filter: string }
 interface PillarItem   { id: string; label: string; heading: string; body: string }
 
 const PILLARS: PillarItem[] = [
@@ -24,14 +24,14 @@ const PILLARS: PillarItem[] = [
 ];
 
 const CATEGORIES: CategoryItem[] = [
-  { label: "Actors",        count: "12,400+", desc: "Film, television, OTT, theatre and commercial artists.",        color: "#c9a84c" },
-  { label: "Models",        count: "8,200+",  desc: "Fashion, lifestyle, commercial and print modelling talent.",     color: "#8b6914" },
-  { label: "Singers",       count: "4,100+",  desc: "Playback, live performers, independent musicians and bands.",    color: "#c9a84c" },
-  { label: "Dancers",       count: "3,800+",  desc: "Classical, hip-hop, freestyle and choreographed performers.",    color: "#8b6914" },
-  { label: "Voice Artists", count: "2,600+",  desc: "Dubbing, narration, audiobooks, radio and animation voices.",   color: "#c9a84c" },
-  { label: "Child Artists", count: "1,900+",  desc: "Verified young performers for films, TV and advertisements.",    color: "#8b6914" },
-  { label: "Influencers",   count: "5,500+",  desc: "Creators across Instagram, YouTube and digital campaigns.",      color: "#c9a84c" },
-  { label: "Anchors",       count: "1,200+",  desc: "Event hosts, presenters, emcees and television anchors.",       color: "#8b6914" },
+  { label: "Actors",        count: "12,400+", desc: "Film, television, OTT, theatre and commercial artists.",        color: "#c9a84c", filter: "Actor" },
+  { label: "Models",        count: "8,200+",  desc: "Fashion, lifestyle, commercial and print modelling talent.",     color: "#8b6914", filter: "Model" },
+  { label: "Singers",       count: "4,100+",  desc: "Playback, live performers, independent musicians and bands.",    color: "#c9a84c", filter: "Singer" },
+  { label: "Dancers",       count: "3,800+",  desc: "Classical, hip-hop, freestyle and choreographed performers.",    color: "#8b6914", filter: "Dancer" },
+  { label: "Voice Artists", count: "2,600+",  desc: "Dubbing, narration, audiobooks, radio and animation voices.",   color: "#c9a84c", filter: "Voice Artist" },
+  { label: "Child Artists", count: "1,900+",  desc: "Verified young performers for films, TV and advertisements.",    color: "#8b6914", filter: "Child Artist" },
+  { label: "Influencers",   count: "5,500+",  desc: "Creators across Instagram, YouTube and digital campaigns.",      color: "#c9a84c", filter: "Influencer" },
+  { label: "Anchors",       count: "1,200+",  desc: "Event hosts, presenters, emcees and television anchors.",       color: "#8b6914", filter: "Anchor" },
 ];
 
 const STEPS: StepItem[] = [
@@ -46,6 +46,8 @@ const VIDEO_FADE = 0.5;
 const CARD_PIN_TOP = 100;
 
 export default function Home() {
+  const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
+
   const heroRef    = useRef<HTMLElement>(null);
   const tilesRef   = useRef<HTMLElement>(null);
   const pillarsRef = useRef<HTMLElement>(null);
@@ -53,6 +55,25 @@ export default function Home() {
   const rafRef     = useRef<number | null>(null);
   const gsapLoaded = useRef<boolean>(false);
   const gsapCtxRef = useRef<{ revert: () => void } | null>(null);
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    const finishLoading = () => {
+      timeoutId = setTimeout(() => setIsSkeletonLoading(false), 700);
+    };
+
+    if (document.readyState === "complete") {
+      finishLoading();
+    } else {
+      window.addEventListener("load", finishLoading, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener("load", finishLoading);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -327,6 +348,437 @@ export default function Home() {
           transition: background .35s ease, color .35s ease;
         }
 
+
+        /* ── HOME PAGE SKELETON LOADER ── */
+        .home-skeleton {
+          position: fixed;
+          inset: 0;
+          z-index: 9999;
+          background: var(--cream);
+          color: var(--ink);
+          overflow-y: auto;
+          overflow-x: hidden;
+          opacity: 1;
+          visibility: visible;
+          transition: opacity .45s ease, visibility .45s ease;
+        }
+
+        .home-skeleton.is-hidden {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+        }
+
+        .skeleton-shimmer {
+          position: relative;
+          overflow: hidden;
+          background: var(--mist);
+        }
+
+        .skeleton-shimmer::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          transform: translateX(-100%);
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,255,255,.62) 45%,
+            transparent 100%
+          );
+          animation: homeSkeletonShimmer 1.6s infinite;
+        }
+
+        @keyframes homeSkeletonShimmer {
+          100% { transform: translateX(100%); }
+        }
+
+        html.dark .skeleton-shimmer::after {
+          background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,255,255,.06) 45%,
+            transparent 100%
+          );
+        }
+
+        .skeleton-header-space {
+          height: 60px;
+          border-bottom: 1px solid var(--mist);
+        }
+
+        .skeleton-hero {
+          height: calc(100vh - 60px);
+          min-height: 560px;
+          position: relative;
+          overflow: hidden;
+          background: #161513;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .skeleton-hero-bg {
+          position: absolute;
+          inset: 0;
+          background:
+            radial-gradient(circle at 50% 40%, rgba(201,168,76,.12), transparent 32%),
+            linear-gradient(135deg, #27231c 0%, #11100f 50%, #242019 100%);
+        }
+
+        .skeleton-hero-content {
+          position: relative;
+          z-index: 2;
+          width: min(900px, 90vw);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        .skeleton-hero-kicker {
+          width: 190px;
+          height: 12px;
+          border-radius: 3px;
+          margin-bottom: 25px;
+          background: rgba(201,168,76,.32);
+        }
+
+        .skeleton-hero-eyebrow {
+          width: 260px;
+          height: 13px;
+          border-radius: 3px;
+          margin-bottom: 25px;
+          background: rgba(255,255,255,.13);
+        }
+
+        .skeleton-hero-title {
+          width: min(690px, 82vw);
+          height: clamp(58px, 7vw, 90px);
+          border-radius: 5px;
+          margin-bottom: 25px;
+          background: rgba(255,255,255,.15);
+        }
+
+        .skeleton-hero-sub {
+          width: min(560px, 75vw);
+          height: 52px;
+          border-radius: 5px;
+          margin-bottom: 35px;
+          background: rgba(255,255,255,.10);
+        }
+
+        .skeleton-hero-buttons {
+          display: flex;
+          gap: 14px;
+        }
+
+        .skeleton-hero-button {
+          width: 150px;
+          height: 47px;
+          border-radius: 999px;
+          background: rgba(255,255,255,.13);
+        }
+
+        .skeleton-hero-button.gold,
+        .skeleton-cta-button.gold {
+          background: rgba(201,168,76,.38);
+        }
+
+        .skeleton-section {
+          padding: 85px 4vw;
+          background: var(--cream);
+        }
+
+        .skeleton-section-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 25px;
+          margin-bottom: 35px;
+        }
+
+        .skeleton-label {
+          width: 155px;
+          height: 10px;
+          border-radius: 3px;
+          margin-bottom: 12px;
+        }
+
+        .skeleton-heading {
+          width: 300px;
+          height: 38px;
+          border-radius: 4px;
+        }
+
+        .skeleton-hint {
+          width: 105px;
+          height: 11px;
+          border-radius: 3px;
+        }
+
+        .skeleton-category-track {
+          display: flex;
+          gap: 1.5rem;
+          overflow: hidden;
+          padding: 15px 0 25px;
+        }
+
+        .skeleton-category-card {
+          flex: 0 0 420px;
+          min-height: 290px;
+          border: 3px solid var(--ink);
+          border-radius: 2px;
+          padding: 58px 48px 54px;
+          background: var(--white);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .skeleton-film-top,
+        .skeleton-film-bottom {
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 34px;
+          background: var(--ink);
+        }
+
+        .skeleton-film-top { top: 0; }
+        .skeleton-film-bottom { bottom: 0; }
+
+        .skeleton-category-count {
+          width: 105px;
+          height: 11px;
+          border-radius: 3px;
+          margin-bottom: 35px;
+        }
+
+        .skeleton-category-title {
+          width: 70%;
+          height: 35px;
+          border-radius: 4px;
+          margin-bottom: 17px;
+        }
+
+        .skeleton-category-desc {
+          width: 90%;
+          height: 45px;
+          border-radius: 4px;
+        }
+
+        .skeleton-tiles {
+          padding: 50px 4vw;
+          min-height: 850px;
+          background: var(--cream);
+        }
+
+        .skeleton-tile-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+          max-width: 1500px;
+          margin: 0 auto;
+        }
+
+        .skeleton-tile-col {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .skeleton-tile {
+          border-radius: var(--radius-md);
+          background: var(--mist);
+        }
+
+        .skeleton-tile:nth-child(1) { height: 280px; }
+        .skeleton-tile:nth-child(2) { height: 210px; }
+        .skeleton-tile:nth-child(3) { height: 240px; }
+
+        .skeleton-how {
+          padding: 30px 4vw 100px;
+          background: var(--cream);
+        }
+
+        .skeleton-steps {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 2px;
+          border: 1.5px solid var(--mist);
+        }
+
+        .skeleton-step {
+          min-height: 260px;
+          padding: 40px;
+          border: 1.5px solid var(--mist);
+          background: var(--cream);
+        }
+
+        .skeleton-step-number {
+          width: 70px;
+          height: 45px;
+          border-radius: 4px;
+          margin-bottom: 25px;
+        }
+
+        .skeleton-step-title {
+          width: 65%;
+          height: 19px;
+          border-radius: 3px;
+          margin-bottom: 20px;
+        }
+
+        .skeleton-step-text {
+          width: 90%;
+          height: 45px;
+          border-radius: 3px;
+        }
+
+        .skeleton-pillars {
+          padding: 110px 0;
+          background: var(--cream);
+        }
+
+        .skeleton-pillar-intro {
+          width: min(850px, 90vw);
+          margin: 0 auto 65px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .skeleton-pillar-heading {
+          width: min(680px, 80vw);
+          height: 105px;
+          border-radius: 5px;
+          margin-bottom: 25px;
+        }
+
+        .skeleton-pillar-sub {
+          width: min(570px, 72vw);
+          height: 45px;
+          border-radius: 4px;
+        }
+
+        .skeleton-pillar-card {
+          width: min(1100px, 90vw);
+          min-height: 420px;
+          margin: 0 auto 24px;
+          border-radius: 28px;
+          background: var(--white);
+          border: 1px solid var(--mist);
+          padding: 60px;
+        }
+
+        .skeleton-pillar-id {
+          width: 100px;
+          height: 10px;
+          border-radius: 3px;
+          margin-bottom: 25px;
+        }
+
+        .skeleton-pillar-label {
+          width: 160px;
+          height: 15px;
+          border-radius: 3px;
+          margin-bottom: 20px;
+        }
+
+        .skeleton-pillar-title {
+          width: 70%;
+          height: 42px;
+          border-radius: 4px;
+          margin-bottom: 22px;
+        }
+
+        .skeleton-pillar-body {
+          width: 80%;
+          height: 55px;
+          border-radius: 4px;
+        }
+
+        .skeleton-cta {
+          min-height: 500px;
+          padding: 100px 4vw;
+          background: var(--cream);
+          border-top: 1px solid var(--mist);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .skeleton-cta-inner {
+          width: min(780px, 90vw);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .skeleton-cta-label {
+          width: 170px;
+          height: 10px;
+          border-radius: 3px;
+          margin-bottom: 30px;
+        }
+
+        .skeleton-cta-title {
+          width: min(560px, 80vw);
+          height: 150px;
+          border-radius: 5px;
+          margin-bottom: 28px;
+        }
+
+        .skeleton-cta-sub {
+          width: 480px;
+          max-width: 80vw;
+          height: 45px;
+          border-radius: 4px;
+          margin-bottom: 35px;
+        }
+
+        .skeleton-cta-buttons {
+          display: flex;
+          gap: 18px;
+        }
+
+        .skeleton-cta-button {
+          width: 190px;
+          height: 55px;
+          border-radius: 999px;
+        }
+
+        @media (max-width: 900px) {
+          .skeleton-category-card {
+            flex-basis: 240px;
+            min-height: 240px;
+            padding: 50px 30px 45px;
+          }
+
+          .skeleton-tile-grid { grid-template-columns: repeat(2, 1fr); }
+          .skeleton-steps { grid-template-columns: 1fr; }
+          .skeleton-pillar-card { padding: 40px 28px; }
+        }
+
+        @media (max-width: 540px) {
+          .skeleton-section-head {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .skeleton-category-card {
+            flex-basis: 200px;
+            min-height: 220px;
+          }
+
+          .skeleton-tile-grid { grid-template-columns: repeat(2, 1fr); }
+          .skeleton-cta-buttons { flex-direction: column; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .skeleton-shimmer::after { animation: none; }
+        }
+
         /* ── HERO ── */
         .hero {
           position: relative;
@@ -478,6 +930,8 @@ export default function Home() {
         /* ── FILM REEL CATEGORY CARDS ── */
 
 .cat-card {
+  text-decoration: none;
+  color: inherit;
   width: 420px;
   min-width: 420px;
   min-height: 290px;
@@ -925,6 +1379,116 @@ html.dark .cat-card:hover {
 
       <main>
 
+
+        {/* =====================================================
+            HOME PAGE SKELETON
+            The actual Home UI below is unchanged.
+        ===================================================== */}
+        <div
+          className={`home-skeleton ${isSkeletonLoading ? "" : "is-hidden"}`}
+          aria-hidden={!isSkeletonLoading}
+        >
+          <div className="skeleton-header-space" />
+
+          <section className="skeleton-hero">
+            <div className="skeleton-hero-bg skeleton-shimmer" />
+
+            <div className="skeleton-hero-content">
+              <div className="skeleton-hero-kicker skeleton-shimmer" />
+              <div className="skeleton-hero-eyebrow skeleton-shimmer" />
+              <div className="skeleton-hero-title skeleton-shimmer" />
+              <div className="skeleton-hero-sub skeleton-shimmer" />
+
+              <div className="skeleton-hero-buttons">
+                <div className="skeleton-hero-button gold skeleton-shimmer" />
+                <div className="skeleton-hero-button skeleton-shimmer" />
+              </div>
+            </div>
+          </section>
+
+          <section className="skeleton-section">
+            <div className="skeleton-section-head">
+              <div>
+                <div className="skeleton-label skeleton-shimmer" />
+                <div className="skeleton-heading skeleton-shimmer" />
+              </div>
+              <div className="skeleton-hint skeleton-shimmer" />
+            </div>
+
+            <div className="skeleton-category-track">
+              {[1, 2, 3, 4].map((item) => (
+                <div className="skeleton-category-card" key={item}>
+                  <div className="skeleton-film-top" />
+                  <div className="skeleton-category-count skeleton-shimmer" />
+                  <div className="skeleton-category-title skeleton-shimmer" />
+                  <div className="skeleton-category-desc skeleton-shimmer" />
+                  <div className="skeleton-film-bottom" />
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="skeleton-tiles">
+            <div className="skeleton-tile-grid">
+              {[1, 2, 3, 4].map((col) => (
+                <div className="skeleton-tile-col" key={col}>
+                  <div className="skeleton-tile skeleton-shimmer" />
+                  <div className="skeleton-tile skeleton-shimmer" />
+                  <div className="skeleton-tile skeleton-shimmer" />
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="skeleton-how">
+            <div className="skeleton-section-head">
+              <div>
+                <div className="skeleton-label skeleton-shimmer" />
+                <div className="skeleton-heading skeleton-shimmer" />
+              </div>
+            </div>
+
+            <div className="skeleton-steps">
+              {[1, 2, 3].map((item) => (
+                <div className="skeleton-step" key={item}>
+                  <div className="skeleton-step-number skeleton-shimmer" />
+                  <div className="skeleton-step-title skeleton-shimmer" />
+                  <div className="skeleton-step-text skeleton-shimmer" />
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="skeleton-pillars">
+            <div className="skeleton-pillar-intro">
+              <div className="skeleton-pillar-heading skeleton-shimmer" />
+              <div className="skeleton-pillar-sub skeleton-shimmer" />
+            </div>
+
+            {[1, 2, 3].map((item) => (
+              <div className="skeleton-pillar-card" key={item}>
+                <div className="skeleton-pillar-id skeleton-shimmer" />
+                <div className="skeleton-pillar-label skeleton-shimmer" />
+                <div className="skeleton-pillar-title skeleton-shimmer" />
+                <div className="skeleton-pillar-body skeleton-shimmer" />
+              </div>
+            ))}
+          </section>
+
+          <section className="skeleton-cta">
+            <div className="skeleton-cta-inner">
+              <div className="skeleton-cta-label skeleton-shimmer" />
+              <div className="skeleton-cta-title skeleton-shimmer" />
+              <div className="skeleton-cta-sub skeleton-shimmer" />
+
+              <div className="skeleton-cta-buttons">
+                <div className="skeleton-cta-button gold skeleton-shimmer" />
+                <div className="skeleton-cta-button skeleton-shimmer" />
+              </div>
+            </div>
+          </section>
+        </div>
+
         {/* ── HERO ── */}
         <section className="hero" ref={heroRef}>
 
@@ -976,8 +1540,13 @@ html.dark .cat-card:hover {
           </div>
           <div className="cat-marquee-wrap">
             <div className="cat-track">
-              {[...CATEGORIES, ...CATEGORIES].map(({ label, count, desc }: CategoryItem, i: number) => (
-                <div className="cat-card" key={`${label}-${i}`}>
+              {[...CATEGORIES, ...CATEGORIES].map(({ label, count, desc, filter }: CategoryItem, i: number) => (
+                <Link
+                  href={`/post?category=${encodeURIComponent(filter)}`}
+                  className="cat-card"
+                  key={`${label}-${i}`}
+                  aria-label={`View ${label} posts`}
+                >
                   <div className="cat-card-top">
                     <span className="cat-card-count">{count} Artists</span>
                   </div>
@@ -989,7 +1558,7 @@ html.dark .cat-card:hover {
                     <span>Explore Category</span>
                     <span className="cat-card-arrow">→</span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import {
   Search,
   Send,
@@ -255,8 +256,12 @@ const STYLES = `
   }
 
   .messages-page {
-  height: calc(100vh - 80px);
-  min-height: 600px;
+  transform: translateY(-90px);
+  width: 100%;
+  height: calc(100vh + 90px);
+  margin-top: -150px;
+  min-height: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   background: var(--cream);
@@ -268,6 +273,8 @@ const STYLES = `
     BlinkMacSystemFont,
     sans-serif;
   overflow: hidden;
+  position: relative;
+  border-radius: 0;
 }
 
   html.dark .messages-page {
@@ -351,13 +358,10 @@ const STYLES = `
 
   .messages-shell {
     flex: 1;
-
+    width: 100%;
     min-height: 0;
-
     display: grid;
-
     grid-template-columns: 340px minmax(0, 1fr);
-
     overflow: hidden;
   }
 
@@ -1149,18 +1153,6 @@ html.dark .message-row.me .message-time {
 
   @media(max-width: 800px) {
 
-    .messages-topbar {
-      height: 68px;
-      padding: 0 18px;
-    }
-
-    .messages-heading h1 {
-      font-size: 1.65rem;
-    }
-
-    .messages-heading p {
-      display: none;
-    }
 
     .messages-shell {
       grid-template-columns: 1fr;
@@ -1345,40 +1337,6 @@ export default function MessagesPage() {
       <style>{STYLES}</style>
 
       <div className="messages-page">
-
-        {/* =================================================
-            PAGE HEADER
-        ================================================= */}
-
-        <header className="messages-topbar">
-
-          <div className="messages-heading">
-            <h1>Messages</h1>
-
-            <p>
-              Stay connected with casting
-              directors and production teams.
-            </p>
-          </div>
-
-          <div className="messages-top-actions">
-            <button
-              className="top-action"
-              title="Search conversations"
-              onClick={() => {
-                const input =
-                  document.querySelector<HTMLInputElement>(
-                    ".search-box input"
-                  );
-
-                input?.focus();
-              }}
-            >
-              <Search size={17} />
-            </button>
-          </div>
-
-        </header>
 
         {/* =================================================
             MESSAGE APPLICATION
@@ -1583,11 +1541,21 @@ export default function MessagesPage() {
 
                   <div className="chat-contact">
 
-                    <div className="chat-contact-name">
+                    <Link
+                      href={`/talents/${selectedConversation.name
+                        .toLowerCase()
+                        .trim()
+                        .replace(/\s+/g, "-")}`}
+                      className="chat-contact-name"
+                      style={{
+                        color: "inherit",
+                        textDecoration: "none",
+                      }}
+                    >
                       {
                         selectedConversation.name
                       }
-                    </div>
+                    </Link>
 
                     <div
                       className={`chat-contact-status ${

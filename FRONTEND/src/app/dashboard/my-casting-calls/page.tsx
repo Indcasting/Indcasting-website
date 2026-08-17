@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 /* =========================================================
    TYPES
@@ -370,9 +371,8 @@ function FilterBar({
 }
 
 /* =========================================================
-   APPLICATION MODAL
+    APPLICATION MODAL — film-slate style matching Casting Calls
 ========================================================= */
-
 function ApplicationModal({
   application,
   onClose,
@@ -382,140 +382,88 @@ function ApplicationModal({
 }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
-
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onClose();
-      }
+      if (event.key === "Escape") onClose();
     };
-
     window.addEventListener("keydown", handleEscape);
-
     return () => {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleEscape);
     };
   }, [onClose]);
 
-  return (
-    <div
-      className="mac-modal-overlay"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-    >
-      <div className="mac-modal">
+  const infoItems: [string, string][] = [
+    ["ROLE", application.category || "Casting"],
+    ["LOCATION", application.location || "Not specified"],
+    ["AGE", application.age || "Any"],
+    ["GENDER", application.gender || "Any"],
+    ["EXPERIENCE", application.experience || "Any"],
+    ["LANGUAGES", application.languages || "—"],
+    ["BUDGET", getBudget(application.budget)],
+    ...(application.deadline ? [["DEADLINE", fmtDate(application.deadline)] as [string, string]] : []),
+  ];
 
-        <button
-          type="button"
-          className="mac-close-btn"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          ×
-        </button>
+  return createPortal(
+    <>
+    <div className="modal-overlay" onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div className="casting-modal">
+        <div className="modal-slate-strip" />
+        <button type="button" className="close-btn" onClick={onClose} aria-label="Close">×</button>
+        <div className="casting-modal-cover" aria-hidden="true" />
 
-        <div className="mac-modal-status-row">
-          <span
-            className={`mac-application-status ${application.status
-              .toLowerCase()
-              .replace(" ", "-")}`}
-          >
-            {application.status}
-          </span>
+        <div className="casting-modal-content">
+          <div className="casting-modal-avatar" aria-hidden="true">
+            {(application.title || application.category || "C")[0].toUpperCase()}
+          </div>
 
-          <span
-            className={`mac-casting-status ${
-              application.castingStatus === "Open"
-                ? "open"
-                : "closed"
-            }`}
-          >
-            {application.castingStatus}
-          </span>
+          <div className="modal-status-row">
+            <span className={`post-status ${application.castingStatus === "Open" ? "open" : "closed"}`}>
+              {application.castingStatus === "Open" ? "NOW CASTING" : "WRAPPED"}
+            </span>
+          </div>
+
+          <p className="modal-film-kicker">CASTING OPPORTUNITY</p>
+          <h2 className="modal-title">{application.title}</h2>
+          <p className="modal-company">{application.company}</p>
+
+          <div className="modal-location">
+            <span>LOCATION</span>
+            <strong>{application.location || "Not specified"}</strong>
+          </div>
+
+          <div className="modal-section">
+            <h3>ABOUT THIS ROLE</h3>
+            <p>{application.description || "No description has been provided for this casting opportunity."}</p>
+          </div>
+
+          <div className="modal-info">
+            {infoItems.map(([label, value]) => (
+              <div className="modal-info-item" key={label}>
+                <strong>{label}</strong>
+                <span>{value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="modal-posted">
+            APPLIED <b>{fmtDate(application.appliedDate)}</b>
+          </div>
+
+          <div className="modal-actions">
+            <button className="film-btn film-btn-gold" type="button">APPLY NOW</button>
+            <button className="film-btn film-btn-outline" type="button" onClick={onClose}>CLOSE</button>
+          </div>
         </div>
-
-        <h2 className="mac-modal-title">
-          {application.title}
-        </h2>
-
-        <p className="mac-modal-company">
-          {application.company}
-        </p>
-
-        <div className="mac-modal-info">
-
-          <div>
-            <strong>Category</strong>
-            <p>{application.category}</p>
-          </div>
-
-          <div>
-            <strong>Location</strong>
-            <p>{application.location}</p>
-          </div>
-
-          <div>
-            <strong>Shoot Date</strong>
-            <p>{fmtDate(application.shootDate)}</p>
-          </div>
-
-          <div>
-            <strong>Budget</strong>
-            <p>{getBudget(application.budget)}</p>
-          </div>
-
-          <div>
-            <strong>Applied</strong>
-            <p>{fmtDate(application.appliedDate)}</p>
-          </div>
-
-          <div>
-            <strong>Deadline</strong>
-            <p>{fmtDate(application.deadline || "")}</p>
-          </div>
-
-          <div>
-            <strong>Experience</strong>
-            <p>{application.experience || "Any"}</p>
-          </div>
-
-          <div>
-            <strong>Languages</strong>
-            <p>{application.languages || "Any"}</p>
-          </div>
-
-        </div>
-
-        <h3 className="mac-modal-heading">
-          About this role
-        </h3>
-
-        <div className="mac-modal-description">
-          {application.description}
-        </div>
-
-        <div className="mac-modal-actions">
-          <button
-            type="button"
-            className="mac-btn-outline"
-            onClick={onClose}
-          >
-            Close
-          </button>
-        </div>
-
       </div>
     </div>
+    </>,
+    document.body
   );
 }
 
 /* =========================================================
-   GRID CARD
+    GRID CARD — film slate style matching Casting Calls
 ========================================================= */
-
 function ApplicationCard({
   application,
   onView,
@@ -523,99 +471,59 @@ function ApplicationCard({
   application: Application;
   onView: (application: Application) => void;
 }) {
+  const budget = Number(application.budget || 0);
+  const statusText =
+    application.castingStatus === "Open" ? "Now Casting" : "Wrapped";
+
   return (
     <div
-      className="mac-application-card"
+      className={`casting-post-card${
+        application.castingStatus === "Closed" ? " casting-closed" : ""
+      }`}
       onClick={() => onView(application)}
     >
-
-      <div className="mac-card-top">
-
-        <div className="mac-card-status-row">
-
-          <span
-            className={`mac-application-status ${application.status
-              .toLowerCase()
-              .replace(" ", "-")}`}
-          >
-            {application.status}
-          </span>
-
-          <span
-            className={`mac-casting-status ${
-              application.castingStatus === "Open"
-                ? "open"
-                : "closed"
-            }`}
-          >
-            {application.castingStatus}
-          </span>
-
-        </div>
-
-        <div className="mac-card-title-area">
-
-          <h3>
-            {application.title}
-          </h3>
-
-          <p>
-            {application.company}
-          </p>
-
-        </div>
-
+      <div className="casting-rail casting-rail-left" aria-hidden="true">
+        {Array.from({ length: 9 }).map((_, index) => <span key={index} />)}
       </div>
 
-      <div className="mac-casting-info">
-
-        <div>
-          <strong>Category</strong>
-          <p>{application.category}</p>
+      <div className="casting-slate-content">
+        <div className="casting-clapper" aria-hidden="true">
+          {Array.from({ length: 7 }).map((_, index) => <span key={index} />)}
         </div>
 
-        <div>
-          <strong>Location</strong>
-          <p>{application.location}</p>
+        <p className="casting-eyebrow">{statusText}</p>
+
+        <h3 className="casting-slate-title">{application.title}</h3>
+
+        <p className="casting-slate-sub">
+          {application.company} <span>·</span> {application.location}
+        </p>
+
+        <div className="casting-slate">
+          <div className="casting-slate-row"><label>Role</label><p>{application.category || "Casting"}</p></div>
+          <div className="casting-slate-row"><label>Age</label><p>{application.age || "ANY"}</p></div>
+          <div className="casting-slate-row"><label>Gender</label><p>{application.gender || "ANY"}</p></div>
+          <div className="casting-slate-row"><label>Budget</label><p>₹{budget.toLocaleString("en-IN")}</p></div>
+          {application.deadline && (
+            <div className="casting-slate-row"><label>Deadline</label><p>{fmtDate(application.deadline)}</p></div>
+          )}
         </div>
 
-        <div>
-          <strong>Budget</strong>
-          <p>{getBudget(application.budget)}</p>
+        <div className="casting-slate-footer">
+          <span>PROD. <b>{application.company}</b></span>
+          <span>CAT. <b>{application.category}</b></span>
         </div>
-
       </div>
 
-      <p className="mac-description">
-        {application.description}
-      </p>
-
-      <small className="mac-meta">
-        Applied {fmtDate(application.appliedDate)}
-        {application.deadline
-          ? ` · Deadline ${fmtDate(application.deadline)}`
-          : ""}
-      </small>
-
-      <div
-        className="mac-card-actions"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <button
-          type="button"
-          className="mac-view-button"
-          onClick={() => onView(application)}
-        >
-          View Application
-        </button>
+      <div className="casting-rail casting-rail-right" aria-hidden="true">
+        {Array.from({ length: 9 }).map((_, index) => <span key={index} />)}
       </div>
-
     </div>
   );
 }
 
 /* =========================================================
-   LIST ROW
+    LIST ROW
 ========================================================= */
 
 function ApplicationListRow({
@@ -625,65 +533,111 @@ function ApplicationListRow({
   application: Application;
   onView: (application: Application) => void;
 }) {
+  const statusText =
+    application.castingStatus === "Open" ? "Now Casting" : "Wrapped";
+
   return (
     <div
-      className="mac-list-row"
+      className={`list-row${
+        application.castingStatus === "Closed" ? " list-row-closed" : ""
+      }`}
       onClick={() => onView(application)}
     >
+      <div className="list-film-rail" aria-hidden="true">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <span key={index} />
+        ))}
+      </div>
 
-      <div className="mac-list-left">
+      <div className="list-row-main">
+        <div className="list-clapper" aria-hidden="true">
+          {Array.from({ length: 7 }).map((_, index) => (
+            <span key={index} />
+          ))}
+        </div>
 
-        <div className="mac-list-title">
-          <span>
-            {application.title}
-          </span>
+        <div className="list-row-kicker">
+          {statusText}
+        </div>
 
-          <span className="mac-list-company">
-            {application.company}
+        <div className="list-row-title-line">
+          <div className="list-row-left">
+            <span className="list-row-title">
+              {application.title}
+            </span>
+
+            <span className="list-row-company">
+              {application.company}
+            </span>
+          </div>
+
+          <span
+            className={`list-status ${
+              application.castingStatus === "Open" ? "open" : "closed"
+            }`}
+          >
+            {application.castingStatus}
           </span>
         </div>
 
-        <div className="mac-list-meta">
-
-          <span>{application.category}</span>
-
-          <span>{application.location}</span>
+        <div className="list-row-meta">
+          <span>
+            <b>ROLE</b>
+            {application.category || "Casting"}
+          </span>
 
           <span>
+            <b>LOCATION</b>
+            {application.location || "Not specified"}
+          </span>
+
+          <span>
+            <b>AGE</b>
+            {application.age || "Any"}
+          </span>
+
+          <span>
+            <b>BUDGET</b>
             {getBudget(application.budget)}
           </span>
 
-          <span>
-            Applied {fmtDate(application.appliedDate)}
-          </span>
-
+          {application.deadline && (
+            <span>
+              <b>DEADLINE</b>
+              {fmtDate(application.deadline)}
+            </span>
+          )}
         </div>
 
+        <div className="list-row-bottom">
+          <span>
+            PROD. <b>{application.company}</b>
+          </span>
+
+          <span>
+            APPLIED. <b>{fmtDate(application.appliedDate)}</b>
+          </span>
+
+          <div
+            className="post-actions"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="row-view-btn"
+              onClick={() => onView(application)}
+            >
+              View
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div
-        className="mac-list-right"
-        onClick={(event) => event.stopPropagation()}
-      >
-
-        <span
-          className={`mac-application-status ${application.status
-            .toLowerCase()
-            .replace(" ", "-")}`}
-        >
-          {application.status}
-        </span>
-
-        <button
-          type="button"
-          className="mac-row-view"
-          onClick={() => onView(application)}
-        >
-          View
-        </button>
-
+      <div className="list-film-rail" aria-hidden="true">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <span key={index} />
+        ))}
       </div>
-
     </div>
   );
 }
@@ -894,6 +848,14 @@ export default function MyCastingCallsPage() {
           --mac-input-border: #e0dbd0;
           --mac-shadow: 0 8px 32px rgba(0,0,0,0.08);
           --mac-border: #0f0e0d;
+          --ink: var(--mac-ink);
+          --cream: var(--mac-cream);
+          --gold: var(--mac-gold);
+          --gold2: var(--mac-gold2);
+          --mid: var(--mac-mid);
+          --mist: var(--mac-mist);
+          --card-bg: var(--mac-card);
+          --nb-border: #0f0e0d;
         }
 
         html.dark {
@@ -908,6 +870,7 @@ export default function MyCastingCallsPage() {
           --mac-input-border: #2e2e2e;
           --mac-shadow: 0 8px 32px rgba(0,0,0,0.35);
           --mac-border: #f0eeea;
+          --nb-border: #f0eeea;
         }
 
         /* =====================================================
@@ -1517,240 +1480,694 @@ export default function MyCastingCallsPage() {
           color: #f28b82;
         }
 
-        /* =====================================================
-           CARD
-        ===================================================== */
+/* ─── FILM SLATE CASTING CARD ─── */
+        .casting-post-card {
+          --film-card-1: #141313;
+          --film-card-2: #0c0b0b;
+          --film-ink: #f4f1e9;
+          --film-muted: #a19b8d;
+          --film-accent: #f0a70a;
+          --film-line: rgba(244,241,233,0.16);
+          --film-glow: rgba(240,167,10,0.06);
+          --film-shadow: rgba(0,0,0,0.75);
+          --film-ring: rgba(240,167,10,0.16);
 
-        .mac-application-card {
           position: relative;
-          background: var(--mac-card);
-          border: 2.5px solid var(--mac-border);
-          border-radius: 0;
-          padding: 1.5rem;
-          box-shadow: 4px 4px 0 var(--mac-border);
-          cursor: pointer;
-          transition:
-            transform 0.15s ease,
-            box-shadow 0.15s ease;
-        }
-
-        .mac-application-card:hover {
-          transform: translate(-2px,-2px);
-          box-shadow: 6px 6px 0 var(--mac-border);
-        }
-
-        .mac-card-status-row {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          min-height: 0;
           display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 0.5rem;
-          padding-bottom: 1rem;
-          border-bottom: 2px solid var(--mac-border);
-        }
-
-        .mac-card-title-area {
-          margin-top: 14px;
-        }
-
-        .mac-card-title-area h3 {
-          color: var(--mac-ink);
-          font-size: 1.35rem;
-          font-weight: 900;
-          line-height: 1.2;
-          margin-bottom: 6px;
-        }
-
-        .mac-card-title-area p {
-          color: var(--mac-gold);
-          font-size: 0.85rem;
-          font-weight: 700;
-        }
-
-        /* =====================================================
-           INFO BLOCKS
-        ===================================================== */
-
-        .mac-casting-info {
-          display: grid;
-          grid-template-columns: repeat(3,1fr);
-          gap: 0.5rem;
-          margin: 1rem 0;
-        }
-
-        .mac-casting-info div {
-          background: #0f0e0d;
-          padding: 8px 10px;
-        }
-
-        html.dark .mac-casting-info div {
-          background: #f0eeea;
-        }
-
-        .mac-casting-info strong {
-          display: block;
-          margin-bottom: 3px;
-          color: rgba(255,255,255,0.5);
-          font-size: 0.58rem;
-          font-weight: 900;
-          letter-spacing: 0.1em;
-          text-transform: uppercase;
-        }
-
-        html.dark .mac-casting-info strong {
-          color: rgba(15,14,13,0.5);
-        }
-
-        .mac-casting-info p {
-          margin: 0;
-          color: #fff;
-          font-size: 0.82rem;
-          font-weight: 800;
-        }
-
-        html.dark .mac-casting-info p {
-          color: #0f0e0d;
-        }
-
-        .mac-description {
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
+          background:
+            radial-gradient(circle at 50% 0%, var(--film-glow), transparent 55%),
+            linear-gradient(180deg,var(--film-card-1) 0%,var(--film-card-2) 100%);
+          border: 1px solid var(--film-ring);
+          border-radius: 10px;
+          box-shadow: 0 20px 42px -16px var(--film-shadow), 0 0 0 1px rgba(240,167,10,0.05);
           overflow: hidden;
-          color: var(--mac-mid);
-          font-size: 0.85rem;
-          line-height: 1.6;
-        }
-
-        .mac-meta {
-          display: block;
-          margin-top: 0.6rem;
-          margin-bottom: 1rem;
-          color: var(--mac-mid);
-          font-size: 0.72rem;
-          font-weight: 600;
-        }
-
-        /* =====================================================
-           CARD ACTION
-        ===================================================== */
-
-        .mac-card-actions {
-          display: flex;
-          width: max-content;
-          border: 2px solid var(--mac-border);
-          overflow: hidden;
-        }
-
-        .mac-view-button {
-          padding: 7px 16px;
-          border: none;
-          background: #fef3c7;
-          color: #92400e;
-          font-family: inherit;
-          font-size: 0.72rem;
-          font-weight: 900;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
           cursor: pointer;
-          transition:
-            background 0.15s,
-            color 0.15s;
+          padding: 0;
+          transition: transform .22s ease, box-shadow .22s ease;
         }
 
-        html.dark .mac-view-button {
-          background: rgba(201,168,76,0.15);
-          color: var(--mac-gold);
+        .casting-post-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 28px 52px -18px var(--film-shadow), 0 0 0 1px rgba(240,167,10,0.22);
         }
 
-        .mac-view-button:hover {
-          background: var(--mac-gold);
-          color: #111;
-        }
+        .casting-post-card.casting-closed { filter: saturate(.72); }
 
-        /* =====================================================
-           LIST
-        ===================================================== */
-
-        .mac-list-row {
+        .casting-rail {
+          width: 25px;
+          min-width: 25px;
+          flex-shrink: 0;
+          position: relative;
+          background: #090909;
           display: flex;
-          align-items: center;
+          flex-direction: column;
           justify-content: space-between;
-          gap: 1rem;
-          padding: 1.2rem 1.6rem;
-          margin-bottom: 0.6rem;
-          background: var(--mac-card);
-          border: 2.5px solid var(--mac-border);
-          border-radius: 0;
-          box-shadow: 3px 3px 0 var(--mac-border);
-          cursor: pointer;
-          transition:
-            transform 0.15s ease,
-            box-shadow 0.15s ease;
+          padding: 12px 0;
         }
 
-        .mac-list-row:hover {
-          transform: translate(-2px,-2px);
-          box-shadow: 5px 5px 0 var(--mac-border);
+        .casting-rail-left { border-right: 1px solid rgba(240,167,10,.16); }
+        .casting-rail-right { border-left: 1px solid rgba(240,167,10,.16); }
+
+        .casting-rail span {
+          display: block;
+          width: 13px;
+          height: 15px;
+          margin: 0 auto;
+          background: #f4f1e9;
+          border-radius: 3px;
+          box-shadow: 0 0 0 1px rgba(255,255,255,.06);
         }
 
-        .mac-list-left {
+        .casting-slate-content {
+          position: relative;
           flex: 1;
           min-width: 0;
-        }
-
-        .mac-list-title {
+          padding: 16px 17px 13px;
+          color: var(--film-ink);
+          overflow: hidden;
           display: flex;
-          align-items: baseline;
-          flex-wrap: wrap;
-          gap: 0.6rem;
+          flex-direction: column;
         }
 
-        .mac-list-title > span:first-child {
-          color: var(--mac-ink);
-          font-size: 1rem;
-          font-weight: 800;
-        }
-
-        .mac-list-company {
-          color: var(--mac-mid);
-          font-size: 0.85rem;
-        }
-
-        .mac-list-meta {
+        .casting-clapper {
           display: flex;
-          gap: 1rem;
-          flex-wrap: wrap;
-          margin-top: 0.3rem;
-          color: var(--mac-mid);
-          font-size: 0.8rem;
-        }
-
-        .mac-list-right {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
+          height: 13px;
+          margin: 0 -17px 13px;
+          overflow: hidden;
           flex-shrink: 0;
         }
 
-        .mac-row-view {
-          padding: 7px 14px;
-          border: 2px solid var(--mac-border);
-          background: transparent;
-          color: var(--mac-ink);
-          font-family: inherit;
-          font-size: 0.72rem;
-          font-weight: 900;
-          letter-spacing: 0.08em;
+        .casting-clapper span { flex: 1; transform: skewX(-22deg); margin: 0 -3px; }
+        .casting-clapper span:nth-child(odd) { background: var(--film-ink); }
+        .casting-clapper span:nth-child(even) { background: var(--film-card-2); border: 1px solid var(--film-line); border-left: none; border-right: none; }
+
+        .casting-eyebrow {
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 8px;
+          font-weight: 700;
+          letter-spacing: .24em;
           text-transform: uppercase;
-          cursor: pointer;
-          transition:
-            background 0.15s,
-            color 0.15s;
+          color: var(--film-accent);
+          margin: 0 0 5px;
+          flex-shrink: 0;
         }
 
-        .mac-row-view:hover {
-          background: var(--mac-gold);
+        .casting-slate-title {
+          font-family: 'Bebas Neue',Impact,sans-serif;
+          font-weight: 400;
+          font-size: clamp(1.65rem, 2.3vw, 2.25rem);
+          letter-spacing: .025em;
+          line-height: .91;
+          text-transform: uppercase;
+          color: var(--film-ink);
+          margin: 0 0 5px;
+          overflow-wrap: anywhere;
+          max-height: 3.8em;
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        .casting-slate-sub {
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 9px;
+          color: var(--film-muted);
+          margin: 0 0 9px;
+          letter-spacing: .01em;
+          line-height: 1.3;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          flex-shrink: 0;
+        }
+
+        .casting-slate-sub span { color: var(--film-accent); margin: 0 3px; }
+
+        .casting-slate {
+          border: 1px solid var(--film-line);
+          border-radius: 4px;
+          padding: 8px 10px 1px;
+          margin-bottom: 9px;
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .casting-slate-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
+          gap: 8px;
+          padding-bottom: 5px;
+          border-bottom: 1px dashed var(--film-line);
+          margin-bottom: 5px;
+        }
+
+        .casting-slate-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 4px; }
+
+        .casting-slate-row label {
+          flex-shrink: 0;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 7px;
+          font-weight: 700;
+          letter-spacing: .14em;
+          text-transform: uppercase;
+          color: var(--film-muted);
+        }
+
+        .casting-slate-row p {
+          margin: 0;
+          min-width: 0;
+          text-align: right;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 10px;
+          font-weight: 700;
+          line-height: 1.1;
+          color: var(--film-ink);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .casting-slate-footer {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 8px;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 6.5px;
+          letter-spacing: .08em;
+          line-height: 1.2;
+          text-transform: uppercase;
+          color: var(--film-muted);
+          flex-shrink: 0;
+        }
+
+        .casting-slate-footer span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .casting-slate-footer b { color: var(--film-accent); font-weight: 700; }
+
+        .casting-slate-actions {
+          display: flex;
+          width: max-content;
+          margin-top: 7px;
+          border: 1px solid var(--film-line);
+          background: rgba(0,0,0,.18);
+          overflow: hidden;
+          flex-shrink: 0;
+        }
+
+        .casting-slate-actions button {
+          border: 0;
+          border-right: 1px solid var(--film-line);
+          background: transparent;
+          color: var(--film-muted);
+          padding: 4px 8px;
+          cursor: pointer;
+          font-family: 'Courier Prime','Courier New',monospace;
+          font-size: 7px;
+          font-weight: 700;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+          transition: background .15s,color .15s;
+        }
+        .casting-slate-actions button:last-child { border-right: 0; }
+        .casting-slate-actions button:hover { background: var(--film-accent); color: #111; }
+
+        
+/* ─── BALANCED FILM SLATE SIZING ─── */
+        /* The card stays compact/square, but the information is readable. */
+        .casting-post-card {
+          aspect-ratio: 1 / 1;
+        }
+
+        .casting-slate-content {
+          padding: 17px 18px 15px;
+        }
+
+        .casting-clapper {
+          height: 14px;
+          margin-left: -18px;
+          margin-right: -18px;
+          margin-bottom: 14px;
+        }
+
+        .casting-eyebrow {
+          font-size: 10px;
+          letter-spacing: .22em;
+          margin-bottom: 7px;
+        }
+
+        .casting-slate-title {
+          font-size: clamp(1.35rem, 1.65vw, 1.75rem);
+          line-height: .94;
+          letter-spacing: .02em;
+          margin-bottom: 7px;
+          max-height: 3.8em;
+        }
+
+        .casting-slate-sub {
+          font-size: 11px;
+          line-height: 1.35;
+          margin-bottom: 11px;
+        }
+
+        .casting-slate {
+          padding: 10px 12px 2px;
+          margin-bottom: 11px;
+        }
+
+        .casting-slate-row {
+          gap: 10px;
+          padding-bottom: 7px;
+          margin-bottom: 7px;
+        }
+
+        .casting-slate-row label {
+          font-size: 9px;
+          letter-spacing: .13em;
+        }
+
+        .casting-slate-row p {
+          font-size: 13px;
+          line-height: 1.2;
+        }
+
+        .casting-slate-footer {
+          font-size: 8px;
+          letter-spacing: .07em;
+        }
+
+        .casting-slate-actions {
+          margin-top: 8px;
+        }
+
+        .casting-slate-actions button {
+          padding: 5px 10px;
+          font-size: 8px;
+        }
+
+        
+/* =========================================================
+   FILM-SLATE SIZING — readable, balanced, square
+========================================================= */
+
+/* ── Grid cards ── */
+.posts-grid {
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.casting-post-card {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  min-height: 0;
+  max-height: 440px;
+  border-radius: 10px;
+}
+
+.casting-rail {
+  width: 28px;
+  min-width: 28px;
+  padding: 14px 0;
+}
+
+.casting-rail span {
+  width: 16px;
+  height: 18px;
+  border-radius: 3px;
+}
+
+.casting-slate-content {
+  padding: 18px 20px 15px;
+}
+
+.casting-clapper {
+  height: 16px;
+  margin: 0 -20px 16px;
+}
+
+.casting-eyebrow {
+  font-size: 10px;
+  letter-spacing: .22em;
+  margin-bottom: 6px;
+}
+
+.casting-slate-title {
+  font-size: clamp(1.7rem, 2.4vw, 2.4rem);
+  line-height: .92;
+  max-height: 2.76em;
+  margin-bottom: 7px;
+}
+
+.casting-slate-sub {
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+.casting-slate {
+  padding: 10px 12px 2px;
+  margin-bottom: 10px;
+}
+
+.casting-slate-row {
+  padding-bottom: 7px;
+  margin-bottom: 7px;
+  gap: 10px;
+}
+
+.casting-slate-row label {
+  font-size: 9px;
+  letter-spacing: .14em;
+}
+
+.casting-slate-row p {
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.casting-slate-footer {
+  font-size: 8px;
+  letter-spacing: .08em;
+}
+
+.casting-slate-actions {
+  margin-top: 8px;
+}
+
+.casting-slate-actions button {
+  padding: 5px 10px;
+  font-size: 8px;
+}
+
+
+        /* =====================================================
+           LIST — exact film-slate style used by post/page.tsx
+        ===================================================== */
+
+        .list-row {
+          --film-card-1: #141313;
+          --film-card-2: #0c0b0b;
+          --film-ink: #f4f1e9;
+          --film-muted: #a19b8d;
+          --film-accent: #f0a70a;
+          --film-line: rgba(244,241,233,.16);
+
+          display: flex;
+          align-items: stretch;
+          width: 100%;
+          min-height: 160px;
+          margin-bottom: 12px;
+          background:
+            radial-gradient(
+              circle at 50% 0%,
+              rgba(240,167,10,.05),
+              transparent 55%
+            ),
+            linear-gradient(
+              180deg,
+              var(--film-card-1),
+              var(--film-card-2)
+            );
+          border: 1px solid rgba(240,167,10,.18);
+          border-radius: 9px;
+          overflow: hidden;
+          cursor: pointer;
+          box-shadow: 0 16px 35px -18px rgba(0,0,0,.7);
+          transition:
+            transform .2s ease,
+            box-shadow .2s ease,
+            border-color .2s ease;
+        }
+
+        .list-row:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 22px 42px -18px rgba(0,0,0,.78);
+          border-color: rgba(240,167,10,.3);
+        }
+
+        .list-row-closed {
+          filter: saturate(.72);
+        }
+
+        .list-film-rail {
+          width: 28px;
+          min-width: 28px;
+          background: #090909;
+          border-right: 1px solid rgba(240,167,10,.16);
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+          padding: 10px 0;
+        }
+
+        .list-film-rail:last-child {
+          border-right: 0;
+          border-left: 1px solid rgba(240,167,10,.16);
+        }
+
+        .list-film-rail span {
+          display: block;
+          width: 16px;
+          height: 18px;
+          margin: 0 auto;
+          background: #f4f1e9;
+          border-radius: 3px;
+          box-shadow: 0 0 0 1px rgba(255,255,255,.06);
+        }
+
+        .list-row-main {
+          flex: 1;
+          min-width: 0;
+          padding: 0 22px 16px;
+          color: var(--film-ink);
+        }
+
+        .list-clapper {
+          display: flex;
+          height: 14px;
+          margin: 0 -22px 13px;
+          overflow: hidden;
+        }
+
+        .list-clapper span {
+          flex: 1;
+          transform: skewX(-22deg);
+          margin: 0 -3px;
+        }
+
+        .list-clapper span:nth-child(odd) {
+          background: var(--film-ink);
+        }
+
+        .list-clapper span:nth-child(even) {
+          background: var(--film-card-2);
+          border: 1px solid var(--film-line);
+          border-left: 0;
+          border-right: 0;
+        }
+
+        .list-row-kicker {
+          font:
+            700 9px/1
+            'Courier Prime',
+            'Courier New',
+            monospace;
+          letter-spacing: .22em;
+          text-transform: uppercase;
+          color: var(--film-accent);
+          margin-bottom: 5px;
+        }
+
+        .list-row-title-line {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .list-row-left {
+          min-width: 0;
+          flex: 1;
+        }
+
+        .list-row-title {
+          display: block;
+          color: var(--film-ink);
+          font:
+            400 clamp(1.45rem, 2vw, 2rem)/.96
+            'Bebas Neue',
+            Impact,
+            sans-serif;
+          letter-spacing: .02em;
+          text-transform: uppercase;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .list-row-company {
+          display: block;
+          margin-top: 4px;
+          color: var(--film-muted);
+          font:
+            10px/1.2
+            'Courier Prime',
+            'Courier New',
+            monospace;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .list-status {
+          padding: 4px 10px;
+          border: 1px solid var(--film-line);
+          font:
+            700 8px/1
+            'Courier Prime',
+            'Courier New',
+            monospace;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+          flex-shrink: 0;
+        }
+
+        .list-status.open {
+          color: var(--film-accent);
+          border-color: rgba(240,167,10,.3);
+        }
+
+        .list-status.closed {
+          color: #d58d84;
+        }
+
+        .list-row-meta {
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+          margin-top: 10px;
+          padding: 10px 0;
+          border-top: 1px dashed var(--film-line);
+          border-bottom: 1px dashed var(--film-line);
+        }
+
+        .list-row-meta span {
+          display: flex;
+          gap: 6px;
+          align-items: baseline;
+          color: var(--film-ink);
+          font:
+            11px/1.2
+            'Courier Prime',
+            'Courier New',
+            monospace;
+        }
+
+        .list-row-meta b {
+          color: var(--film-muted);
+          font-size: 7.5px;
+          letter-spacing: .12em;
+        }
+
+        .list-row-bottom {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          margin-top: 9px;
+          color: var(--film-muted);
+          font:
+            8px/1.2
+            'Courier Prime',
+            'Courier New',
+            monospace;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+        }
+
+        .list-row-bottom b {
+          color: var(--film-accent);
+        }
+
+        .list-row-bottom .post-actions {
+          display: flex;
+          gap: 0;
+          margin-left: auto;
+          border: 1px solid var(--film-line);
+        }
+
+        .list-row-bottom .post-actions button {
+          border: 0;
+          border-right: 1px solid var(--film-line);
+          background: transparent;
+          color: var(--film-muted);
+          padding: 5px 10px;
+          font:
+            700 8px/1
+            'Courier Prime',
+            'Courier New',
+            monospace;
+          text-transform: uppercase;
+          cursor: pointer;
+        }
+
+        .list-row-bottom .post-actions button:last-child {
+          border-right: 0;
+        }
+
+        .list-row-bottom .post-actions button:hover {
+          background: var(--film-accent);
           color: #111;
+        }
+
+        @media (max-width: 700px) {
+          .list-row {
+            min-height: 0;
+          }
+
+          .list-row-main {
+            padding: 0 16px 14px;
+          }
+
+          .list-clapper {
+            margin-left: -16px;
+            margin-right: -16px;
+            margin-bottom: 11px;
+          }
+
+          .list-row-title {
+            font-size: 1.35rem;
+          }
+
+          .list-row-meta {
+            gap: 10px;
+          }
+
+          .list-row-meta span {
+            font-size: 9px;
+          }
+
+          .list-row-bottom {
+            flex-wrap: wrap;
+          }
+
+          .list-row-bottom .post-actions {
+            width: 100%;
+            margin-left: 0;
+          }
+
+          .list-film-rail {
+            width: 22px;
+            min-width: 22px;
+          }
+
+          .list-film-rail span {
+            width: 13px;
+            height: 15px;
+          }
         }
 
         /* =====================================================
@@ -1794,177 +2211,339 @@ export default function MyCastingCallsPage() {
         }
 
         /* =====================================================
-           MODAL
+           MODAL — exact Casting Calls film-slate popup
         ===================================================== */
+/* ─── COMPACT APPLICATION-STYLE VIEW POPUP ─── */
 
-        .mac-modal-overlay {
+        .modal-overlay {
           position: fixed;
           inset: 0;
-          z-index: 1000;
+          z-index: 2147483647;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 24px;
-          background: rgba(0,0,0,0.6);
-          backdrop-filter: blur(4px);
+          background: rgba(0,0,0,.68);
+          backdrop-filter: blur(5px);
         }
 
-        html.dark .mac-modal-overlay {
-          background: rgba(0,0,0,0.75);
+        html.dark .modal-overlay {
+          background: rgba(0,0,0,.75);
         }
 
-        .mac-modal {
+        .casting-modal {
           position: relative;
+          z-index: 1;
           width: 100%;
           max-width: 820px;
           max-height: 88vh;
           overflow-y: auto;
-          padding: 4.5rem 2.5rem 2.5rem;
-          background: var(--mac-card);
-          color: var(--mac-ink);
-          border: 2.5px solid var(--mac-border);
+          background: var(--card-bg);
+          color: var(--ink);
+          border: 2px solid var(--nb-border);
+          box-shadow: 8px 8px 0 var(--nb-border);
           border-radius: 0;
-          box-shadow: 8px 8px 0 var(--mac-border);
-          animation: mac-pop-in 0.25s cubic-bezier(0.34,1.56,0.64,1);
+          padding: 0;
+          animation: popIn .25s cubic-bezier(.34,1.56,.64,1);
         }
 
-        @keyframes mac-pop-in {
-          from {
-            opacity: 0;
-            transform: scale(0.93) translateY(16px);
-          }
-
-          to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
+        @keyframes popIn {
+          from { opacity: 0; transform: scale(.93) translateY(16px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        .mac-close-btn {
+        .close-btn {
           position: absolute;
-          top: 18px;
-          right: 20px;
-          width: 32px;
-          height: 32px;
+          z-index: 5;
+          top: 14px;
+          right: 14px;
+          width: 34px;
+          height: 34px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border: 2px solid var(--mac-border);
-          background: transparent;
-          color: var(--mac-ink);
-          font-size: 1.1rem;
+          border: 2px solid #f4f1e9;
+          background: #11100f;
+          color: #f4f1e9;
+          border-radius: 0;
+          font-size: 1.25rem;
+          line-height: 1;
           cursor: pointer;
         }
 
-        .mac-close-btn:hover {
-          background: var(--mac-gold);
-          color: #111;
+        .close-btn:hover {
+          background: #11100f;
+          color: #f4f1e9;
+          border-color: #f4f1e9;
         }
 
-        .mac-modal-status-row {
+        .modal-slate-strip {
+          height: 26px;
+          background: repeating-linear-gradient(
+            120deg,
+            #f4f1e9 0 42px,
+            #11100f 42px 84px
+          );
+        }
+
+        .casting-modal-cover {
+          height: 80px;
+          background: linear-gradient(135deg,#24211d,#0d0c0c);
+          overflow: hidden;
+        }
+
+        .casting-modal-content {
+          position: relative;
+          padding: 28px;
+        }
+
+        .casting-modal-avatar {
+          width: 84px;
+          height: 84px;
+          margin-top: -45px;
+          margin-bottom: 16px;
           display: flex;
-          justify-content: flex-end;
-          gap: 0.5rem;
-          flex-wrap: wrap;
-          margin-bottom: 1rem;
+          align-items: center;
+          justify-content: center;
+          border: 4px solid var(--card-bg);
+          border-radius: 50%;
+          background: #11100f;
+          color: #a19b8d;
+          font: 700 2.4rem/1 Impact, sans-serif;
+          box-shadow: 0 0 0 2px #11100f;
         }
 
-        .mac-modal-title {
-          margin-bottom: 6px;
-          color: var(--mac-ink);
-          font-size: clamp(1.4rem,3vw,1.9rem);
-          font-weight: 900;
-          line-height: 1.2;
+        .modal-status-row {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          margin-bottom: 8px;
         }
 
-        .mac-modal-company {
-          margin-bottom: 1.5rem;
-          color: var(--mac-gold);
-          font-size: 0.95rem;
-          font-weight: 700;
-        }
-
-        .mac-modal-info {
-          display: grid;
-          grid-template-columns: repeat(4,1fr);
-          gap: 0.5rem;
-          margin: 1.5rem 0;
-        }
-
-        .mac-modal-info div {
-          padding: 10px 12px;
-          background: #0f0e0d;
-        }
-
-        html.dark .mac-modal-info div {
-          background: #f0eeea;
-        }
-
-        .mac-modal-info strong {
-          display: block;
-          margin-bottom: 4px;
-          color: rgba(255,255,255,0.5);
-          font-size: 0.58rem;
-          font-weight: 900;
-          letter-spacing: 0.1em;
+        .modal-film-kicker {
+          margin: 0 0 6px;
+          color: var(--gold);
+          font: 700 10px/1 'Courier New', monospace;
+          letter-spacing: .22em;
           text-transform: uppercase;
         }
 
-        html.dark .mac-modal-info strong {
-          color: rgba(15,14,13,0.5);
-        }
-
-        .mac-modal-info p {
+        .modal-title {
           margin: 0;
-          color: #fff;
-          font-size: 0.85rem;
-          font-weight: 800;
+          color: var(--ink);
+          font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+          font-size: clamp(2rem,4vw,3rem);
+          line-height: .95;
+          letter-spacing: .02em;
+          text-transform: uppercase;
         }
 
-        html.dark .mac-modal-info p {
+        .modal-company {
+          margin: 8px 0 5px;
+          color: var(--gold);
+          font-weight: 800;
+          font-size: .9rem;
+        }
+
+        .modal-location {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          margin: 0;
+          color: var(--mid);
+          font-size: .85rem;
+        }
+
+        .modal-location span {
+          font: 700 9px/1 'Courier New', monospace;
+          letter-spacing: .12em;
+          color: var(--mid);
+        }
+
+        .modal-location strong {
+          color: var(--ink);
+          font-size: .85rem;
+        }
+
+        .modal-section {
+          margin-top: 1.5rem;
+          padding-top: 1rem;
+          border-top: 2px solid var(--nb-border);
+        }
+
+        .modal-section h3 {
+          margin: 0 0 .65rem;
+          padding: 0;
+          border: 0;
+          color: var(--ink);
+          font: 900 .72rem/1 'Courier New', monospace;
+          letter-spacing: .12em;
+          text-transform: uppercase;
+        }
+
+        .modal-section p {
+          margin: 0;
+          color: var(--mid);
+          line-height: 1.7;
+          font-size: .92rem;
+        }
+
+        .modal-info {
+          display: grid;
+          grid-template-columns: repeat(4,1fr);
+          gap: 6px;
+          margin-top: 1.5rem;
+        }
+
+        .modal-info-item {
+          min-width: 0;
+          padding: 12px;
+          background: #11100f;
+          color: #fff;
+          border-radius: 0;
+        }
+
+        html.dark .modal-info-item {
+          background: #f0eeea;
           color: #0f0e0d;
         }
 
-        .mac-modal-heading {
-          margin-bottom: 0.6rem;
-          padding-top: 1.2rem;
-          border-top: 2px solid var(--mac-border);
-          color: var(--mac-mid);
-          font-size: 0.82rem;
-          font-weight: 900;
-          letter-spacing: 0.1em;
+        .modal-info-item strong {
+          display: block;
+          margin-bottom: 5px;
+          color: rgba(255,255,255,.55);
+          font: 900 8px/1 'Courier New', monospace;
+          letter-spacing: .05em;
+        }
+
+        .modal-info-item span {
+          display: block;
+          color: #fff;
+          font: 800 13px/1.2 'Courier New', monospace;
+          overflow-wrap: anywhere;
+        }
+
+        html.dark .modal-info-item strong {
+          color: rgba(15,14,13,.5);
+        }
+
+        html.dark .modal-info-item span {
+          color: #0f0e0d;
+        }
+
+        .modal-posted {
+          margin-top: 1.2rem;
+          color: var(--mid);
+          font: 8px/1 'Courier New', monospace;
+          letter-spacing: .08em;
           text-transform: uppercase;
         }
 
-        .mac-modal-description {
-          color: var(--mac-mid);
-          font-size: 0.92rem;
-          line-height: 1.75;
+        .modal-posted b {
+          color: var(--ink);
         }
 
-        .mac-modal-actions {
+        .modal-actions {
           display: flex;
-          gap: 1rem;
-          margin-top: 2rem;
+          gap: 10px;
+          align-items: center;
+          margin-top: 1.8rem;
+          flex-wrap: wrap;
         }
 
-        .mac-btn-outline {
-          padding: 0.55rem 1.2rem;
-          border: 1.5px solid var(--mac-mist);
-          border-radius: 100px;
-          background: transparent;
-          color: var(--mac-ink);
-          font-family: inherit;
-          font-size: 0.8rem;
-          font-weight: 700;
+        .film-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 9px 15px;
+          border-radius: 3px;
+          font: 700 9px/1 'Courier New', monospace;
+          letter-spacing: .08em;
+          text-transform: uppercase;
           cursor: pointer;
         }
 
-        .mac-btn-outline:hover {
-          border-color: var(--mac-gold);
-          background: rgba(201,168,76,0.07);
+        .film-btn-gold {
+          border: 1px solid var(--gold);
+          background: var(--gold);
+          color: #111;
         }
 
+        .film-btn-outline {
+          border: 1px solid var(--ink);
+          background: transparent;
+          color: var(--ink);
+        }
+
+        .film-btn-gold:hover {
+          background: var(--gold2);
+        }
+
+        .film-btn-outline:hover {
+          border-color: var(--gold);
+          background: rgba(201,168,76,.07);
+        }
+
+        
+/* ─── MODAL RESPONSIVE ─── */
+
+        @media (max-width: 1000px) {
+          .modal-info {
+            grid-template-columns: repeat(2,1fr);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .modal-overlay {
+            padding: 16px;
+          }
+
+          .casting-modal {
+            max-height: 92vh;
+            box-shadow: 6px 6px 0 var(--nb-border);
+          }
+
+          .casting-modal-content {
+            padding: 22px;
+          }
+
+          .close-btn {
+            right: 14px;
+            top: 14px;
+          }
+        }
+
+        @media (max-width: 520px) {
+          .modal-info {
+            grid-template-columns: 1fr 1fr;
+          }
+
+          .casting-modal-content {
+            padding: 18px;
+          }
+
+          .casting-modal-avatar {
+            width: 76px;
+            height: 76px;
+            margin-top: -40px;
+            font-size: 2.1rem;
+          }
+
+          .modal-title {
+            font-size: 1.8rem;
+          }
+
+          .modal-actions {
+            flex-direction: column;
+            align-items: stretch;
+          }
+
+          .film-btn {
+            width: 100%;
+          }
+        }
+
+        
         /* =====================================================
            RESPONSIVE
         ===================================================== */

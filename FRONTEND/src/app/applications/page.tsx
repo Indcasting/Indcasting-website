@@ -39,6 +39,27 @@ const CATEGORIES = [
   "Choreographers",
 ];
 
+const GENDERS = ["Male", "Female", "Any"];
+const EXPERIENCE = ["Beginner", "Intermediate", "Expert"];
+const ALL_LANGUAGES = [
+  "Hindi", "English", "Tamil", "Telugu", "Bengali", "Kannada",
+  "Malayalam", "Marathi", "Gujarati", "Punjabi", "Odia", "Urdu",
+];
+const BUDGET_OPTS = [
+  { v: "", l: "Any Budget" },
+  { v: "0-25000", l: "Under ₹25k" },
+  { v: "25000-50000", l: "₹25k – ₹50k" },
+  { v: "50000-100000", l: "₹50k – ₹1L" },
+  { v: "100000+", l: "₹1L+" },
+];
+const SORT_OPTS = [
+  { v: "newest", l: "Newest First" },
+  { v: "oldest", l: "Oldest First" },
+  { v: "completion-high", l: "Completion: High → Low" },
+  { v: "completion-low", l: "Completion: Low → High" },
+  { v: "name", l: "Name A–Z" },
+];
+
 
 /* Temporary demo profiles for development. These are rendered alongside
    real published portfolios and do not depend on localStorage. */
@@ -574,6 +595,160 @@ function ApplicationListRow({
 }
 
 /* ─────────────────────────────────────────
+   CUSTOM FILTER CONTROLS — SAME UI AS POST PAGE
+───────────────────────────────────────── */
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  options: { v: string; l: string }[];
+  placeholder: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const selected = options.find((o) => o.v === value);
+
+  useEffect(() => {
+    const outside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", outside);
+    return () => document.removeEventListener("mousedown", outside);
+  }, []);
+
+  return (
+    <div className="csd-wrap" ref={ref}>
+      <button
+        type="button"
+        className={`csd-trigger${open ? " open" : ""}`}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className={selected && value ? "csd-val" : "csd-placeholder"}>
+          {selected && value ? selected.l : placeholder}
+        </span>
+        <span className={`csd-arrow${open ? " up" : ""}`}>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </span>
+      </button>
+
+      {open && (
+        <div className="csd-menu">
+          {options.map((option) => (
+            <button
+              type="button"
+              key={option.v}
+              className={`csd-option${option.v === value ? " selected" : ""}`}
+              onClick={() => {
+                onChange(option.v);
+                setOpen(false);
+              }}
+            >
+              <span>{option.l}</span>
+              {option.v === value && <span>✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LanguageMultiSelect({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const outside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", outside);
+    return () => document.removeEventListener("mousedown", outside);
+  }, []);
+
+  const toggle = (lang: string) => {
+    onChange(
+      value.includes(lang)
+        ? value.filter((v) => v !== lang)
+        : [...value, lang]
+    );
+  };
+
+  const label =
+    value.length === 0
+      ? "Any Language"
+      : value.length === 1
+        ? value[0]
+        : `${value[0]} +${value.length - 1}`;
+
+  return (
+    <div className="csd-wrap" ref={ref}>
+      <button
+        type="button"
+        className={`csd-trigger${open ? " open" : ""}`}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <span className={value.length === 0 ? "csd-placeholder" : "csd-val"}>
+          {label}
+        </span>
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {value.length > 0 && <span className="csd-count">{value.length}</span>}
+          <span className={`csd-arrow${open ? " up" : ""}`}>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </span>
+        </span>
+      </button>
+
+      {open && (
+        <div className="csd-menu lang-menu">
+          <div className="lang-menu-header">
+            <span className="lang-menu-title">Select Languages</span>
+            {value.length > 0 && (
+              <button type="button" className="lang-clear" onClick={() => onChange([])}>
+                Clear all
+              </button>
+            )}
+          </div>
+          <div className="lang-grid">
+            {ALL_LANGUAGES.map((lang) => {
+              const checked = value.includes(lang);
+              return (
+                <button
+                  key={lang}
+                  type="button"
+                  className={`lang-chip${checked ? " checked" : ""}`}
+                  onClick={() => toggle(lang)}
+                >
+                  {checked && <span className="lang-tick">✓</span>}
+                  {lang}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────
    MAIN PAGE
 ───────────────────────────────────────── */
 
@@ -586,6 +761,14 @@ export default function ApplicationsPage() {
     useState<PortfolioData[]>(DEMO_PORTFOLIOS);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const [location, setLocation] = useState("");
+  const [gender, setGender] = useState("");
+  const [experience, setExperience] = useState("");
+  const [languages, setLanguages] = useState<string[]>([]);
+  const [age, setAge] = useState("");
+  const [budget, setBudget] = useState("");
+  const [status, setStatus] = useState("");
+  const [sort, setSort] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedPortfolio, setSelectedPortfolio] =
@@ -637,17 +820,121 @@ export default function ApplicationsPage() {
 
       results = results.filter((portfolio) => {
         const title = portfolio.basicInfo.professionalTitle?.toLowerCase() || "";
-        const skills = portfolio.skills.map((skill) =>
-          skill.name.toLowerCase()
-        );
+        const skills = portfolio.skills.map((skill) => skill.name.toLowerCase());
 
         return title.includes(normalized) ||
           skills.some((skill) => skill.includes(normalized));
       });
     }
 
+    if (location.trim()) {
+      const normalizedLocation = location.trim().toLowerCase();
+      results = results.filter((portfolio) =>
+        portfolio.basicInfo.location?.toLowerCase().includes(normalizedLocation)
+      );
+    }
+
+    if (gender) {
+      results = results.filter((portfolio) => {
+        const data = portfolio as any;
+        const value = String(data.basicInfo?.gender ?? data.gender ?? "").toLowerCase();
+        return value === gender.toLowerCase() || (gender === "Any" && value === "any");
+      });
+    }
+
+    if (experience) {
+      results = results.filter((portfolio) => {
+        const data = portfolio as any;
+        const explicit = String(
+          data.basicInfo?.experience ?? data.experienceLevel ?? ""
+        ).toLowerCase();
+
+        if (explicit) return explicit === experience.toLowerCase();
+
+        const roles = portfolio.experience?.length ?? 0;
+        if (experience === "Beginner") return roles <= 1;
+        if (experience === "Intermediate") return roles >= 2 && roles <= 3;
+        return roles >= 4;
+      });
+    }
+
+    if (languages.length > 0) {
+      results = results.filter((portfolio) => {
+        const data = portfolio as any;
+        const raw = data.basicInfo?.languages ?? data.languages ?? "";
+        const profileLanguages = Array.isArray(raw)
+          ? raw
+          : String(raw).split(",").map((item) => item.trim()).filter(Boolean);
+
+        const skillNames = portfolio.skills.map((skill) => skill.name.toLowerCase());
+
+        return languages.every((lang) =>
+          profileLanguages.some((item: string) => item.toLowerCase() === lang.toLowerCase()) ||
+          skillNames.some((skill) => skill.includes(lang.toLowerCase()))
+        );
+      });
+    }
+
+    if (age) {
+      results = results.filter((portfolio) => {
+        const data = portfolio as any;
+        const profileAge = String(data.basicInfo?.age ?? data.age ?? "");
+        return profileAge === age || profileAge.includes(age);
+      });
+    }
+
+    if (budget) {
+      results = results.filter((portfolio) => {
+        const data = portfolio as any;
+        const rawBudget = Number(
+          String(data.basicInfo?.budget ?? data.budget ?? "").replace(/[^0-9]/g, "")
+        );
+
+        if (!rawBudget) return false;
+        if (budget === "0-25000") return rawBudget < 25000;
+        if (budget === "25000-50000") return rawBudget >= 25000 && rawBudget <= 50000;
+        if (budget === "50000-100000") return rawBudget > 50000 && rawBudget <= 100000;
+        if (budget === "100000+") return rawBudget > 100000;
+        return true;
+      });
+    }
+
+    if (status) {
+      results = results.filter((portfolio) => {
+        const data = portfolio as any;
+        const value = String(data.status ?? data.applicationStatus ?? "Published");
+        return value.toLowerCase() === status.toLowerCase();
+      });
+    }
+
+    results.sort((a, b) => {
+      if (sort === "oldest") return a.userId.localeCompare(b.userId);
+      if (sort === "completion-high") {
+        return (b.completionPercentage || 0) - (a.completionPercentage || 0);
+      }
+      if (sort === "completion-low") {
+        return (a.completionPercentage || 0) - (b.completionPercentage || 0);
+      }
+      if (sort === "name") {
+        return (a.basicInfo.fullName || "").localeCompare(b.basicInfo.fullName || "");
+      }
+      return (b.completionPercentage || 0) - (a.completionPercentage || 0);
+    });
+
     setFilteredPortfolios(results);
-  }, [allPortfolios, search, category]);
+  }, [
+    allPortfolios,
+    search,
+    category,
+    location,
+    gender,
+    experience,
+    languages,
+    age,
+    budget,
+    status,
+    sort,
+  ]);
 
   useEffect(() => {
   if (gsapLoaded.current) return;
@@ -692,6 +979,14 @@ export default function ApplicationsPage() {
   const resetFilters = useCallback(() => {
     setSearch("");
     setCategory("");
+    setLocation("");
+    setGender("");
+    setExperience("");
+    setLanguages([]);
+    setAge("");
+    setBudget("");
+    setStatus("");
+    setSort("newest");
   }, []);
 
   const totalApplications = allPortfolios.length;
@@ -958,44 +1253,185 @@ export default function ApplicationsPage() {
           border-bottom: 1px solid var(--app-mist);
         }
 
-        .application-category-grid {
-          display: flex;
-          flex-wrap: wrap;
-          gap: .55rem;
+        .application-post-filter-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: .75rem;
+          margin-bottom: 1rem;
         }
 
-        .application-category {
-          padding: .45rem .85rem;
-          border: 1px solid var(--app-mist);
-          border-radius: 100px;
-          background: transparent;
+        .application-filter-input {
+          width: 100%;
+          min-height: 48px;
+          padding: 13px 16px;
+          border: 1.5px solid var(--app-border);
+          border-radius: 14px;
+          font-size: .92rem;
+          font-family: inherit;
+          outline: none;
+          background: var(--app-card);
           color: var(--app-ink);
-          font-size: .76rem;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all .2s;
+          transition: border-color .25s, box-shadow .25s, background .2s;
+          appearance: none;
+          -webkit-appearance: none;
         }
 
-        .application-category:hover,
-        .application-category.active {
+        .application-filter-input::placeholder { color: var(--app-mid); }
+        .application-filter-input:focus {
           border-color: var(--app-gold);
+          box-shadow: 0 0 0 3px rgba(201,168,76,.15);
+        }
+
+        /* Exact dropdown language used by the Post page. */
+        .csd-wrap { position: relative; width: 100%; }
+        .csd-trigger {
+          width: 100%;
+          min-height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 13px 16px;
+          background: var(--app-card);
+          border: 1.5px solid var(--app-border);
+          border-radius: 14px;
+          color: var(--app-ink);
+          font-size: .92rem;
+          font-family: inherit;
+          cursor: pointer;
+          transition: border-color .25s, box-shadow .25s, background .2s;
+          text-align: left;
+        }
+        .csd-trigger:hover {
+          border-color: rgba(201,168,76,.5);
+          background: rgba(201,168,76,.06);
+        }
+        .csd-trigger.open {
+          border-color: var(--app-gold);
+          box-shadow: 0 0 0 3px rgba(201,168,76,.15);
+          border-bottom-left-radius: 6px;
+          border-bottom-right-radius: 6px;
+        }
+        .csd-placeholder { color: var(--app-mid); }
+        .csd-val { color: var(--app-ink); font-weight: 600; }
+        .csd-arrow {
+          display: flex;
+          align-items: center;
+          color: var(--app-mid);
+          transition: transform .25s cubic-bezier(.4,0,.2,1);
+          flex-shrink: 0;
+        }
+        .csd-arrow.up { transform: rotate(180deg); }
+        .csd-count {
+          margin-left: auto;
           background: var(--app-gold);
           color: #111;
+          border-radius: 100px;
+          padding: 1px 7px;
+          font-size: .68rem;
+          font-weight: 800;
+          line-height: 1.6;
         }
+        .csd-menu {
+          position: absolute;
+          top: calc(100% + 10px);
+          left: 0;
+          right: 0;
+          min-width: 100%;
+          background: var(--app-card);
+          border: 2px solid var(--app-gold);
+          border-radius: 22px;
+          z-index: 9999;
+          max-height: 220px;
+          overflow-y: auto;
+          overflow-x: hidden;
+          scrollbar-width: thin;
+        }
+        .csd-option {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 11px 16px;
+          background: transparent;
+          border: none;
+          color: var(--app-ink);
+          font-size: .88rem;
+          font-family: inherit;
+          cursor: pointer;
+          transition: background .15s, color .15s;
+          text-align: left;
+          border-bottom: 1px solid var(--app-mist);
+        }
+        .csd-option:last-child { border-bottom: none; }
+        .csd-option:hover { background: rgba(201,168,76,.18); }
+        .csd-option.selected {
+          background: rgba(201,168,76,.15);
+          color: var(--app-gold);
+          font-weight: 700;
+        }
+        .lang-menu { max-height: 300px; padding: 0; }
+        .lang-menu-header {
+          position: sticky;
+          top: 0;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+          padding: 12px 14px;
+          background: var(--app-card);
+          border-bottom: 1px solid var(--app-mist);
+        }
+        .lang-menu-title {
+          color: var(--app-ink);
+          font-size: .75rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: .08em;
+        }
+        .lang-clear {
+          border: 0;
+          background: transparent;
+          color: var(--app-gold);
+          font-size: .72rem;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .lang-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0,1fr));
+          gap: 6px;
+          padding: 10px;
+        }
+        .lang-chip {
+          min-width: 0;
+          padding: 8px 9px;
+          border: 1px solid var(--app-mist);
+          border-radius: 8px;
+          background: transparent;
+          color: var(--app-ink);
+          font-size: .72rem;
+          text-align: left;
+          cursor: pointer;
+        }
+        .lang-chip:hover,
+        .lang-chip.checked {
+          border-color: var(--app-gold);
+          background: rgba(201,168,76,.12);
+          color: var(--app-gold);
+        }
+        .lang-tick { margin-right: 4px; font-weight: 900; }
 
         .application-filter-footer {
           display: flex;
           align-items: center;
+          justify-content: space-between;
           gap: 1rem;
           margin-top: 1rem;
           flex-wrap: wrap;
         }
-
-        .application-result-count {
-          color: var(--app-mid);
-          font-size: .82rem;
-        }
-
+        .application-result-count { color: var(--app-mid); font-size: .82rem; }
         .application-clear {
           border: 1px solid rgba(201,168,76,.3);
           border-radius: 100px;
@@ -1005,6 +1441,13 @@ export default function ApplicationsPage() {
           font-size: .78rem;
           font-weight: 700;
           cursor: pointer;
+        }
+
+        @media (max-width: 900px) {
+          .application-post-filter-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        }
+        @media (max-width: 560px) {
+          .application-post-filter-grid { grid-template-columns: 1fr; }
         }
 
         /* ─── RESULTS ─── */
@@ -1758,18 +2201,90 @@ export default function ApplicationsPage() {
 
         <div className={`applications-filter-collapse${showFilters ? " open" : ""}`}>
           <section className="applications-filter-bar">
-            <div className="application-category-grid">
-              {CATEGORIES.map((item) => (
-                <button
-                  key={item}
-                  className={`application-category${category === item ? " active" : ""}`}
-                  onClick={() =>
-                    setCategory((current) => (current === item ? "" : item))
-                  }
-                >
-                  {item}
-                </button>
-              ))}
+            <div className="application-post-filter-grid">
+              <CustomSelect
+                value={category}
+                onChange={setCategory}
+                options={[{ v: "", l: "Any Category" }, ...CATEGORIES.map((item) => ({ v: item, l: item }))]}
+                placeholder="Any Category"
+              />
+
+              <div className="csd-wrap">
+                <div style={{ position: "relative" }}>
+                  <MapPin
+                    size={14}
+                    style={{
+                      position: "absolute",
+                      left: 14,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "var(--app-mid)",
+                      pointerEvents: "none",
+                    }}
+                  />
+                  <input
+                    className="application-filter-input"
+                    placeholder="Location"
+                    value={location}
+                    style={{ paddingLeft: "38px" }}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <CustomSelect
+                value={gender}
+                onChange={setGender}
+                options={[{ v: "", l: "Any Gender" }, ...GENDERS.map((item) => ({ v: item, l: item }))]}
+                placeholder="Any Gender"
+              />
+
+              <CustomSelect
+                value={experience}
+                onChange={setExperience}
+                options={[{ v: "", l: "Any Experience" }, ...EXPERIENCE.map((item) => ({ v: item, l: item }))]}
+                placeholder="Any Experience"
+              />
+
+              <LanguageMultiSelect value={languages} onChange={setLanguages} />
+
+              <div className="csd-wrap">
+                <div style={{ position: "relative" }}>
+                  <input
+                    className="application-filter-input"
+                    placeholder="Age (e.g. 25)"
+                    type="number"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <CustomSelect
+                value={budget}
+                onChange={setBudget}
+                options={BUDGET_OPTS}
+                placeholder="Any Budget"
+              />
+
+              <CustomSelect
+                value={status}
+                onChange={setStatus}
+                options={[
+                  { v: "", l: "Any Status" },
+                  { v: "Open", l: "Open" },
+                  { v: "Closed", l: "Closed" },
+                  { v: "Published", l: "Published" },
+                ]}
+                placeholder="Any Status"
+              />
+
+              <CustomSelect
+                value={sort}
+                onChange={setSort}
+                options={SORT_OPTS}
+                placeholder="Sort by"
+              />
             </div>
 
             <div className="application-filter-footer">
@@ -1778,7 +2293,8 @@ export default function ApplicationsPage() {
                 {filteredPortfolios.length !== 1 ? "s" : ""}
               </span>
 
-              {(search || category) && (
+              {(search || category || location || gender || experience ||
+                languages.length || age || budget || status || sort !== "newest") && (
                 <button className="application-clear" onClick={resetFilters}>
                   Clear filters ×
                 </button>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import HeroCarousel from "@/components/ui/Herocarousel";
 import { postHeroSlides } from "@/data/heroSlides";
 import gsap from "gsap";
@@ -746,6 +747,7 @@ function CastingListRow({
 ───────────────────────────────────────── */
 export default function PostPage() {
   const gsapLoaded = useRef(false);
+  const searchParams = useSearchParams();
 
   const [posts, setPosts] = useState<CastingPost[]>([]);
   const [editing, setEditing] = useState<CastingPost | null>(null);
@@ -759,6 +761,14 @@ export default function PostPage() {
     search: "", category: "", location: "", gender: "", experience: "",
     languages: [], age: "", budget: "", status: "", sort: "newest",
   });
+
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("category");
+    if (!categoryFromUrl) return;
+
+    setFilters(prev => ({ ...prev, category: categoryFromUrl }));
+    setShowFilters(true);
+  }, [searchParams]);
 
   useEffect(() => {
     const stored = getPosts();
