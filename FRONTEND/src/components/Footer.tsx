@@ -25,7 +25,7 @@ export default function Footer() {
 
           <Link href="/">Home</Link>
 
-          <Link href="/signup">Portfolios</Link>
+          <Link href="/about">About Us</Link>
 
           <Link href="/membership">Membership</Link>
 
@@ -36,8 +36,6 @@ export default function Footer() {
         <div className="footer-column">
 
           <h3>Support</h3>
-
-          <Link href="/help">Help Centre</Link>
 
           <Link href="/privacy">Privacy Policy</Link>
 
@@ -53,7 +51,7 @@ export default function Footer() {
 
           <p>support@indcasting.com</p>
 
-          <p>Mumbai, India</p>
+          <p>New Delhi, India</p>
 
           <div className="socials">
 
