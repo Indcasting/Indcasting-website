@@ -1,0 +1,416 @@
+// IndCasting canonical Prisma schema
+// Designed from the current frontend models and the existing PostgreSQL schema.
+// IMPORTANT: This is a design schema only. Do not run migrations until reviewed.
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PortfolioVisibility {
+  Public
+  RecruitersOnly
+  Private
+}
+
+enum SkillProficiency {
+  Beginner
+  Intermediate
+  Advanced
+  Expert
+}
+
+enum LanguageProficiency {
+  Beginner
+  Intermediate
+  Fluent
+  Native
+}
+
+enum AchievementType {
+  Award
+  Competition
+  Hackathon
+  Sports
+  Publication
+  Other
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  name         String
+  email        String    @unique
+  password     String
+  mobile       String?   @map("mobile")
+  role         String
+  plan         String    @default("free")
+  region       String?
+  language     String    @default("English")
+  companyName  String?   @map("company_name")
+  primarySkill String?   @map("primary_skill")
+  experience   String?
+  verified     Boolean   @default(false)
+  available    Boolean   @default(true)
+  joinedDate   DateTime? @map("joined_date") @db.Date
+  createdAt    DateTime  @default(now()) @map("created_at")
+  skill        String?
+  bio          String?
+  tags         String[]  @default([])
+  avatarUrl    String?   @map("avatar_url")
+  instagram    String?
+  youtube      String?
+  website      String?
+  portfolio    String?
+
+  castingCalls     CastingCall[]       @relation("CastingOwner")
+  applications     Application[]       @relation("TalentApplications")
+  conversationsA   Conversation[]      @relation("ConversationUserA")
+  conversationsB   Conversation[]      @relation("ConversationUserB")
+  messages         Message[]           @relation("MessageSender")
+  notifications    Notification[]
+  savedAsSeeker    SavedTalent[]       @relation("SavedBySeeker")
+  savedAsTalent    SavedTalent[]       @relation("SavedTalent")
+  sessionsAsSeeker TalentSession[]     @relation("SessionSeeker")
+  sessionsAsTalent TalentSession[]     @relation("SessionTalent")
+  powderAsBooker   PowderRoomSession[] @relation("PowderBooker")
+  powderAsTalent   PowderRoomSession[] @relation("PowderTalent")
+  portfolioProfile Portfolio?
+
+  @@map("users")
+}
+
+model CastingCall {
+  id                  String    @id @default(uuid()) @db.Uuid
+  seekerId            String    @map("seeker_id") @db.Uuid
+  company             String?
+  title               String
+  category            String?   @map("skill")
+  role                String?
+  gender              String?
+  age                 String?
+  height              String?
+  languages           String?
+  experience          String?
+  location            String
+  shootStartDate      DateTime? @map("shoot_start_date") @db.Date
+  shootEndDate        DateTime? @map("shoot_end_date") @db.Date
+  budget              String
+  vacancies           Int?
+  applicationDeadline DateTime? @map("application_deadline") @db.Date
+  description         String?
+  type                String
+  status              String    @default("active")
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  seeker       User          @relation("CastingOwner", fields: [seekerId], references: [id])
+  applications Application[]
+
+  @@index([seekerId])
+  @@index([status])
+  @@index([location])
+  @@map("job_posts")
+}
+
+model Application {
+  id        String    @id @default(uuid()) @db.Uuid
+  jobId     String    @map("job_id") @db.Uuid
+  talentId  String    @map("talent_id") @db.Uuid
+  coverNote String?   @map("cover_note")
+  status    String    @default("pending")
+  appliedAt DateTime? @default(now()) @map("applied_at")
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  job    CastingCall @relation(fields: [jobId], references: [id])
+  talent User        @relation("TalentApplications", fields: [talentId], references: [id])
+
+  @@unique([jobId, talentId])
+  @@index([talentId])
+  @@index([jobId])
+  @@map("applications")
+}
+
+model Conversation {
+  id        String    @id @default(uuid()) @db.Uuid
+  userAId   String    @map("user_a") @db.Uuid
+  userBId   String    @map("user_b") @db.Uuid
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  userA    User      @relation("ConversationUserA", fields: [userAId], references: [id])
+  userB    User      @relation("ConversationUserB", fields: [userBId], references: [id])
+  messages Message[]
+
+  @@unique([userAId, userBId])
+  @@index([userAId])
+  @@index([userBId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String    @id @default(uuid()) @db.Uuid
+  conversationId String    @map("conversation_id") @db.Uuid
+  senderId       String    @map("sender_id") @db.Uuid
+  text           String
+  read           Boolean   @default(false)
+  createdAt      DateTime? @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  sender       User         @relation("MessageSender", fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+  @@map("messages")
+}
+
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  title     String
+  message   String
+  type      String    @default("info")
+  read      Boolean   @default(false)
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, read, createdAt])
+  @@map("notifications")
+}
+
+model SavedTalent {
+  id        String    @id @default(uuid()) @db.Uuid
+  seekerId  String    @map("seeker_id") @db.Uuid
+  talentId  String    @map("talent_id") @db.Uuid
+  status    String    @default("saved")
+  createdAt DateTime? @default(now()) @map("created_at")
+
+  seeker User @relation("SavedBySeeker", fields: [seekerId], references: [id])
+  talent User @relation("SavedTalent", fields: [talentId], references: [id])
+
+  @@unique([seekerId, talentId])
+  @@index([talentId])
+  @@map("saved_talent")
+}
+
+model TalentSession {
+  id          Int       @id @default(autoincrement())
+  seekerId    String?   @map("seeker_id") @db.Uuid
+  talentId    String?   @map("talent_id") @db.Uuid
+  title       String?
+  description String?
+  sessionDate DateTime? @map("session_date")
+  status      String?   @default("pending")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  seeker User? @relation("SessionSeeker", fields: [seekerId], references: [id])
+  talent User? @relation("SessionTalent", fields: [talentId], references: [id])
+
+  @@index([seekerId])
+  @@index([talentId])
+  @@map("sessions")
+}
+
+model PowderRoomSession {
+  id          String    @id @default(uuid()) @db.Uuid
+  bookerId    String    @map("booker_id") @db.Uuid
+  talentId    String    @map("talent_id") @db.Uuid
+  sessionDate DateTime  @map("session_date") @db.Date
+  duration    String    @default("60 min")
+  fee         String    @default("£120")
+  status      String    @default("upcoming")
+  createdAt   DateTime? @default(now()) @map("created_at")
+
+  booker User @relation("PowderBooker", fields: [bookerId], references: [id])
+  talent User @relation("PowderTalent", fields: [talentId], references: [id])
+
+  @@index([bookerId])
+  @@index([talentId])
+  @@map("powder_room_sessions")
+}
+
+model Portfolio {
+  id                   String   @id @default(uuid()) @db.Uuid
+  userId               String   @unique @map("user_id") @db.Uuid
+  usernameSlug         String   @unique @map("username_slug")
+  isPublished          Boolean  @default(false) @map("is_published")
+  completionPercentage Int      @default(0) @map("completion_percentage")
+  lastUpdated          DateTime @default(now()) @updatedAt @map("last_updated")
+
+  fullName          String? @map("full_name")
+  professionalTitle String? @map("professional_title")
+  profilePictureUrl String? @map("profile_picture_url")
+  coverBannerUrl    String? @map("cover_banner_url")
+  bio               String?
+  location          String?
+  email             String?
+  phone             String?
+  website           String?
+  linkedin          String?
+  github            String?
+  portfolioUrl      String? @map("portfolio_url")
+  resumeUrl         String? @map("resume_url")
+
+  visibility          PortfolioVisibility @default(Public)
+  privacyEmail        PortfolioVisibility @default(Public) @map("privacy_email")
+  privacyPhone        PortfolioVisibility @default(Public) @map("privacy_phone")
+  privacyResume       PortfolioVisibility @default(Public) @map("privacy_resume")
+  privacyProjects     PortfolioVisibility @default(Public) @map("privacy_projects")
+  privacyAchievements PortfolioVisibility @default(Public) @map("privacy_achievements")
+  privacySocialLinks  PortfolioVisibility @default(Public) @map("privacy_social_links")
+
+  user           User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  skills         PortfolioSkill[]
+  experiences    PortfolioExperience[]
+  education      PortfolioEducation[]
+  projects       PortfolioProject[]
+  certifications PortfolioCertification[]
+  achievements   PortfolioAchievement[]
+  languages      PortfolioLanguage[]
+  socialLinks    PortfolioSocialLinks?
+  interests      PortfolioInterest[]
+
+  @@index([isPublished])
+  @@map("portfolios")
+}
+
+model PortfolioSkill {
+  id          String           @id @default(uuid()) @db.Uuid
+  portfolioId String           @map("portfolio_id") @db.Uuid
+  name        String
+  proficiency SkillProficiency
+  sortOrder   Int              @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_skills")
+}
+
+model PortfolioExperience {
+  id             String @id @default(uuid()) @db.Uuid
+  portfolioId    String @map("portfolio_id") @db.Uuid
+  company        String
+  role           String
+  employmentType String @map("employment_type")
+  startDate      String @map("start_date")
+  endDate        String @map("end_date")
+  description    String
+  sortOrder      Int    @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_experiences")
+}
+
+model PortfolioEducation {
+  id             String @id @default(uuid()) @db.Uuid
+  portfolioId    String @map("portfolio_id") @db.Uuid
+  institution    String
+  degree         String
+  specialization String
+  startYear      String @map("start_year")
+  endYear        String @map("end_year")
+  score          String
+  sortOrder      Int    @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_education")
+}
+
+model PortfolioProject {
+  id           String   @id @default(uuid()) @db.Uuid
+  portfolioId  String   @map("portfolio_id") @db.Uuid
+  title        String
+  description  String
+  technologies String[]
+  githubLink   String?  @map("github_link")
+  liveDemoLink String?  @map("live_demo_link")
+  images       String[]
+  videoUrl     String?  @map("video_url")
+  featured     Boolean  @default(false)
+  sortOrder    Int      @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_projects")
+}
+
+model PortfolioCertification {
+  id               String  @id @default(uuid()) @db.Uuid
+  portfolioId      String  @map("portfolio_id") @db.Uuid
+  name             String
+  organization     String
+  issueDate        String  @map("issue_date")
+  credentialId     String  @map("credential_id")
+  credentialUrl    String? @map("credential_url")
+  certificateImage String? @map("certificate_image")
+  sortOrder        Int     @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_certifications")
+}
+
+model PortfolioAchievement {
+  id          String          @id @default(uuid()) @db.Uuid
+  portfolioId String          @map("portfolio_id") @db.Uuid
+  title       String
+  type        AchievementType
+  description String
+  sortOrder   Int             @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_achievements")
+}
+
+model PortfolioLanguage {
+  id          String              @id @default(uuid()) @db.Uuid
+  portfolioId String              @map("portfolio_id") @db.Uuid
+  name        String
+  proficiency LanguageProficiency
+  sortOrder   Int                 @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_languages")
+}
+
+model PortfolioSocialLinks {
+  id          String  @id @default(uuid()) @db.Uuid
+  portfolioId String  @unique @map("portfolio_id") @db.Uuid
+  linkedin    String?
+  github      String?
+  twitter     String?
+  instagram   String?
+  youtube     String?
+  behance     String?
+  dribbble    String?
+  medium      String?
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@map("portfolio_social_links")
+}
+
+model PortfolioInterest {
+  id          String @id @default(uuid()) @db.Uuid
+  portfolioId String @map("portfolio_id") @db.Uuid
+  name        String
+  sortOrder   Int    @default(0) @map("sort_order")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@index([portfolioId])
+  @@map("portfolio_interests")
+}
