@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma';
@@ -8,21 +9,23 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
-    const connectionString = process.env.APP_DATABASE_URL;
+    const connectionString = process.env.DATABASE_URL;
 
     if (!connectionString) {
-      throw new Error('APP_DATABASE_URL is required');
+      throw new Error('DATABASE_URL is not configured');
     }
 
     const adapter = new PrismaPg({
       connectionString,
     });
 
-    super({ adapter });
+    super({
+      adapter,
+    });
   }
 
   async onModuleInit() {
-    await this.$connect();
+    // Prisma connects lazily when the first query is executed.
   }
 
   async onModuleDestroy() {
