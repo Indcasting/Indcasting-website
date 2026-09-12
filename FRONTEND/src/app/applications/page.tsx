@@ -61,195 +61,128 @@ const SORT_OPTS = [
 ];
 
 
-/* Temporary demo profiles for development. These are rendered alongside
-   real published portfolios and do not depend on localStorage. */
-const DEMO_PORTFOLIOS = [
-  {
-    userId: "demo-arjun-mehta",
-    usernameSlug: "arjun-mehta",
-    isPublished: true,
-    completionPercentage: 94,
-    basicInfo: {
-      fullName: "Arjun Mehta",
-      professionalTitle: "Lead Actor",
-      location: "Mumbai, Maharashtra",
-      bio: "Versatile screen actor with experience across films, commercials and digital productions.",
-      profileImage: "",
-      coverBanner: "",
-    },
-    skills: [
-      { id: "demo-arjun-s1", name: "Acting" },
-      { id: "demo-arjun-s2", name: "Drama" },
-      { id: "demo-arjun-s3", name: "Screen Performance" },
-    ],
-    experience: [
-      {
-        id: "demo-arjun-e1",
-        role: "Lead Actor",
-        company: "Independent Productions",
-      },
-      {
-        id: "demo-arjun-e2",
-        role: "Commercial Actor",
-        company: "Brand Films",
-      },
-    ],
-    projects: [],
-    certifications: [],
-  },
-  {
-    userId: "demo-isha-kapoor",
-    usernameSlug: "isha-kapoor",
-    isPublished: true,
-    completionPercentage: 91,
-    basicInfo: {
-      fullName: "Isha Kapoor",
-      professionalTitle: "Fashion Model",
-      location: "Delhi, India",
-      bio: "Fashion and commercial model available for campaigns, editorials and brand shoots.",
-      profileImage: "",
-      coverBanner: "",
-    },
-    skills: [
-      { id: "demo-isha-s1", name: "Modeling" },
-      { id: "demo-isha-s2", name: "Fashion" },
-      { id: "demo-isha-s3", name: "Commercial" },
-    ],
-    experience: [
-      {
-        id: "demo-isha-e1",
-        role: "Fashion Model",
-        company: "Editorial Studios",
-      },
-    ],
-    projects: [],
-    certifications: [],
-  },
-  {
-    userId: "demo-rohan-iyer",
-    usernameSlug: "rohan-iyer",
-    isPublished: true,
-    completionPercentage: 88,
-    basicInfo: {
-      fullName: "Rohan Iyer",
-      professionalTitle: "Voice Artist",
-      location: "Bangalore, India",
-      bio: "Voice artist specializing in commercials, narration, animation and character voices.",
-      profileImage: "",
-      coverBanner: "",
-    },
-    skills: [
-      { id: "demo-rohan-s1", name: "Voice Acting" },
-      { id: "demo-rohan-s2", name: "Narration" },
-      { id: "demo-rohan-s3", name: "Dubbing" },
-    ],
-    experience: [
-      {
-        id: "demo-rohan-e1",
-        role: "Voice Artist",
-        company: "Audio Works",
-      },
-    ],
-    projects: [],
-    certifications: [],
-  },
-  {
-    userId: "demo-sana-rao",
-    usernameSlug: "sana-rao",
-    isPublished: true,
-    completionPercentage: 96,
-    basicInfo: {
-      fullName: "Sana Rao",
-      professionalTitle: "Professional Dancer",
-      location: "Mumbai, India",
-      bio: "Trained dancer available for music videos, films, stage productions and commercial work.",
-      profileImage: "",
-      coverBanner: "",
-    },
-    skills: [
-      { id: "demo-sana-s1", name: "Dance" },
-      { id: "demo-sana-s2", name: "Choreography" },
-      { id: "demo-sana-s3", name: "Stage Performance" },
-    ],
-    experience: [
-      {
-        id: "demo-sana-e1",
-        role: "Dancer",
-        company: "Stage Productions",
-      },
-    ],
-    projects: [],
-    certifications: [],
-  },
-  {
-    userId: "demo-kabir-singh",
-    usernameSlug: "kabir-singh",
-    isPublished: true,
-    completionPercentage: 90,
-    basicInfo: {
-      fullName: "Kabir Singh",
-      professionalTitle: "Cinematographer",
-      location: "Pune, India",
-      bio: "Cinematographer focused on narrative films, music videos and commercial productions.",
-      profileImage: "",
-      coverBanner: "",
-    },
-    skills: [
-      { id: "demo-kabir-s1", name: "Cinematography" },
-      { id: "demo-kabir-s2", name: "Camera" },
-      { id: "demo-kabir-s3", name: "Lighting" },
-    ],
-    experience: [
-      {
-        id: "demo-kabir-e1",
-        role: "Cinematographer",
-        company: "Frame House",
-      },
-    ],
-    projects: [],
-    certifications: [],
-  },
-  {
-    userId: "demo-meera-nair",
-    usernameSlug: "meera-nair",
-    isPublished: true,
-    completionPercentage: 93,
-    basicInfo: {
-      fullName: "Meera Nair",
-      professionalTitle: "Film Editor",
-      location: "Chennai, India",
-      bio: "Film editor working across short films, advertisements, music videos and digital content.",
-      profileImage: "",
-      coverBanner: "",
-    },
-    skills: [
-      { id: "demo-meera-s1", name: "Video Editing" },
-      { id: "demo-meera-s2", name: "Premiere Pro" },
-      { id: "demo-meera-s3", name: "DaVinci Resolve" },
-    ],
-    experience: [
-      {
-        id: "demo-meera-e1",
-        role: "Film Editor",
-        company: "Post House",
-      },
-    ],
-    projects: [],
-    certifications: [],
-  },
-] as unknown as PortfolioData[];
+interface TalentApi {
+  id: string;
+  name: string;
+  region: string | null;
+  experience: string | null;
+  primarySkill: string | null;
+  skill: string | null;
+  bio: string | null;
+  tags: string[];
+  avatarUrl: string | null;
+  verified: boolean;
+  available: boolean;
+  language: string;
+  instagram: string | null;
+  youtube: string | null;
+  website: string | null;
+  portfolio: string | null;
+  joinedDate: string | null;
+  createdAt: string;
+  companyName: string | null;
+}
 
-function getAllPublicPortfolios(): PortfolioData[] {
-  if (typeof window === "undefined") return [];
+function slugifyName(name: string) {
+  return (
+    name
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "talent"
+  );
+}
 
-  try {
-    const data = localStorage.getItem("indcasting_portfolios") || "[]";
-    const portfolios = JSON.parse(data) as PortfolioData[];
-    return portfolios.filter((p) => p.isPublished);
-  } catch (error) {
-    console.error("Failed to parse portfolios from localStorage", error);
-    return [];
-  }
+function talentToPortfolio(talent: TalentApi): PortfolioData {
+  const skillNames =
+    talent.tags?.length > 0
+      ? talent.tags
+      : [talent.primarySkill || talent.skill || "Talent"];
+
+  return {
+    userId: talent.id,
+    usernameSlug: `${slugifyName(talent.name)}-${talent.id.slice(0, 8)}`,
+    isPublished: true,
+    completionPercentage: talent.verified ? 100 : 0,
+    lastUpdated: talent.createdAt,
+
+    basicInfo: {
+      fullName: talent.name,
+      professionalTitle:
+        talent.primarySkill || talent.skill || "Creative Professional",
+      profilePicture: talent.avatarUrl || "",
+      coverBanner: "",
+      bio: talent.bio || "",
+      location: talent.region || "",
+      email: "",
+      phone: "",
+      website: talent.website || "",
+      linkedin: "",
+      github: "",
+      portfolioUrl: talent.portfolio || "",
+    },
+
+    skills: skillNames.map((name, index) => ({
+      id: `${talent.id}-skill-${index}`,
+      name,
+      proficiency: "Advanced" as const,
+    })),
+
+    experience: talent.experience
+      ? [
+          {
+            id: `${talent.id}-experience`,
+            company: talent.companyName || "",
+            role:
+              talent.primarySkill ||
+              talent.skill ||
+              "Creative Professional",
+            employmentType: "Professional",
+            startDate: "",
+            endDate: "",
+            description: talent.experience,
+          },
+        ]
+      : [],
+
+    education: [],
+    projects: [],
+    certifications: [],
+    resume: "",
+    achievements: [],
+
+    socialLinks: {
+      linkedin: "",
+      github: "",
+      twitter: "",
+      instagram: talent.instagram || "",
+      youtube: talent.youtube || "",
+      behance: "",
+      dribbble: "",
+      medium: "",
+    },
+
+    languages: talent.language
+      ? [
+          {
+            id: `${talent.id}-language`,
+            name: talent.language,
+            proficiency: "Fluent" as const,
+          },
+        ]
+      : [],
+
+    interests: talent.tags || [],
+
+    privacyControls: {
+      email: "Private",
+      phone: "Private",
+      resume: "Private",
+      projects: "Public",
+      achievements: "Public",
+      socialLinks: "Public",
+    },
+  };
 }
 
 /* ─────────────────────────────────────────
@@ -756,9 +689,9 @@ export default function ApplicationsPage() {
   const gsapLoaded = useRef(false);
 
   const [allPortfolios, setAllPortfolios] =
-    useState<PortfolioData[]>(DEMO_PORTFOLIOS);
+    useState<PortfolioData[]>([]);
   const [filteredPortfolios, setFilteredPortfolios] =
-    useState<PortfolioData[]>(DEMO_PORTFOLIOS);
+    useState<PortfolioData[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
@@ -775,19 +708,41 @@ export default function ApplicationsPage() {
     useState<PortfolioData | null>(null);
 
   useEffect(() => {
-    const realPortfolios = getAllPublicPortfolios();
+    let cancelled = false;
 
-    // Keep the demo profiles visible until real published portfolios exist.
-    // Real portfolios are appended without duplicating any demo user IDs.
-    const combined = [
-      ...DEMO_PORTFOLIOS,
-      ...realPortfolios.filter(
-        (real) => !DEMO_PORTFOLIOS.some((demo) => demo.userId === real.userId)
-      ),
-    ];
+    async function loadTalents() {
+      try {
+        const response = await fetch("http://localhost:4000/talent-profiles");
 
-    setAllPortfolios(combined);
-    setFilteredPortfolios(combined);
+        if (!response.ok) {
+          throw new Error(`Failed to load talent profiles (${response.status})`);
+        }
+
+        const data: TalentApi[] = await response.json();
+
+        if (cancelled) return;
+
+        const portfolios = data
+          .filter((talent) => talent.available)
+          .map(talentToPortfolio);
+
+        setAllPortfolios(portfolios);
+        setFilteredPortfolios(portfolios);
+      } catch (error) {
+        console.error("Failed to load talent profiles:", error);
+
+        if (!cancelled) {
+          setAllPortfolios([]);
+          setFilteredPortfolios([]);
+        }
+      }
+    }
+
+    loadTalents();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {

@@ -1,31 +1,35 @@
 import 'dotenv/config';
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../../generated/prisma';
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+
+  ssl: {
+    rejectUnauthorized: false,
+  },
+
+  // How long to wait when establishing a DB connection
+  connectionTimeoutMillis: 10_000,
+
+  // Close idle connections instead of keeping them around
+  idleTimeoutMillis: 30_000,
+
+  // Keep the application-side pool small.
+  // Your development backend does not need 10 connections.
+  max: 3,
+});
 
 @Injectable()
 export class PrismaService
   extends PrismaClient
-  implements OnModuleInit, OnModuleDestroy
+  implements OnModuleDestroy
 {
   constructor() {
-    const connectionString = process.env.DATABASE_URL;
-
-    if (!connectionString) {
-      throw new Error('DATABASE_URL is not configured');
-    }
-
-    const adapter = new PrismaPg({
-      connectionString,
-    });
-
     super({
       adapter,
     });
-  }
-
-  async onModuleInit() {
-    // Prisma connects lazily when the first query is executed.
   }
 
   async onModuleDestroy() {
