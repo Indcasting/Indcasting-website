@@ -29,6 +29,13 @@ export class TalentProfilesService {
         portfolio: true,
         joinedDate: true,
         createdAt: true,
+        portfolioProfile: {
+        select: {
+          usernameSlug: true,
+          isPublished: true,
+          completionPercentage: true,
+        },
+      },
       },
       orderBy: {
         createdAt: 'desc',
@@ -61,6 +68,13 @@ export class TalentProfilesService {
         portfolio: true,
         joinedDate: true,
         createdAt: true,
+        portfolioProfile: {
+        select: {
+          usernameSlug: true,
+          isPublished: true,
+          completionPercentage: true,
+        },
+      },
       },
     });
   }

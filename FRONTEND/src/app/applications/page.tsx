@@ -5,9 +5,6 @@ import Link from "next/link";
 import {
   Search,
   MapPin,
-  Briefcase,
-  FolderKanban,
-  ExternalLink,
   Filter,
   Grid2X2,
   List,
@@ -40,11 +37,24 @@ const CATEGORIES = [
 ];
 
 const GENDERS = ["Male", "Female", "Any"];
+
 const EXPERIENCE = ["Beginner", "Intermediate", "Expert"];
+
 const ALL_LANGUAGES = [
-  "Hindi", "English", "Tamil", "Telugu", "Bengali", "Kannada",
-  "Malayalam", "Marathi", "Gujarati", "Punjabi", "Odia", "Urdu",
+  "Hindi",
+  "English",
+  "Tamil",
+  "Telugu",
+  "Bengali",
+  "Kannada",
+  "Malayalam",
+  "Marathi",
+  "Gujarati",
+  "Punjabi",
+  "Odia",
+  "Urdu",
 ];
+
 const BUDGET_OPTS = [
   { v: "", l: "Any Budget" },
   { v: "0-25000", l: "Under ₹25k" },
@@ -52,6 +62,7 @@ const BUDGET_OPTS = [
   { v: "50000-100000", l: "₹50k – ₹1L" },
   { v: "100000+", l: "₹1L+" },
 ];
+
 const SORT_OPTS = [
   { v: "newest", l: "Newest First" },
   { v: "oldest", l: "Oldest First" },
@@ -60,6 +71,9 @@ const SORT_OPTS = [
   { v: "name", l: "Name A–Z" },
 ];
 
+/* ─────────────────────────────────────────
+   BACKEND TALENT TYPE
+───────────────────────────────────────── */
 
 interface TalentApi {
   id: string;
@@ -81,17 +95,22 @@ interface TalentApi {
   joinedDate: string | null;
   createdAt: string;
   companyName: string | null;
+
+  /*
+   * Real Portfolio relation from the backend.
+   *
+   * null = user exists but has not created a portfolio yet.
+   */
+  portfolioProfile: {
+    usernameSlug: string;
+    isPublished: boolean;
+    completionPercentage: number;
+  } | null;
 }
 
-function slugifyName(name: string) {
-  return (
-    name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "talent"
-  );
-}
+/* ─────────────────────────────────────────
+   TALENT → EXISTING UI DATA
+───────────────────────────────────────── */
 
 function talentToPortfolio(talent: TalentApi): PortfolioData {
   const skillNames =
@@ -99,26 +118,54 @@ function talentToPortfolio(talent: TalentApi): PortfolioData {
       ? talent.tags
       : [talent.primarySkill || talent.skill || "Talent"];
 
+  const portfolio = talent.portfolioProfile;
+
   return {
     userId: talent.id,
-    usernameSlug: `${slugifyName(talent.name)}-${talent.id.slice(0, 8)}`,
-    isPublished: true,
-    completionPercentage: talent.verified ? 100 : 0,
+
+    /*
+     * IMPORTANT:
+     * Do NOT generate a fake slug anymore.
+     *
+     * If there is no real Portfolio row, this stays empty.
+     */
+    usernameSlug: portfolio?.usernameSlug || "",
+
+    /*
+     * These values now come from the actual Portfolio.
+     */
+    isPublished: portfolio?.isPublished ?? false,
+
+    completionPercentage: portfolio?.completionPercentage ?? 0,
+
     lastUpdated: talent.createdAt,
 
     basicInfo: {
       fullName: talent.name,
+
       professionalTitle:
-        talent.primarySkill || talent.skill || "Creative Professional",
+        talent.primarySkill ||
+        talent.skill ||
+        "Creative Professional",
+
       profilePicture: talent.avatarUrl || "",
+
       coverBanner: "",
+
       bio: talent.bio || "",
+
       location: talent.region || "",
+
       email: "",
+
       phone: "",
+
       website: talent.website || "",
+
       linkedin: "",
+
       github: "",
+
       portfolioUrl: talent.portfolio || "",
     },
 
@@ -146,9 +193,13 @@ function talentToPortfolio(talent: TalentApi): PortfolioData {
       : [],
 
     education: [],
+
     projects: [],
+
     certifications: [],
+
     resume: "",
+
     achievements: [],
 
     socialLinks: {
@@ -186,18 +237,40 @@ function talentToPortfolio(talent: TalentApi): PortfolioData {
 }
 
 /* ─────────────────────────────────────────
+   PORTFOLIO AVAILABILITY HELPERS
+───────────────────────────────────────── */
+
+function hasPortfolio(portfolio: PortfolioData) {
+  return Boolean(portfolio.usernameSlug);
+}
+
+function canOpenPortfolio(portfolio: PortfolioData) {
+  return Boolean(
+    portfolio.usernameSlug &&
+      portfolio.isPublished
+  );
+}
+
+/* ─────────────────────────────────────────
    DETAILS MODAL
 ───────────────────────────────────────── */
 
 function ApplicationDetailsModal({
   portfolio,
   onClose,
+  onPortfolioUnavailable,
 }: {
   portfolio: PortfolioData;
   onClose: () => void;
+  onPortfolioUnavailable: (message: string) => void;
 }) {
-  const { basicInfo, skills, experience, projects, certifications } =
-    portfolio;
+  const {
+    basicInfo,
+    skills,
+    experience,
+    projects,
+    certifications,
+  } = portfolio;
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -214,6 +287,24 @@ function ApplicationDetailsModal({
     };
   }, [onClose]);
 
+  const handleFullPortfolio = () => {
+    if (!hasPortfolio(portfolio)) {
+      onPortfolioUnavailable(
+        "This talent has not created a portfolio yet."
+      );
+      return;
+    }
+
+    if (!portfolio.isPublished) {
+      onPortfolioUnavailable(
+        "This portfolio exists but is currently private."
+      );
+      return;
+    }
+
+    window.location.href = `/portfolio/${portfolio.usernameSlug}`;
+  };
+
   return (
     <div
       className="application-modal-overlay"
@@ -222,7 +313,11 @@ function ApplicationDetailsModal({
       }}
     >
       <div className="application-modal">
-        <button className="application-close" onClick={onClose} aria-label="Close">
+        <button
+          className="application-close"
+          onClick={onClose}
+          aria-label="Close"
+        >
           <X size={18} />
         </button>
 
@@ -241,10 +336,13 @@ function ApplicationDetailsModal({
 
           <p className="film-kicker">TALENT APPLICATION</p>
 
-          <h2>{basicInfo.fullName || "Unnamed Portfolio"}</h2>
+          <h2>
+            {basicInfo.fullName || "Unnamed Portfolio"}
+          </h2>
 
           <p className="application-modal-title">
-            {basicInfo.professionalTitle || "Professional Title"}
+            {basicInfo.professionalTitle ||
+              "Professional Title"}
           </p>
 
           {basicInfo.location && (
@@ -253,6 +351,27 @@ function ApplicationDetailsModal({
               {basicInfo.location}
             </p>
           )}
+
+          {!hasPortfolio(portfolio) && (
+            <div className="portfolio-status-message">
+              <strong>PORTFOLIO NOT AVAILABLE</strong>
+              <span>
+                This talent profile exists, but the full
+                portfolio has not been created yet.
+              </span>
+            </div>
+          )}
+
+          {hasPortfolio(portfolio) &&
+            !portfolio.isPublished && (
+              <div className="portfolio-status-message">
+                <strong>PORTFOLIO PRIVATE</strong>
+                <span>
+                  This talent has a portfolio, but it is
+                  currently not published.
+                </span>
+              </div>
+            )}
 
           {basicInfo.bio && (
             <div className="application-modal-section">
@@ -264,16 +383,24 @@ function ApplicationDetailsModal({
           <div className="application-info-grid">
             <div>
               <strong>EXPERIENCE</strong>
-              <span>{experience.length} {experience.length === 1 ? "ROLE" : "ROLES"}</span>
+              <span>
+                {experience.length}{" "}
+                {experience.length === 1
+                  ? "ROLE"
+                  : "ROLES"}
+              </span>
             </div>
+
             <div>
               <strong>PROJECTS</strong>
               <span>{projects.length}</span>
             </div>
+
             <div>
               <strong>SKILLS</strong>
               <span>{skills.length}</span>
             </div>
+
             <div>
               <strong>CERTIFICATIONS</strong>
               <span>{certifications.length}</span>
@@ -283,24 +410,36 @@ function ApplicationDetailsModal({
           {skills.length > 0 && (
             <div className="application-modal-section">
               <h3>SKILLS</h3>
+
               <div className="skill-tags">
                 {skills.map((skill) => (
-                  <span key={skill.id}>{skill.name}</span>
+                  <span key={skill.id}>
+                    {skill.name}
+                  </span>
                 ))}
               </div>
             </div>
           )}
 
           <div className="modal-actions">
-            <Link
-              href={`/portfolio/${portfolio.usernameSlug}`}
-              className="film-btn film-btn-gold"
+            <button
+              type="button"
+              className={`film-btn ${
+                canOpenPortfolio(portfolio)
+                  ? "film-btn-gold"
+                  : "film-btn-disabled"
+              }`}
+              onClick={handleFullPortfolio}
+            >
+              {canOpenPortfolio(portfolio)
+                ? "VIEW FULL PORTFOLIO"
+                : "PORTFOLIO UNAVAILABLE"}
+            </button>
+
+            <button
+              className="film-btn film-btn-outline"
               onClick={onClose}
             >
-              VIEW FULL PORTFOLIO
-            </Link>
-
-            <button className="film-btn film-btn-outline" onClick={onClose}>
               CLOSE
             </button>
           </div>
@@ -311,7 +450,7 @@ function ApplicationDetailsModal({
 }
 
 /* ─────────────────────────────────────────
-   GRID CARD — SAME FILM-SLATE LANGUAGE AS POST
+   GRID CARD
 ───────────────────────────────────────── */
 
 function ApplicationCard({
@@ -321,7 +460,14 @@ function ApplicationCard({
   portfolio: PortfolioData;
   onView: (portfolio: PortfolioData) => void;
 }) {
-  const { basicInfo, skills, experience, projects } = portfolio;
+  const {
+    basicInfo,
+    skills,
+    experience,
+    projects,
+  } = portfolio;
+
+  const portfolioExists = hasPortfolio(portfolio);
 
   return (
     <div
@@ -330,33 +476,68 @@ function ApplicationCard({
       role="button"
       tabIndex={0}
       onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") onView(portfolio);
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
+          onView(portfolio);
+        }
       }}
     >
-      <div className="application-film-rail" aria-hidden="true">
-        {Array.from({ length: 8 }).map((_, index) => (
-          <span key={index} />
-        ))}
+      <div
+        className="application-film-rail"
+        aria-hidden="true"
+      >
+        {Array.from({ length: 8 }).map(
+          (_, index) => (
+            <span key={index} />
+          )
+        )}
       </div>
 
       <div className="application-slate-content">
-        <div className="application-clapper" aria-hidden="true">
-          {Array.from({ length: 7 }).map((_, index) => (
-            <span key={index} />
-          ))}
+        <div
+          className="application-clapper"
+          aria-hidden="true"
+        >
+          {Array.from({ length: 7 }).map(
+            (_, index) => (
+              <span key={index} />
+            )
+          )}
         </div>
 
-        <p className="film-kicker">TALENT APPLICATION</p>
+        <p className="film-kicker">
+          TALENT APPLICATION
+        </p>
 
         <div className="application-card-heading">
           <div>
-            <h3>{basicInfo.fullName || "Unnamed Portfolio"}</h3>
+            <h3>
+              {basicInfo.fullName ||
+                "Unnamed Portfolio"}
+            </h3>
+
             <p className="application-title">
-              {basicInfo.professionalTitle || "Professional Title"}
+              {basicInfo.professionalTitle ||
+                "Professional Title"}
             </p>
           </div>
 
-          <span className="published-stamp">PUBLISHED</span>
+          <span
+            className={`published-stamp ${
+              portfolioExists &&
+              portfolio.isPublished
+                ? ""
+                : "unavailable"
+            }`}
+          >
+            {portfolioExists
+              ? portfolio.isPublished
+                ? "PUBLISHED"
+                : "PRIVATE"
+              : "NO PORTFOLIO"}
+          </span>
         </div>
 
         {basicInfo.location && (
@@ -369,21 +550,32 @@ function ApplicationCard({
         <div className="application-slate">
           <div className="application-slate-row">
             <label>ROLE</label>
-            <p>{basicInfo.professionalTitle || "Talent"}</p>
+            <p>
+              {basicInfo.professionalTitle ||
+                "Talent"}
+            </p>
           </div>
 
           <div className="application-slate-row">
             <label>SKILLS</label>
             <p>
               {skills.length > 0
-                ? skills.slice(0, 2).map((s) => s.name).join(" · ")
+                ? skills
+                    .slice(0, 2)
+                    .map((s) => s.name)
+                    .join(" · ")
                 : "Available"}
             </p>
           </div>
 
           <div className="application-slate-row">
             <label>EXPERIENCE</label>
-            <p>{experience.length} {experience.length === 1 ? "ROLE" : "ROLES"}</p>
+            <p>
+              {experience.length}{" "}
+              {experience.length === 1
+                ? "ROLE"
+                : "ROLES"}
+            </p>
           </div>
 
           <div className="application-slate-row">
@@ -394,44 +586,93 @@ function ApplicationCard({
 
         {skills.length > 0 && (
           <div className="application-tags">
-            {skills.slice(0, 4).map((skill) => (
-              <span key={skill.id}>{skill.name}</span>
-            ))}
-            {skills.length > 4 && <span>+{skills.length - 4}</span>}
+            {skills
+              .slice(0, 4)
+              .map((skill) => (
+                <span key={skill.id}>
+                  {skill.name}
+                </span>
+              ))}
+
+            {skills.length > 4 && (
+              <span>
+                +{skills.length - 4}
+              </span>
+            )}
           </div>
         )}
 
         <div className="application-card-footer">
           <span>
-            PROFILE. <b>{portfolio.usernameSlug || "TALENT"}</b>
+            PROFILE.{" "}
+            <b>
+              {portfolio.usernameSlug ||
+                "NOT AVAILABLE"}
+            </b>
           </span>
+
           <span>
-            COMPLETION. <b>{portfolio.completionPercentage || 0}%</b>
+            COMPLETION.{" "}
+            <b>
+              {portfolio.completionPercentage || 0}%
+            </b>
           </span>
         </div>
       </div>
 
-      <div className="application-film-rail" aria-hidden="true">
-        {Array.from({ length: 8 }).map((_, index) => (
-          <span key={index} />
-        ))}
+      <div
+        className="application-film-rail"
+        aria-hidden="true"
+      >
+        {Array.from({ length: 8 }).map(
+          (_, index) => (
+            <span key={index} />
+          )
+        )}
       </div>
     </div>
   );
 }
 
 /* ─────────────────────────────────────────
-   LIST ROW — SAME FILM-SLATE LANGUAGE AS POST
+   LIST ROW
 ───────────────────────────────────────── */
 
 function ApplicationListRow({
   portfolio,
   onView,
+  onPortfolioUnavailable,
 }: {
   portfolio: PortfolioData;
   onView: (portfolio: PortfolioData) => void;
+  onPortfolioUnavailable: (message: string) => void;
 }) {
-  const { basicInfo, skills, experience, projects } = portfolio;
+  const {
+    basicInfo,
+    skills,
+    experience,
+    projects,
+  } = portfolio;
+
+  const portfolioExists = hasPortfolio(portfolio);
+
+  const handlePortfolioClick = () => {
+    if (!portfolioExists) {
+      onPortfolioUnavailable(
+        "This talent has not created a portfolio yet."
+      );
+      return;
+    }
+
+    if (!portfolio.isPublished) {
+      onPortfolioUnavailable(
+        "This portfolio exists but is currently private."
+      );
+      return;
+    }
+
+    window.location.href = `/portfolio/${portfolio.usernameSlug}`;
+  };
 
   return (
     <div
@@ -440,46 +681,81 @@ function ApplicationListRow({
       role="button"
       tabIndex={0}
       onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") onView(portfolio);
+        if (
+          event.key === "Enter" ||
+          event.key === " "
+        ) {
+          onView(portfolio);
+        }
       }}
     >
-      <div className="application-list-rail" aria-hidden="true">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <span key={index} />
-        ))}
+      <div
+        className="application-list-rail"
+        aria-hidden="true"
+      >
+        {Array.from({ length: 5 }).map(
+          (_, index) => (
+            <span key={index} />
+          )
+        )}
       </div>
 
       <div className="application-list-main">
-        <div className="application-list-clapper" aria-hidden="true">
-          {Array.from({ length: 7 }).map((_, index) => (
-            <span key={index} />
-          ))}
+        <div
+          className="application-list-clapper"
+          aria-hidden="true"
+        >
+          {Array.from({ length: 7 }).map(
+            (_, index) => (
+              <span key={index} />
+            )
+          )}
         </div>
 
-        <div className="film-kicker">TALENT APPLICATION</div>
+        <div className="film-kicker">
+          TALENT APPLICATION
+        </div>
 
         <div className="application-list-title-line">
           <div>
             <span className="application-list-title">
-              {basicInfo.fullName || "Unnamed Portfolio"}
+              {basicInfo.fullName ||
+                "Unnamed Portfolio"}
             </span>
+
             <span className="application-list-company">
-              {basicInfo.professionalTitle || "Professional Title"}
+              {basicInfo.professionalTitle ||
+                "Professional Title"}
             </span>
           </div>
 
-          <span className="published-stamp">PUBLISHED</span>
+          <span
+            className={`published-stamp ${
+              portfolioExists &&
+              portfolio.isPublished
+                ? ""
+                : "unavailable"
+            }`}
+          >
+            {portfolioExists
+              ? portfolio.isPublished
+                ? "PUBLISHED"
+                : "PRIVATE"
+              : "NO PORTFOLIO"}
+          </span>
         </div>
 
         <div className="application-list-meta">
           <span>
             <b>ROLE</b>
-            {basicInfo.professionalTitle || "Talent"}
+            {basicInfo.professionalTitle ||
+              "Talent"}
           </span>
 
           <span>
             <b>LOCATION</b>
-            {basicInfo.location || "Not specified"}
+            {basicInfo.location ||
+              "Not specified"}
           </span>
 
           <span>
@@ -500,36 +776,62 @@ function ApplicationListRow({
 
         <div className="application-list-bottom">
           <span>
-            SKILLS. <b>{skills.slice(0, 3).map((s) => s.name).join(" · ") || "—"}</b>
+            SKILLS.{" "}
+            <b>
+              {skills
+                .slice(0, 3)
+                .map((s) => s.name)
+                .join(" · ") || "—"}
+            </b>
           </span>
 
-          <div className="application-actions" onClick={(event) => event.stopPropagation()}>
-            <button className="row-view-btn" onClick={() => onView(portfolio)}>
+          <div
+            className="application-actions"
+            onClick={(event) =>
+              event.stopPropagation()
+            }
+          >
+            <button
+              className="row-view-btn"
+              onClick={() => onView(portfolio)}
+            >
               VIEW
             </button>
 
-            <Link
-              href={`/portfolio/${portfolio.usernameSlug}`}
-              onClick={(event) => event.stopPropagation()}
+            <button
+              type="button"
+              className={`row-portfolio-btn ${
+                !portfolioExists ||
+                !portfolio.isPublished
+                  ? "disabled"
+                  : ""
+              }`}
+              onClick={handlePortfolioClick}
             >
               PORTFOLIO
-            </Link>
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="application-list-rail" aria-hidden="true">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <span key={index} />
-        ))}
+      <div
+        className="application-list-rail"
+        aria-hidden="true"
+      >
+        {Array.from({ length: 5 }).map(
+          (_, index) => (
+            <span key={index} />
+          )
+        )}
       </div>
     </div>
   );
 }
 
 /* ─────────────────────────────────────────
-   CUSTOM FILTER CONTROLS — SAME UI AS POST PAGE
+   CUSTOM FILTER CONTROLS
 ───────────────────────────────────────── */
+
 function CustomSelect({
   value,
   onChange,
@@ -543,30 +845,70 @@ function CustomSelect({
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const selected = options.find((o) => o.v === value);
+  const selected = options.find(
+    (o) => o.v === value
+  );
 
   useEffect(() => {
     const outside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+      if (
+        ref.current &&
+        !ref.current.contains(
+          event.target as Node
+        )
+      ) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", outside);
-    return () => document.removeEventListener("mousedown", outside);
+
+    document.addEventListener(
+      "mousedown",
+      outside
+    );
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        outside
+      );
   }, []);
 
   return (
     <div className="csd-wrap" ref={ref}>
       <button
         type="button"
-        className={`csd-trigger${open ? " open" : ""}`}
-        onClick={() => setOpen((v) => !v)}
+        className={`csd-trigger${
+          open ? " open" : ""
+        }`}
+        onClick={() =>
+          setOpen((v) => !v)
+        }
       >
-        <span className={selected && value ? "csd-val" : "csd-placeholder"}>
-          {selected && value ? selected.l : placeholder}
+        <span
+          className={
+            selected && value
+              ? "csd-val"
+              : "csd-placeholder"
+          }
+        >
+          {selected && value
+            ? selected.l
+            : placeholder}
         </span>
-        <span className={`csd-arrow${open ? " up" : ""}`}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+
+        <span
+          className={`csd-arrow${
+            open ? " up" : ""
+          }`}
+        >
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M6 9l6 6 6-6" />
           </svg>
         </span>
@@ -578,14 +920,21 @@ function CustomSelect({
             <button
               type="button"
               key={option.v}
-              className={`csd-option${option.v === value ? " selected" : ""}`}
+              className={`csd-option${
+                option.v === value
+                  ? " selected"
+                  : ""
+              }`}
               onClick={() => {
                 onChange(option.v);
                 setOpen(false);
               }}
             >
               <span>{option.l}</span>
-              {option.v === value && <span>✓</span>}
+
+              {option.v === value && (
+                <span>✓</span>
+              )}
             </button>
           ))}
         </div>
@@ -606,12 +955,26 @@ function LanguageMultiSelect({
 
   useEffect(() => {
     const outside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+      if (
+        ref.current &&
+        !ref.current.contains(
+          event.target as Node
+        )
+      ) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", outside);
-    return () => document.removeEventListener("mousedown", outside);
+
+    document.addEventListener(
+      "mousedown",
+      outside
+    );
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        outside
+      );
   }, []);
 
   const toggle = (lang: string) => {
@@ -627,22 +990,57 @@ function LanguageMultiSelect({
       ? "Any Language"
       : value.length === 1
         ? value[0]
-        : `${value[0]} +${value.length - 1}`;
+        : `${value[0]} +${
+            value.length - 1
+          }`;
 
   return (
     <div className="csd-wrap" ref={ref}>
       <button
         type="button"
-        className={`csd-trigger${open ? " open" : ""}`}
-        onClick={() => setOpen((v) => !v)}
+        className={`csd-trigger${
+          open ? " open" : ""
+        }`}
+        onClick={() =>
+          setOpen((v) => !v)
+        }
       >
-        <span className={value.length === 0 ? "csd-placeholder" : "csd-val"}>
+        <span
+          className={
+            value.length === 0
+              ? "csd-placeholder"
+              : "csd-val"
+          }
+        >
           {label}
         </span>
-        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          {value.length > 0 && <span className="csd-count">{value.length}</span>}
-          <span className={`csd-arrow${open ? " up" : ""}`}>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          {value.length > 0 && (
+            <span className="csd-count">
+              {value.length}
+            </span>
+          )}
+
+          <span
+            className={`csd-arrow${
+              open ? " up" : ""
+            }`}
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
               <path d="M6 9l6 6 6-6" />
             </svg>
           </span>
@@ -652,24 +1050,47 @@ function LanguageMultiSelect({
       {open && (
         <div className="csd-menu lang-menu">
           <div className="lang-menu-header">
-            <span className="lang-menu-title">Select Languages</span>
+            <span className="lang-menu-title">
+              Select Languages
+            </span>
+
             {value.length > 0 && (
-              <button type="button" className="lang-clear" onClick={() => onChange([])}>
+              <button
+                type="button"
+                className="lang-clear"
+                onClick={() =>
+                  onChange([])
+                }
+              >
                 Clear all
               </button>
             )}
           </div>
+
           <div className="lang-grid">
             {ALL_LANGUAGES.map((lang) => {
-              const checked = value.includes(lang);
+              const checked =
+                value.includes(lang);
+
               return (
                 <button
                   key={lang}
                   type="button"
-                  className={`lang-chip${checked ? " checked" : ""}`}
-                  onClick={() => toggle(lang)}
+                  className={`lang-chip${
+                    checked
+                      ? " checked"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    toggle(lang)
+                  }
                 >
-                  {checked && <span className="lang-tick">✓</span>}
+                  {checked && (
+                    <span className="lang-tick">
+                      ✓
+                    </span>
+                  )}
+
                   {lang}
                 </button>
               );
@@ -690,190 +1111,498 @@ export default function ApplicationsPage() {
 
   const [allPortfolios, setAllPortfolios] =
     useState<PortfolioData[]>([]);
+
   const [filteredPortfolios, setFilteredPortfolios] =
     useState<PortfolioData[]>([]);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
   const [gender, setGender] = useState("");
-  const [experience, setExperience] = useState("");
-  const [languages, setLanguages] = useState<string[]>([]);
+  const [experience, setExperience] =
+    useState("");
+  const [languages, setLanguages] =
+    useState<string[]>([]);
   const [age, setAge] = useState("");
   const [budget, setBudget] = useState("");
   const [status, setStatus] = useState("");
   const [sort, setSort] = useState("newest");
-  const [showFilters, setShowFilters] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [showFilters, setShowFilters] =
+    useState(false);
+  const [viewMode, setViewMode] =
+    useState<ViewMode>("grid");
+
   const [selectedPortfolio, setSelectedPortfolio] =
     useState<PortfolioData | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const [
+    portfolioError,
+    setPortfolioError,
+  ] = useState("");
 
-    async function loadTalents() {
+  /* ─────────────────────────────────────────
+     LOAD TALENTS + REAL PORTFOLIOS
+
+     This function is intentionally reusable.
+     We call it initially, when the page becomes
+     visible again, and periodically.
+  ───────────────────────────────────────── */
+
+  const loadTalents = useCallback(
+    async (silent = false) => {
       try {
-        const response = await fetch("http://localhost:4000/talent-profiles");
+        const response = await fetch(
+          "http://localhost:4000/talent-profiles",
+          {
+            cache: "no-store",
+          }
+        );
 
         if (!response.ok) {
-          throw new Error(`Failed to load talent profiles (${response.status})`);
+          throw new Error(
+            `Failed to load talent profiles (${response.status})`
+          );
         }
 
-        const data: TalentApi[] = await response.json();
-
-        if (cancelled) return;
+        const data: TalentApi[] =
+          await response.json();
 
         const portfolios = data
-          .filter((talent) => talent.available)
+          .filter(
+            (talent) => talent.available
+          )
           .map(talentToPortfolio);
 
         setAllPortfolios(portfolios);
-        setFilteredPortfolios(portfolios);
-      } catch (error) {
-        console.error("Failed to load talent profiles:", error);
 
-        if (!cancelled) {
+        if (!silent) {
+          setPortfolioError("");
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load talent profiles:",
+          error
+        );
+
+        /*
+         * During a silent background refresh,
+         * don't destroy already-loaded data just
+         * because one polling request failed.
+         */
+        if (!silent) {
           setAllPortfolios([]);
-          setFilteredPortfolios([]);
+
+          setPortfolioError(
+            "Unable to connect to the talent directory right now."
+          );
         }
       }
-    }
+    },
+    []
+  );
 
-    loadTalents();
+  /* ─────────────────────────────────────────
+     INITIAL LOAD + BACKGROUND REFRESH
+
+     Every 15 seconds we ask the backend again.
+
+     So if:
+       12:00 → no portfolio
+       12:03 → portfolio created
+       12:03:15 → frontend sees it
+
+     No SQL access is required.
+  ───────────────────────────────────────── */
+
+  useEffect(() => {
+    loadTalents(false);
+
+    const refreshInterval =
+      window.setInterval(() => {
+        loadTalents(true);
+      }, 15000);
+
+    const handleVisibilityChange = () => {
+      if (
+        document.visibilityState === "visible"
+      ) {
+        loadTalents(true);
+      }
+    };
+
+    const handleFocus = () => {
+      loadTalents(true);
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+
+    window.addEventListener(
+      "focus",
+      handleFocus
+    );
 
     return () => {
-      cancelled = true;
+      window.clearInterval(
+        refreshInterval
+      );
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+
+      window.removeEventListener(
+        "focus",
+        handleFocus
+      );
     };
-  }, []);
+  }, [loadTalents]);
+
+  /* ─────────────────────────────────────────
+     FILTERING
+  ───────────────────────────────────────── */
 
   useEffect(() => {
     let results = [...allPortfolios];
 
-    const query = search.trim().toLowerCase();
+    const query =
+      search.trim().toLowerCase();
 
     if (query) {
-      results = results.filter((portfolio) => {
-        const { basicInfo, skills, experience } = portfolio;
+      results = results.filter(
+        (portfolio) => {
+          const {
+            basicInfo,
+            skills,
+            experience,
+          } = portfolio;
 
-        const values = [
-          basicInfo.fullName,
-          portfolio.usernameSlug,
-          basicInfo.professionalTitle,
-          basicInfo.location,
-          basicInfo.bio,
-          ...skills.map((skill) => skill.name),
-          ...experience.flatMap((item) => [item.role, item.company]),
-        ];
+          const values = [
+            basicInfo.fullName,
+            portfolio.usernameSlug,
+            basicInfo.professionalTitle,
+            basicInfo.location,
+            basicInfo.bio,
+            ...skills.map(
+              (skill) => skill.name
+            ),
+            ...experience.flatMap(
+              (item) => [
+                item.role,
+                item.company,
+              ]
+            ),
+          ];
 
-        return values.some((value) =>
-          value?.toLowerCase().includes(query)
-        );
-      });
+          return values.some((value) =>
+            value
+              ?.toLowerCase()
+              .includes(query)
+          );
+        }
+      );
     }
 
     if (category) {
-      const normalized = category.toLowerCase().replace(/s$/, "");
+      const normalized =
+        category
+          .toLowerCase()
+          .replace(/s$/, "");
 
-      results = results.filter((portfolio) => {
-        const title = portfolio.basicInfo.professionalTitle?.toLowerCase() || "";
-        const skills = portfolio.skills.map((skill) => skill.name.toLowerCase());
+      results = results.filter(
+        (portfolio) => {
+          const title =
+            portfolio.basicInfo.professionalTitle?.toLowerCase() ||
+            "";
 
-        return title.includes(normalized) ||
-          skills.some((skill) => skill.includes(normalized));
-      });
+          const skills =
+            portfolio.skills.map(
+              (skill) =>
+                skill.name.toLowerCase()
+            );
+
+          return (
+            title.includes(normalized) ||
+            skills.some((skill) =>
+              skill.includes(normalized)
+            )
+          );
+        }
+      );
     }
 
     if (location.trim()) {
-      const normalizedLocation = location.trim().toLowerCase();
-      results = results.filter((portfolio) =>
-        portfolio.basicInfo.location?.toLowerCase().includes(normalizedLocation)
+      const normalizedLocation =
+        location.trim().toLowerCase();
+
+      results = results.filter(
+        (portfolio) =>
+          portfolio.basicInfo.location
+            ?.toLowerCase()
+            .includes(normalizedLocation)
       );
     }
 
     if (gender) {
-      results = results.filter((portfolio) => {
-        const data = portfolio as any;
-        const value = String(data.basicInfo?.gender ?? data.gender ?? "").toLowerCase();
-        return value === gender.toLowerCase() || (gender === "Any" && value === "any");
-      });
+      results = results.filter(
+        (portfolio) => {
+          const data =
+            portfolio as any;
+
+          const value = String(
+            data.basicInfo?.gender ??
+              data.gender ??
+              ""
+          ).toLowerCase();
+
+          return (
+            value ===
+              gender.toLowerCase() ||
+            (gender === "Any" &&
+              value === "any")
+          );
+        }
+      );
     }
 
     if (experience) {
-      results = results.filter((portfolio) => {
-        const data = portfolio as any;
-        const explicit = String(
-          data.basicInfo?.experience ?? data.experienceLevel ?? ""
-        ).toLowerCase();
+      results = results.filter(
+        (portfolio) => {
+          const data =
+            portfolio as any;
 
-        if (explicit) return explicit === experience.toLowerCase();
+          const explicit = String(
+            data.basicInfo?.experience ??
+              data.experienceLevel ??
+              ""
+          ).toLowerCase();
 
-        const roles = portfolio.experience?.length ?? 0;
-        if (experience === "Beginner") return roles <= 1;
-        if (experience === "Intermediate") return roles >= 2 && roles <= 3;
-        return roles >= 4;
-      });
+          if (explicit) {
+            return (
+              explicit ===
+              experience.toLowerCase()
+            );
+          }
+
+          const roles =
+            portfolio.experience?.length ??
+            0;
+
+          if (
+            experience === "Beginner"
+          ) {
+            return roles <= 1;
+          }
+
+          if (
+            experience ===
+            "Intermediate"
+          ) {
+            return (
+              roles >= 2 &&
+              roles <= 3
+            );
+          }
+
+          return roles >= 4;
+        }
+      );
     }
 
     if (languages.length > 0) {
-      results = results.filter((portfolio) => {
-        const data = portfolio as any;
-        const raw = data.basicInfo?.languages ?? data.languages ?? "";
-        const profileLanguages = Array.isArray(raw)
-          ? raw
-          : String(raw).split(",").map((item) => item.trim()).filter(Boolean);
+      results = results.filter(
+        (portfolio) => {
+          const data =
+            portfolio as any;
 
-        const skillNames = portfolio.skills.map((skill) => skill.name.toLowerCase());
+          const raw =
+            data.basicInfo?.languages ??
+            data.languages ??
+            "";
 
-        return languages.every((lang) =>
-          profileLanguages.some((item: string) => item.toLowerCase() === lang.toLowerCase()) ||
-          skillNames.some((skill) => skill.includes(lang.toLowerCase()))
-        );
-      });
+          const profileLanguages =
+            Array.isArray(raw)
+              ? raw
+              : String(raw)
+                  .split(",")
+                  .map(
+                    (item) =>
+                      item.trim()
+                  )
+                  .filter(Boolean);
+
+          const skillNames =
+            portfolio.skills.map(
+              (skill) =>
+                skill.name.toLowerCase()
+            );
+
+          return languages.every(
+            (lang) =>
+              profileLanguages.some(
+                (item: string) =>
+                  item.toLowerCase() ===
+                  lang.toLowerCase()
+              ) ||
+              skillNames.some(
+                (skill) =>
+                  skill.includes(
+                    lang.toLowerCase()
+                  )
+              )
+          );
+        }
+      );
     }
 
     if (age) {
-      results = results.filter((portfolio) => {
-        const data = portfolio as any;
-        const profileAge = String(data.basicInfo?.age ?? data.age ?? "");
-        return profileAge === age || profileAge.includes(age);
-      });
+      results = results.filter(
+        (portfolio) => {
+          const data =
+            portfolio as any;
+
+          const profileAge = String(
+            data.basicInfo?.age ??
+              data.age ??
+              ""
+          );
+
+          return (
+            profileAge === age ||
+            profileAge.includes(age)
+          );
+        }
+      );
     }
 
     if (budget) {
-      results = results.filter((portfolio) => {
-        const data = portfolio as any;
-        const rawBudget = Number(
-          String(data.basicInfo?.budget ?? data.budget ?? "").replace(/[^0-9]/g, "")
-        );
+      results = results.filter(
+        (portfolio) => {
+          const data =
+            portfolio as any;
 
-        if (!rawBudget) return false;
-        if (budget === "0-25000") return rawBudget < 25000;
-        if (budget === "25000-50000") return rawBudget >= 25000 && rawBudget <= 50000;
-        if (budget === "50000-100000") return rawBudget > 50000 && rawBudget <= 100000;
-        if (budget === "100000+") return rawBudget > 100000;
-        return true;
-      });
+          const rawBudget = Number(
+            String(
+              data.basicInfo?.budget ??
+                data.budget ??
+                ""
+            ).replace(
+              /[^0-9]/g,
+              ""
+            )
+          );
+
+          if (!rawBudget) {
+            return false;
+          }
+
+          if (
+            budget === "0-25000"
+          ) {
+            return rawBudget < 25000;
+          }
+
+          if (
+            budget ===
+            "25000-50000"
+          ) {
+            return (
+              rawBudget >= 25000 &&
+              rawBudget <= 50000
+            );
+          }
+
+          if (
+            budget ===
+            "50000-100000"
+          ) {
+            return (
+              rawBudget > 50000 &&
+              rawBudget <= 100000
+            );
+          }
+
+          if (
+            budget === "100000+"
+          ) {
+            return rawBudget > 100000;
+          }
+
+          return true;
+        }
+      );
     }
 
     if (status) {
-      results = results.filter((portfolio) => {
-        const data = portfolio as any;
-        const value = String(data.status ?? data.applicationStatus ?? "Published");
-        return value.toLowerCase() === status.toLowerCase();
-      });
+      results = results.filter(
+        (portfolio) => {
+          const data =
+            portfolio as any;
+
+          const value = String(
+            data.status ??
+              data.applicationStatus ??
+              "Published"
+          );
+
+          return (
+            value.toLowerCase() ===
+            status.toLowerCase()
+          );
+        }
+      );
     }
 
     results.sort((a, b) => {
-      if (sort === "oldest") return a.userId.localeCompare(b.userId);
-      if (sort === "completion-high") {
-        return (b.completionPercentage || 0) - (a.completionPercentage || 0);
+      if (sort === "oldest") {
+        return a.userId.localeCompare(
+          b.userId
+        );
       }
-      if (sort === "completion-low") {
-        return (a.completionPercentage || 0) - (b.completionPercentage || 0);
+
+      if (
+        sort ===
+        "completion-high"
+      ) {
+        return (
+          (b.completionPercentage ||
+            0) -
+          (a.completionPercentage ||
+            0)
+        );
       }
+
+      if (
+        sort ===
+        "completion-low"
+      ) {
+        return (
+          (a.completionPercentage ||
+            0) -
+          (b.completionPercentage ||
+            0)
+        );
+      }
+
       if (sort === "name") {
-        return (a.basicInfo.fullName || "").localeCompare(b.basicInfo.fullName || "");
+        return (
+          a.basicInfo.fullName ||
+          ""
+        ).localeCompare(
+          b.basicInfo.fullName ||
+            ""
+        );
       }
-      return (b.completionPercentage || 0) - (a.completionPercentage || 0);
+
+      return (
+        (b.completionPercentage ||
+          0) -
+        (a.completionPercentage ||
+          0)
+      );
     });
 
     setFilteredPortfolios(results);
@@ -891,74 +1620,150 @@ export default function ApplicationsPage() {
     sort,
   ]);
 
+  /* ─────────────────────────────────────────
+     GSAP
+  ───────────────────────────────────────── */
+
   useEffect(() => {
-  if (gsapLoaded.current) return;
+    if (gsapLoaded.current) {
+      return;
+    }
 
-  gsapLoaded.current = true;
-  gsap.registerPlugin(ScrollTrigger);
+    gsapLoaded.current = true;
 
-  // Keep only the top scroll progress animation.
-  // Do NOT animate the application cards because
-  // opacity: 0 can make them disappear on initial render.
-  gsap.to(".applications-progress-bar", {
-    scaleX: 1,
-    ease: "none",
-    scrollTrigger: {
-      trigger: "body",
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 0,
-    },
-  });
+    gsap.registerPlugin(
+      ScrollTrigger
+    );
 
-  const onLoad = () => {
-    ScrollTrigger.refresh();
-  };
+    gsap.to(
+      ".applications-progress-bar",
+      {
+        scaleX: 1,
+        ease: "none",
+        scrollTrigger: {
+          trigger: "body",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 0,
+        },
+      }
+    );
 
-  window.addEventListener("load", onLoad);
+    const onLoad = () => {
+      ScrollTrigger.refresh();
+    };
 
-  const refreshTimer = window.setTimeout(() => {
-    ScrollTrigger.refresh();
-  }, 500);
+    window.addEventListener(
+      "load",
+      onLoad
+    );
 
-  return () => {
-    window.removeEventListener("load", onLoad);
-    window.clearTimeout(refreshTimer);
+    const refreshTimer =
+      window.setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 500);
 
-    ScrollTrigger.getAll().forEach((trigger) => {
-      trigger.kill();
-    });
-  };
-}, []);
+    return () => {
+      window.removeEventListener(
+        "load",
+        onLoad
+      );
 
-  const resetFilters = useCallback(() => {
-    setSearch("");
-    setCategory("");
-    setLocation("");
-    setGender("");
-    setExperience("");
-    setLanguages([]);
-    setAge("");
-    setBudget("");
-    setStatus("");
-    setSort("newest");
+      window.clearTimeout(
+        refreshTimer
+      );
+
+      ScrollTrigger.getAll().forEach(
+        (trigger) => {
+          trigger.kill();
+        }
+      );
+    };
   }, []);
 
-  const totalApplications = allPortfolios.length;
-  const visibleApplications = filteredPortfolios.length;
-  const completeProfiles = allPortfolios.filter(
-    (portfolio) => (portfolio.completionPercentage || 0) >= 80
-  ).length;
-  const totalProjects = allPortfolios.reduce(
-    (sum, portfolio) => sum + portfolio.projects.length,
-    0
-  );
+  /* ─────────────────────────────────────────
+     FILTER RESET
+  ───────────────────────────────────────── */
+
+  const resetFilters =
+    useCallback(() => {
+      setSearch("");
+      setCategory("");
+      setLocation("");
+      setGender("");
+      setExperience("");
+      setLanguages([]);
+      setAge("");
+      setBudget("");
+      setStatus("");
+      setSort("newest");
+    }, []);
+
+  /* ─────────────────────────────────────────
+     PORTFOLIO ERROR
+  ───────────────────────────────────────── */
+
+  const showPortfolioError =
+    useCallback(
+      (message: string) => {
+        setPortfolioError(message);
+
+        window.setTimeout(() => {
+          setPortfolioError("");
+        }, 4000);
+      },
+      []
+    );
+
+  /* ─────────────────────────────────────────
+     STATS
+  ───────────────────────────────────────── */
+
+  const totalApplications =
+    allPortfolios.length;
+
+  const visibleApplications =
+    filteredPortfolios.length;
+
+  const completeProfiles =
+    allPortfolios.filter(
+      (portfolio) =>
+        (portfolio.completionPercentage ||
+          0) >= 80
+    ).length;
+
+  const totalProjects =
+    allPortfolios.reduce(
+      (sum, portfolio) =>
+        sum +
+        portfolio.projects.length,
+      0
+    );
 
   return (
     <>
       <div className="applications-progress">
         <div className="applications-progress-bar" />
       </div>
+
+      {/* ─────────────────────────────────────
+          TEMPORARY STATUS MESSAGE
+      ───────────────────────────────────── */}
+
+      {portfolioError && (
+        <div className="portfolio-error-toast">
+          <span>{portfolioError}</span>
+
+          <button
+            type="button"
+            onClick={() =>
+              setPortfolioError("")
+            }
+          >
+            <X size={15} />
+          </button>
+        </div>
+      )}
 
       <style>{`
         *, *::before, *::after {
@@ -1020,6 +1825,34 @@ export default function ApplicationsPage() {
           background: var(--app-cream);
           color: var(--app-ink);
           transition: background .35s ease, color .35s ease;
+        }
+
+        .portfolio-error-toast {
+          position: fixed;
+          top: 24px;
+          right: 24px;
+          z-index: 5000;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          max-width: 420px;
+          padding: 13px 15px;
+          background: #11100f;
+          color: #f4f1e9;
+          border: 1px solid rgba(240,167,10,.5);
+          box-shadow: 0 15px 40px rgba(0,0,0,.35);
+          font: 700 11px/1.4 'Courier New', monospace;
+        }
+
+        .portfolio-error-toast button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          border: 0;
+          background: transparent;
+          color: #f4f1e9;
+          cursor: pointer;
         }
 
         /* ─── OVERVIEW ─── */
@@ -1231,14 +2064,20 @@ export default function ApplicationsPage() {
           -webkit-appearance: none;
         }
 
-        .application-filter-input::placeholder { color: var(--app-mid); }
+        .application-filter-input::placeholder {
+          color: var(--app-mid);
+        }
+
         .application-filter-input:focus {
           border-color: var(--app-gold);
           box-shadow: 0 0 0 3px rgba(201,168,76,.15);
         }
 
-        /* Exact dropdown language used by the Post page. */
-        .csd-wrap { position: relative; width: 100%; }
+        .csd-wrap {
+          position: relative;
+          width: 100%;
+        }
+
         .csd-trigger {
           width: 100%;
           min-height: 48px;
@@ -1257,18 +2096,28 @@ export default function ApplicationsPage() {
           transition: border-color .25s, box-shadow .25s, background .2s;
           text-align: left;
         }
+
         .csd-trigger:hover {
           border-color: rgba(201,168,76,.5);
           background: rgba(201,168,76,.06);
         }
+
         .csd-trigger.open {
           border-color: var(--app-gold);
           box-shadow: 0 0 0 3px rgba(201,168,76,.15);
           border-bottom-left-radius: 6px;
           border-bottom-right-radius: 6px;
         }
-        .csd-placeholder { color: var(--app-mid); }
-        .csd-val { color: var(--app-ink); font-weight: 600; }
+
+        .csd-placeholder {
+          color: var(--app-mid);
+        }
+
+        .csd-val {
+          color: var(--app-ink);
+          font-weight: 600;
+        }
+
         .csd-arrow {
           display: flex;
           align-items: center;
@@ -1276,7 +2125,11 @@ export default function ApplicationsPage() {
           transition: transform .25s cubic-bezier(.4,0,.2,1);
           flex-shrink: 0;
         }
-        .csd-arrow.up { transform: rotate(180deg); }
+
+        .csd-arrow.up {
+          transform: rotate(180deg);
+        }
+
         .csd-count {
           margin-left: auto;
           background: var(--app-gold);
@@ -1287,6 +2140,7 @@ export default function ApplicationsPage() {
           font-weight: 800;
           line-height: 1.6;
         }
+
         .csd-menu {
           position: absolute;
           top: calc(100% + 10px);
@@ -1302,6 +2156,7 @@ export default function ApplicationsPage() {
           overflow-x: hidden;
           scrollbar-width: thin;
         }
+
         .csd-option {
           width: 100%;
           display: flex;
@@ -1318,14 +2173,26 @@ export default function ApplicationsPage() {
           text-align: left;
           border-bottom: 1px solid var(--app-mist);
         }
-        .csd-option:last-child { border-bottom: none; }
-        .csd-option:hover { background: rgba(201,168,76,.18); }
+
+        .csd-option:last-child {
+          border-bottom: none;
+        }
+
+        .csd-option:hover {
+          background: rgba(201,168,76,.18);
+        }
+
         .csd-option.selected {
           background: rgba(201,168,76,.15);
           color: var(--app-gold);
           font-weight: 700;
         }
-        .lang-menu { max-height: 300px; padding: 0; }
+
+        .lang-menu {
+          max-height: 300px;
+          padding: 0;
+        }
+
         .lang-menu-header {
           position: sticky;
           top: 0;
@@ -1338,6 +2205,7 @@ export default function ApplicationsPage() {
           background: var(--app-card);
           border-bottom: 1px solid var(--app-mist);
         }
+
         .lang-menu-title {
           color: var(--app-ink);
           font-size: .75rem;
@@ -1345,6 +2213,7 @@ export default function ApplicationsPage() {
           text-transform: uppercase;
           letter-spacing: .08em;
         }
+
         .lang-clear {
           border: 0;
           background: transparent;
@@ -1353,12 +2222,14 @@ export default function ApplicationsPage() {
           font-weight: 700;
           cursor: pointer;
         }
+
         .lang-grid {
           display: grid;
           grid-template-columns: repeat(2, minmax(0,1fr));
           gap: 6px;
           padding: 10px;
         }
+
         .lang-chip {
           min-width: 0;
           padding: 8px 9px;
@@ -1370,13 +2241,18 @@ export default function ApplicationsPage() {
           text-align: left;
           cursor: pointer;
         }
+
         .lang-chip:hover,
         .lang-chip.checked {
           border-color: var(--app-gold);
           background: rgba(201,168,76,.12);
           color: var(--app-gold);
         }
-        .lang-tick { margin-right: 4px; font-weight: 900; }
+
+        .lang-tick {
+          margin-right: 4px;
+          font-weight: 900;
+        }
 
         .application-filter-footer {
           display: flex;
@@ -1386,7 +2262,12 @@ export default function ApplicationsPage() {
           margin-top: 1rem;
           flex-wrap: wrap;
         }
-        .application-result-count { color: var(--app-mid); font-size: .82rem; }
+
+        .application-result-count {
+          color: var(--app-mid);
+          font-size: .82rem;
+        }
+
         .application-clear {
           border: 1px solid rgba(201,168,76,.3);
           border-radius: 100px;
@@ -1399,10 +2280,15 @@ export default function ApplicationsPage() {
         }
 
         @media (max-width: 900px) {
-          .application-post-filter-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+          .application-post-filter-grid {
+            grid-template-columns: repeat(2, minmax(0,1fr));
+          }
         }
+
         @media (max-width: 560px) {
-          .application-post-filter-grid { grid-template-columns: 1fr; }
+          .application-post-filter-grid {
+            grid-template-columns: 1fr;
+          }
         }
 
         /* ─── RESULTS ─── */
@@ -1546,6 +2432,11 @@ export default function ApplicationsPage() {
           font: 700 7px/1 'Courier New', monospace;
           letter-spacing: .12em;
           text-transform: uppercase;
+        }
+
+        .published-stamp.unavailable {
+          border-color: rgba(244,241,233,.25);
+          color: var(--film-muted);
         }
 
         .application-location {
@@ -1748,6 +2639,15 @@ export default function ApplicationsPage() {
           color: #111;
         }
 
+        .application-actions .disabled {
+          color: #7f7970;
+        }
+
+        .application-actions .disabled:hover {
+          background: rgba(244,241,233,.06);
+          color: #7f7970;
+        }
+
         /* ─── EMPTY STATE ─── */
 
         .applications-empty {
@@ -1807,6 +2707,36 @@ export default function ApplicationsPage() {
           color: var(--app-ink);
         }
 
+        .film-btn-disabled {
+          border: 1px solid rgba(107,101,96,.5);
+          background: rgba(107,101,96,.08);
+          color: var(--app-mid);
+        }
+
+        /* ─── PORTFOLIO STATUS ─── */
+
+        .portfolio-status-message {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+          margin-top: 16px;
+          padding: 12px 14px;
+          background: rgba(201,168,76,.08);
+          border-left: 3px solid var(--app-gold);
+        }
+
+        .portfolio-status-message strong {
+          color: var(--app-gold);
+          font: 800 9px/1 'Courier New', monospace;
+          letter-spacing: .12em;
+        }
+
+        .portfolio-status-message span {
+          color: var(--app-mid);
+          font-size: .8rem;
+          line-height: 1.5;
+        }
+
         /* ─── MODAL ─── */
 
         .application-modal-overlay {
@@ -1835,8 +2765,15 @@ export default function ApplicationsPage() {
         }
 
         @keyframes applicationPop {
-          from { opacity: 0; transform: scale(.93) translateY(16px); }
-          to { opacity: 1; transform: scale(1) translateY(0); }
+          from {
+            opacity: 0;
+            transform: scale(.93) translateY(16px);
+          }
+
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
         }
 
         .application-close {
@@ -2068,6 +3005,12 @@ export default function ApplicationsPage() {
           .application-modal-content {
             padding: 22px;
           }
+
+          .portfolio-error-toast {
+            left: 16px;
+            right: 16px;
+            top: 16px;
+          }
         }
       `}</style>
 
@@ -2079,37 +3022,74 @@ export default function ApplicationsPage() {
             <div className="application-stat-card">
               <div className="application-stat-meta">
                 <span />
-                <small>DIRECTORY</small>
+                <small>
+                  DIRECTORY
+                </small>
               </div>
-              <h2>{totalApplications}</h2>
-              <p>Published talent applications</p>
+
+              <h2>
+                {totalApplications}
+              </h2>
+
+              <p>
+                Published talent
+                applications
+              </p>
             </div>
 
             <div className="application-stat-card">
               <div className="application-stat-meta">
                 <span />
-                <small>RESULTS</small>
+                <small>
+                  RESULTS
+                </small>
               </div>
-              <h2>{visibleApplications}</h2>
-              <p>Applications matching your search</p>
+
+              <h2>
+                {visibleApplications}
+              </h2>
+
+              <p>
+                Applications
+                matching your
+                search
+              </p>
             </div>
 
             <div className="application-stat-card">
               <div className="application-stat-meta">
                 <span />
-                <small>PROFILE STATUS</small>
+                <small>
+                  PROFILE STATUS
+                </small>
               </div>
-              <h2>{completeProfiles}</h2>
-              <p>Profiles with 80%+ completion</p>
+
+              <h2>
+                {completeProfiles}
+              </h2>
+
+              <p>
+                Profiles with 80%+
+                completion
+              </p>
             </div>
 
             <div className="application-stat-card">
               <div className="application-stat-meta">
                 <span />
-                <small>PORTFOLIO DATA</small>
+                <small>
+                  PORTFOLIO DATA
+                </small>
               </div>
-              <h2>{totalProjects}</h2>
-              <p>Total projects represented</p>
+
+              <h2>
+                {totalProjects}
+              </h2>
+
+              <p>
+                Total projects
+                represented
+              </p>
             </div>
           </div>
         </section>
@@ -2118,35 +3098,64 @@ export default function ApplicationsPage() {
           <div className="applications-toolbar-left">
             <div className="applications-search-wrap">
               <Search size={15} />
+
               <input
                 className="applications-search"
                 placeholder="Search talent, skills, experience…"
                 value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={(event) =>
+                  setSearch(
+                    event.target.value
+                  )
+                }
               />
             </div>
 
             <button
-              className={`application-filter-btn${showFilters ? " active" : ""}`}
-              onClick={() => setShowFilters((value) => !value)}
+              className={`application-filter-btn${
+                showFilters
+                  ? " active"
+                  : ""
+              }`}
+              onClick={() =>
+                setShowFilters(
+                  (value) => !value
+                )
+              }
             >
               <Filter size={15} />
-              Filters {showFilters ? "▲" : "▼"}
+
+              Filters{" "}
+              {showFilters
+                ? "▲"
+                : "▼"}
             </button>
           </div>
 
           <div className="applications-toolbar-right">
             <button
-              className={`application-view-btn${viewMode === "grid" ? " active" : ""}`}
-              onClick={() => setViewMode("grid")}
+              className={`application-view-btn${
+                viewMode === "grid"
+                  ? " active"
+                  : ""
+              }`}
+              onClick={() =>
+                setViewMode("grid")
+              }
               title="Grid view"
             >
               <Grid2X2 size={16} />
             </button>
 
             <button
-              className={`application-view-btn${viewMode === "list" ? " active" : ""}`}
-              onClick={() => setViewMode("list")}
+              className={`application-view-btn${
+                viewMode === "list"
+                  ? " active"
+                  : ""
+              }`}
+              onClick={() =>
+                setViewMode("list")
+              }
               title="List view"
             >
               <List size={17} />
@@ -2154,35 +3163,69 @@ export default function ApplicationsPage() {
           </div>
         </div>
 
-        <div className={`applications-filter-collapse${showFilters ? " open" : ""}`}>
+        <div
+          className={`applications-filter-collapse${
+            showFilters
+              ? " open"
+              : ""
+          }`}
+        >
           <section className="applications-filter-bar">
             <div className="application-post-filter-grid">
               <CustomSelect
                 value={category}
                 onChange={setCategory}
-                options={[{ v: "", l: "Any Category" }, ...CATEGORIES.map((item) => ({ v: item, l: item }))]}
+                options={[
+                  {
+                    v: "",
+                    l: "Any Category",
+                  },
+                  ...CATEGORIES.map(
+                    (item) => ({
+                      v: item,
+                      l: item,
+                    })
+                  ),
+                ]}
                 placeholder="Any Category"
               />
 
               <div className="csd-wrap">
-                <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    position:
+                      "relative",
+                  }}
+                >
                   <MapPin
                     size={14}
                     style={{
-                      position: "absolute",
+                      position:
+                        "absolute",
                       left: 14,
                       top: "50%",
-                      transform: "translateY(-50%)",
-                      color: "var(--app-mid)",
-                      pointerEvents: "none",
+                      transform:
+                        "translateY(-50%)",
+                      color:
+                        "var(--app-mid)",
+                      pointerEvents:
+                        "none",
                     }}
                   />
+
                   <input
                     className="application-filter-input"
                     placeholder="Location"
                     value={location}
-                    style={{ paddingLeft: "38px" }}
-                    onChange={(e) => setLocation(e.target.value)}
+                    style={{
+                      paddingLeft:
+                        "38px",
+                    }}
+                    onChange={(e) =>
+                      setLocation(
+                        e.target.value
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -2190,27 +3233,65 @@ export default function ApplicationsPage() {
               <CustomSelect
                 value={gender}
                 onChange={setGender}
-                options={[{ v: "", l: "Any Gender" }, ...GENDERS.map((item) => ({ v: item, l: item }))]}
+                options={[
+                  {
+                    v: "",
+                    l: "Any Gender",
+                  },
+                  ...GENDERS.map(
+                    (item) => ({
+                      v: item,
+                      l: item,
+                    })
+                  ),
+                ]}
                 placeholder="Any Gender"
               />
 
               <CustomSelect
                 value={experience}
-                onChange={setExperience}
-                options={[{ v: "", l: "Any Experience" }, ...EXPERIENCE.map((item) => ({ v: item, l: item }))]}
+                onChange={
+                  setExperience
+                }
+                options={[
+                  {
+                    v: "",
+                    l: "Any Experience",
+                  },
+                  ...EXPERIENCE.map(
+                    (item) => ({
+                      v: item,
+                      l: item,
+                    })
+                  ),
+                ]}
                 placeholder="Any Experience"
               />
 
-              <LanguageMultiSelect value={languages} onChange={setLanguages} />
+              <LanguageMultiSelect
+                value={languages}
+                onChange={
+                  setLanguages
+                }
+              />
 
               <div className="csd-wrap">
-                <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    position:
+                      "relative",
+                  }}
+                >
                   <input
                     className="application-filter-input"
                     placeholder="Age (e.g. 25)"
                     type="number"
                     value={age}
-                    onChange={(e) => setAge(e.target.value)}
+                    onChange={(e) =>
+                      setAge(
+                        e.target.value
+                      )
+                    }
                   />
                 </div>
               </div>
@@ -2226,10 +3307,22 @@ export default function ApplicationsPage() {
                 value={status}
                 onChange={setStatus}
                 options={[
-                  { v: "", l: "Any Status" },
-                  { v: "Open", l: "Open" },
-                  { v: "Closed", l: "Closed" },
-                  { v: "Published", l: "Published" },
+                  {
+                    v: "",
+                    l: "Any Status",
+                  },
+                  {
+                    v: "Open",
+                    l: "Open",
+                  },
+                  {
+                    v: "Closed",
+                    l: "Closed",
+                  },
+                  {
+                    v: "Published",
+                    l: "Published",
+                  },
                 ]}
                 placeholder="Any Status"
               />
@@ -2244,13 +3337,33 @@ export default function ApplicationsPage() {
 
             <div className="application-filter-footer">
               <span className="application-result-count">
-                {filteredPortfolios.length} result
-                {filteredPortfolios.length !== 1 ? "s" : ""}
+                {
+                  filteredPortfolios.length
+                }{" "}
+                result
+                {filteredPortfolios.length !==
+                1
+                  ? "s"
+                  : ""}
               </span>
 
-              {(search || category || location || gender || experience ||
-                languages.length || age || budget || status || sort !== "newest") && (
-                <button className="application-clear" onClick={resetFilters}>
+              {(search ||
+                category ||
+                location ||
+                gender ||
+                experience ||
+                languages.length ||
+                age ||
+                budget ||
+                status ||
+                sort !==
+                  "newest") && (
+                <button
+                  className="application-clear"
+                  onClick={
+                    resetFilters
+                  }
+                >
                   Clear filters ×
                 </button>
               )}
@@ -2260,43 +3373,119 @@ export default function ApplicationsPage() {
 
         <section className="applications-results">
           <div className="applications-heading applications-reveal">
-            <h2>All Talent Applications</h2>
+            <h2>
+              All Talent
+              Applications
+            </h2>
+
             <p>
-              {filteredPortfolios.length} application
-              {filteredPortfolios.length !== 1 ? "s" : ""} available
+              {
+                filteredPortfolios.length
+              }{" "}
+              application
+              {filteredPortfolios.length !==
+              1
+                ? "s"
+                : ""}{" "}
+              available
             </p>
           </div>
 
-          {filteredPortfolios.length === 0 ? (
+          {portfolioError &&
+          allPortfolios.length ===
+            0 ? (
             <div className="applications-empty">
               <span className="applications-empty-icon">
                 <Search size={25} />
               </span>
-              <h3>No applications found</h3>
-              <p>Try adjusting your search or category filter.</p>
-              <button className="film-btn film-btn-gold" onClick={resetFilters}>
+
+              <h3>
+                Unable to load
+                applications
+              </h3>
+
+              <p>
+                The talent directory
+                is temporarily
+                unavailable. Please
+                try again.
+              </p>
+
+              <button
+                className="film-btn film-btn-gold"
+                onClick={() =>
+                  loadTalents(false)
+                }
+              >
+                RETRY
+              </button>
+            </div>
+          ) : filteredPortfolios.length ===
+            0 ? (
+            <div className="applications-empty">
+              <span className="applications-empty-icon">
+                <Search size={25} />
+              </span>
+
+              <h3>
+                No applications
+                found
+              </h3>
+
+              <p>
+                Try adjusting your
+                search or category
+                filter.
+              </p>
+
+              <button
+                className="film-btn film-btn-gold"
+                onClick={
+                  resetFilters
+                }
+              >
                 CLEAR FILTERS
               </button>
             </div>
-          ) : viewMode === "grid" ? (
+          ) : viewMode ===
+            "grid" ? (
             <div className="applications-grid">
-              {filteredPortfolios.map((portfolio) => (
-                <ApplicationCard
-                  key={portfolio.userId}
-                  portfolio={portfolio}
-                  onView={setSelectedPortfolio}
-                />
-              ))}
+              {filteredPortfolios.map(
+                (portfolio) => (
+                  <ApplicationCard
+                    key={
+                      portfolio.userId
+                    }
+                    portfolio={
+                      portfolio
+                    }
+                    onView={
+                      setSelectedPortfolio
+                    }
+                  />
+                )
+              )}
             </div>
           ) : (
             <div>
-              {filteredPortfolios.map((portfolio) => (
-                <ApplicationListRow
-                  key={portfolio.userId}
-                  portfolio={portfolio}
-                  onView={setSelectedPortfolio}
-                />
-              ))}
+              {filteredPortfolios.map(
+                (portfolio) => (
+                  <ApplicationListRow
+                    key={
+                      portfolio.userId
+                    }
+                    portfolio={
+                      portfolio
+                    }
+                    onView={
+                      setSelectedPortfolio
+                    }
+                    onPortfolioUnavailable={
+                      showPortfolioError
+                    }
+                  />
+                )
+              )}
             </div>
           )}
         </section>
@@ -2304,8 +3493,15 @@ export default function ApplicationsPage() {
 
       {selectedPortfolio && (
         <ApplicationDetailsModal
-          portfolio={selectedPortfolio}
-          onClose={() => setSelectedPortfolio(null)}
+          portfolio={
+            selectedPortfolio
+          }
+          onClose={() =>
+            setSelectedPortfolio(null)
+          }
+          onPortfolioUnavailable={
+            showPortfolioError
+          }
         />
       )}
     </>
