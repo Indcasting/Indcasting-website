@@ -5,7 +5,7 @@ import DashboardCard from "@/components/DashboardCard";
 
 export default function SeekerAnalytics() {
   return (
-    <div className="dashboard-grid" style={{ paddingBottom: '40px' }}>
+    <div className="dashboard-grid" style={{ paddingTop: '56px', paddingBottom: '40px' }}>
       <div className="col-span-12" style={{ marginBottom: '24px' }}>
         <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, color: 'var(--dash-text-main)' }}>Analytics & Performance</h2>
         <p style={{ color: 'var(--dash-text-muted)', marginTop: '8px', fontSize: '1.05rem' }}>Track the performance of your casting calls and applications.</p>

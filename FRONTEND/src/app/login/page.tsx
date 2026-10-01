@@ -1,11 +1,32 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import {
+  useState,
+  useEffect,
+  Suspense,
+} from "react";
+
+import {
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+
 import Link from "next/link";
-import { loginUser, getCurrentUser } from "@/utils/auth";
-import { validateInternalPath } from "@/utils/security";
-import { Mail, Lock } from "lucide-react";
+
+import {
+  loginUser,
+  getCurrentUser,
+} from "@/utils/auth";
+
+import {
+  validateInternalPath,
+} from "@/utils/security";
+
+import {
+  Mail,
+  Lock,
+} from "lucide-react";
+
 import AuthLayout from "@/components/auth/AuthLayout";
 import AuthHeroSection from "@/components/auth/AuthHeroSection";
 import AuthCard from "@/components/auth/AuthCard";
@@ -16,112 +37,311 @@ import SocialLoginButtons from "@/components/auth/SocialLoginButtons";
 
 function LoginContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect");
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const searchParams =
+    useSearchParams();
 
-  // Auto redirect if already logged in
+  const redirect =
+    searchParams.get(
+      "redirect"
+    );
+
+  const [email, setEmail] =
+    useState("");
+
+  const [password, setPassword] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [rememberMe, setRememberMe] =
+    useState(false);
+
+  const [isLoading, setIsLoading] =
+    useState(false);
+
+  /*
+   * Check whether the user already
+   * has a valid backend session.
+   */
   useEffect(() => {
-    const user = getCurrentUser();
-    if (user) {
-      if (redirect) {
-        router.push(validateInternalPath(redirect));
-      } else if (user.role === "talent") {
-        router.push("/dashboard/talent");
-      } else {
-        router.push("/dashboard/seeker");
-      }
-    }
-  }, [router, redirect]);
+    let mounted = true;
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    async function checkAuthentication() {
+      const user =
+        await getCurrentUser();
 
-    // Simulate network request for premium feel
-    setTimeout(async () => {
-      const user = await loginUser(email, password, rememberMe);
-
-      if (!user) {
-        setError("Invalid email or password.");
-        setIsLoading(false);
+      if (!mounted || !user) {
         return;
       }
 
       if (redirect) {
-        router.push(validateInternalPath(redirect));
-      } else if (user.role === "talent") {
-        router.push("/dashboard/talent");
-      } else {
-        router.push("/dashboard/seeker");
+        router.push(
+          validateInternalPath(
+            redirect
+          )
+        );
+
+        return;
       }
-    }, 800);
+
+      if (
+        user.role ===
+        "talent"
+      ) {
+        router.push(
+          "/dashboard/talent"
+        );
+      } else {
+        router.push(
+          "/dashboard/seeker"
+        );
+      }
+    }
+
+    checkAuthentication();
+
+    return () => {
+      mounted = false;
+    };
+  }, [
+    router,
+    redirect,
+  ]);
+
+  async function handleLogin(
+    e: React.FormEvent
+  ) {
+    e.preventDefault();
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const user =
+        await loginUser(
+          email,
+          password,
+          rememberMe
+        );
+
+      if (!user) {
+        setError(
+          "Invalid email or password."
+        );
+
+        return;
+      }
+
+      /*
+       * Backend has now set the
+       * HTTP-only access_token cookie.
+       */
+
+      if (redirect) {
+        router.push(
+          validateInternalPath(
+            redirect
+          )
+        );
+
+        return;
+      }
+
+      if (
+        user.role ===
+        "talent"
+      ) {
+        router.push(
+          "/dashboard/talent"
+        );
+      } else {
+        router.push(
+          "/dashboard/seeker"
+        );
+      }
+    } catch (err) {
+      console.error(
+        "Login failed:",
+        err
+      );
+
+      setError(
+        "Unable to connect to the server. Please make sure the backend is running."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <AuthLayout>
       <AuthHeroSection />
-      <AuthCard 
-        title="Welcome Back" 
+
+      <AuthCard
+        title="Welcome Back"
         subtitle="Login to your IndCasting account."
         bottomText="Don't have an account?"
         bottomLinkText="Sign Up"
         bottomLinkHref="/signup"
       >
-        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <AuthInput 
-            icon={<Mail size={18} />} 
-            type="email" 
-            placeholder="Email Address" 
-            required 
-            value={email} 
-            onChange={e => setEmail(e.target.value)} 
-          />
-          
-          <AuthInput 
-            icon={<Lock size={18} />} 
-            type="password" 
-            placeholder="Password" 
-            required 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
+        <form
+          onSubmit={handleLogin}
+          style={{
+            display: "flex",
+            flexDirection:
+              "column",
+            gap: "20px",
+          }}
+        >
+          <AuthInput
+            icon={<Mail size={18} />}
+            type="email"
+            placeholder="Email Address"
+            required
+            value={email}
+            onChange={(e) =>
+              setEmail(
+                e.target.value
+              )
+            }
           />
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '14px', marginTop: '-4px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', margin: 0, fontWeight: 500, color: 'var(--mid)' }}>
-              <input 
-                type="checkbox" 
-                checked={rememberMe} 
-                onChange={(e) => setRememberMe(e.target.checked)} 
-                style={{ width: '16px', height: '16px', accentColor: 'var(--gold)', cursor: 'pointer' }}
+          <AuthInput
+            icon={<Lock size={18} />}
+            type="password"
+            placeholder="Password"
+            required
+            value={password}
+            onChange={(e) =>
+              setPassword(
+                e.target.value
+              )
+            }
+          />
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent:
+                "space-between",
+              alignItems:
+                "center",
+              fontSize:
+                "14px",
+              marginTop:
+                "-4px",
+            }}
+          >
+            <label
+              style={{
+                display:
+                  "flex",
+                alignItems:
+                  "center",
+                gap: "8px",
+                cursor:
+                  "pointer",
+                margin: 0,
+                fontWeight:
+                  500,
+                color:
+                  "var(--mid)",
+              }}
+            >
+              <input
+                type="checkbox"
+                checked={
+                  rememberMe
+                }
+                onChange={(e) =>
+                  setRememberMe(
+                    e.target
+                      .checked
+                  )
+                }
+                style={{
+                  width:
+                    "16px",
+                  height:
+                    "16px",
+                  accentColor:
+                    "var(--gold)",
+                  cursor:
+                    "pointer",
+                }}
               />
+
               Remember Me
             </label>
-            <Link href="#" style={{ color: 'var(--mid)', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--gold)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--mid)'}>
+
+            <Link
+              href="#"
+              style={{
+                color:
+                  "var(--mid)",
+                textDecoration:
+                  "none",
+                fontWeight:
+                  600,
+                transition:
+                  "color 0.2s",
+              }}
+              onMouseEnter={(
+                e
+              ) =>
+                (e.currentTarget.style.color =
+                  "var(--gold)")
+              }
+              onMouseLeave={(
+                e
+              ) =>
+                (e.currentTarget.style.color =
+                  "var(--mid)")
+              }
+            >
               Forgot Password?
             </Link>
           </div>
 
           {error && (
-            <div style={{ padding: '12px', borderRadius: '8px', backgroundColor: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', fontSize: '0.9rem', textAlign: 'center' }}>
+            <div
+              style={{
+                padding:
+                  "12px",
+                borderRadius:
+                  "8px",
+                backgroundColor:
+                  "rgba(239, 68, 68, 0.1)",
+                border:
+                  "1px solid rgba(239, 68, 68, 0.3)",
+                color:
+                  "#ef4444",
+                fontSize:
+                  "0.9rem",
+                textAlign:
+                  "center",
+              }}
+            >
               {error}
             </div>
           )}
 
-          <AuthButton type="submit" isLoading={isLoading} loadingText="Logging In...">
+          <AuthButton
+            type="submit"
+            isLoading={
+              isLoading
+            }
+            loadingText="Logging In..."
+          >
             Log In
           </AuthButton>
         </form>
 
         <AuthDivider />
-        <SocialLoginButtons />
 
+        <SocialLoginButtons />
       </AuthCard>
     </AuthLayout>
   );
@@ -129,7 +349,18 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: '100vh', backgroundColor: '#111' }}></div>}>
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight:
+              "100vh",
+            backgroundColor:
+              "#111",
+          }}
+        />
+      }
+    >
       <LoginContent />
     </Suspense>
   );

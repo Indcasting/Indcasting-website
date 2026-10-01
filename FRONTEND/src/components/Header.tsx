@@ -140,8 +140,30 @@ export default function Header() {
   ───────────────────────────────────────── */
 
   useEffect(() => {
-    setUser(getCurrentUser());
-  }, [pathname]);
+  let cancelled = false;
+
+  async function loadCurrentUser() {
+    try {
+      const currentUser = await getCurrentUser();
+
+      if (!cancelled) {
+        setUser(currentUser);
+      }
+    } catch (error) {
+      console.error("Failed to load current user:", error);
+
+      if (!cancelled) {
+        setUser(null);
+      }
+    }
+  }
+
+  loadCurrentUser();
+
+  return () => {
+    cancelled = true;
+  };
+}, [pathname]);
 
   /* ─────────────────────────────────────────
      CLOSE PROFILE DROPDOWN
@@ -231,15 +253,17 @@ export default function Header() {
      LOGOUT
   ───────────────────────────────────────── */
 
-  function handleLogout() {
-    logoutUser();
-
+  async function handleLogout() {
+  try {
+    await logoutUser();
+  } catch (error) {
+    console.error("Logout failed:", error);
+  } finally {
     setUser(null);
     setProfileOpen(false);
-
     router.push("/login");
   }
-
+}
   /* ─────────────────────────────────────────
      CLOSE MOBILE MENU ON ROUTE CHANGE
   ───────────────────────────────────────── */

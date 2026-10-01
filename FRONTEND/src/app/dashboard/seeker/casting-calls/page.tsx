@@ -418,7 +418,7 @@ export default function SeekerCastingCalls() {
         {/* Left Column: Productions */}
         <div>
           {filteredCalls.length === 0 ? (
-            <div style={{ padding: '80px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
+            <div style={{ paddingTop: "56px",  padding: '80px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
               <Film size={64} color="var(--gold)" style={{ margin: '0 auto 24px auto', opacity: 0.5 }} />
               <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>You haven't launched a production yet</h2>
               <p style={{ color: '#888', marginBottom: '24px' }}>Create a casting call and start discovering exceptional talent.</p>

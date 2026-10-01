@@ -15,11 +15,33 @@ export default function SeekerDashboard() {
   const [selectedAppModal, setSelectedAppModal] = useState<{name: string, role: string, time: string, status: string, color: string, bg: string} | null>(null);
 
   useEffect(() => {
-    setUser(getCurrentUser());
+    let mounted = true;
+
+    async function loadUser() {
+      try {
+        const currentUser = await getCurrentUser();
+
+        if (mounted) {
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error("Failed to load seeker user:", error);
+
+        if (mounted) {
+          setUser(null);
+        }
+      }
+    }
+
+    loadUser();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
-    <div className="dashboard-grid" style={{ paddingBottom: '40px' }}>
+    <div className="dashboard-grid" style={{ paddingTop: '56px', paddingBottom: '40px' }}>
       
       {/* Header Section */}
       <div className="col-span-12" style={{ marginBottom: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -28,7 +50,7 @@ export default function SeekerDashboard() {
             Welcome back, {user?.name ? user.name.split(" ")[0] : "Director"}!
           </h1>
           <p style={{ color: 'var(--dash-text-muted)', marginTop: '4px', fontSize: '15px' }}>
-            Here is what's happening with your casting calls today.
+            Manage your productions, discover talent, and keep your casting workflow moving.
           </p>
         </div>
         <button 
@@ -55,7 +77,7 @@ export default function SeekerDashboard() {
         <SpotlightCard className="stat-card" style={{ cursor: 'pointer', justifyContent: 'center' }}>
           <div className="stat-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <h3>142</h3>
-            <p>Total Applications</p>
+            <p>Talent Applications</p>
           </div>
         </SpotlightCard>
       </div>
@@ -215,7 +237,7 @@ export default function SeekerDashboard() {
               </div>
               <span style={{ fontSize: '13px', fontWeight: 600 }}>Post Job</span>
             </SpotlightCard>
-            <SpotlightCard className="dash-quick-action" onClick={() => router.push('/messages')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer' }}>
+            <SpotlightCard className="dash-quick-action" onClick={() => router.push('/dashboard/seeker/messages')} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '16px', background: 'var(--dash-surface)', border: '1px solid var(--dash-border)', borderRadius: '12px', color: 'var(--dash-text-main)', cursor: 'pointer' }}>
               <div style={{ padding: '10px', borderRadius: '50%', backgroundColor: 'rgba(139, 92, 246, 0.1)', color: '#8b5cf6' }}>
                 <MessageSquare size={20} />
               </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
 import {
   Home,
   BriefcaseBusiness,
@@ -20,11 +21,20 @@ import {
   BarChart2,
   Building,
   Calendar as CalendarIcon,
+  Search,
   X,
 } from "lucide-react";
 
-import { logoutUser, getCurrentUser } from "@/utils/auth";
+import {
+  logoutUser,
+  getCurrentUser,
+} from "@/utils/auth";
+
 import { UserProfile } from "@/types/user";
+
+/* =========================================================
+   TALENT MENU
+========================================================= */
 
 const talentMenuItems = [
   {
@@ -74,11 +84,25 @@ const talentMenuItems = [
   },
 ];
 
+/* =========================================================
+   SEEKER MENU
+
+   A seeker is someone looking for talent / managing
+   casting projects.
+
+   Therefore there is NO Portfolio item here.
+========================================================= */
+
 const seekerMenuItems = [
   {
     name: "Dashboard",
     href: "/dashboard/seeker",
     icon: Home,
+  },
+  {
+    name: "Find Talent",
+    href: "/talents",
+    icon: Search,
   },
   {
     name: "My Casting Calls",
@@ -101,14 +125,14 @@ const seekerMenuItems = [
     icon: Video,
   },
   {
-    name: "Portfolio",
-    href: "/portfolio/builder",
-    icon: User,
-  },
-  {
     name: "Messages",
     href: "/dashboard/seeker/messages",
     icon: MessageCircle,
+  },
+  {
+    name: "Calendar",
+    href: "/dashboard/seeker/calendar",
+    icon: CalendarIcon,
   },
   {
     name: "Notifications",
@@ -121,66 +145,166 @@ const seekerMenuItems = [
     icon: BarChart2,
   },
   {
-    name: "Membership",
-    href: "/membership",
-    icon: Crown,
-  },
-  {
     name: "Company Profile",
     href: "/dashboard/seeker/company-profile",
     icon: Building,
+  },
+  {
+    name: "Membership",
+    href: "/membership",
+    icon: Crown,
   },
   {
     name: "Settings",
     href: "/dashboard/seeker/settings",
     icon: Settings,
   },
+  {
+    name: "Help Center",
+    href: "/dashboard/help",
+    icon: HelpCircle,
+  },
 ];
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
 
 export default function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] =
+    useState<UserProfile | null>(null);
 
-  // Sidebar open/closed state
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] =
+    useState(true);
+
+  /* =======================================================
+     LOAD CURRENT USER
+  ======================================================= */
 
   useEffect(() => {
-    setUser(getCurrentUser());
+    let mounted = true;
+
+    async function loadUser() {
+      try {
+        const currentUser =
+          await getCurrentUser();
+
+        if (mounted) {
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load current user:",
+          error
+        );
+
+        if (mounted) {
+          setUser(null);
+        }
+      }
+    }
+
+    loadUser();
+
+    return () => {
+      mounted = false;
+    };
   }, [pathname]);
 
-  const handleLogout = () => {
-    logoutUser();
-    router.push("/login");
-  };
+  /* =======================================================
+     LOGOUT
+  ======================================================= */
 
-  const menuItems =
-    user?.role === "seeker"
-      ? seekerMenuItems
-      : talentMenuItems;
+  async function handleLogout() {
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error(
+        "Logout failed:",
+        error
+      );
+    } finally {
+      setUser(null);
+      router.push("/login");
+    }
+  }
 
-  const splitIndex =
-    user?.role === "seeker" ? 8 : 6;
+  /* =======================================================
+     ROLE-BASED MENU
+  ======================================================= */
 
-  const mainItems = menuItems.slice(
-    0,
-    splitIndex
-  );
+  const isSeeker =
+    user?.role === "seeker";
 
-  const accountItems = menuItems.slice(
-    splitIndex
-  );
+  const menuItems = isSeeker
+    ? seekerMenuItems
+    : talentMenuItems;
 
   /*
-   * When sidebar is closed, return only the toggle button.
-   * This keeps the sidebar component in the layout without
-   * completely removing it from the page.
+   * Seeker:
+   *
+   * Main Menu
+   * 0 Dashboard
+   * 1 Find Talent
+   * 2 My Casting Calls
+   * 3 Applications
+   * 4 Shortlisted Talent
+   * 5 Auditions
+   * 6 Messages
+   * 7 Calendar
+   *
+   * Account
+   * 8 Notifications
+   * 9 Analytics
+   * 10 Company Profile
+   * 11 Membership
+   * 12 Settings
+   * 13 Help Center
+   *
+   * Talent:
+   *
+   * Main Menu
+   * 0 Dashboard
+   * 1 Calendar
+   * 2 My Casting Calls
+   * 3 Portfolio
+   * 4 Messages
+   * 5 Notifications
+   *
+   * Account
+   * 6 Membership
+   * 7 Settings
+   * 8 Help Center
    */
+
+  const splitIndex = isSeeker
+    ? 8
+    : 6;
+
+  const mainItems =
+    menuItems.slice(
+      0,
+      splitIndex
+    );
+
+  const accountItems =
+    menuItems.slice(
+      splitIndex
+    );
+
+  /* =======================================================
+     CLOSED SIDEBAR
+  ======================================================= */
+
   if (!isSidebarOpen) {
     return (
       <button
-        onClick={() => setIsSidebarOpen(true)}
+        onClick={() =>
+          setIsSidebarOpen(true)
+        }
         aria-label="Open sidebar"
         title="Open sidebar"
         style={{
@@ -198,7 +322,8 @@ export default function DashboardSidebar() {
 
           borderRadius: "12px",
 
-          border: "1px solid rgba(201,168,76,0.25)",
+          border:
+            "1px solid rgba(201,168,76,0.25)",
 
           background:
             "rgba(255,255,255,0.85)",
@@ -207,8 +332,11 @@ export default function DashboardSidebar() {
 
           cursor: "pointer",
 
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
+          backdropFilter:
+            "blur(14px)",
+
+          WebkitBackdropFilter:
+            "blur(14px)",
 
           boxShadow:
             "0 8px 25px rgba(0,0,0,0.08)",
@@ -236,51 +364,64 @@ export default function DashboardSidebar() {
     );
   }
 
+  /* =======================================================
+     OPEN SIDEBAR
+  ======================================================= */
+
   return (
     <aside
-  className="dashboard-sidebar"
-  style={{
-    position: "sticky",
-    top: 0,
-    left: 0,
-    width: "260px",
-    height: "100vh",
-    flexShrink: 0,
-    zIndex: 1000,
-    display: "flex",
-    flexDirection: "column",
-    overflow: "hidden",
-  }}
->
-
-      {/* =====================================================
+      className="dashboard-sidebar"
+      style={{
+        position: "sticky",
+        top: 0,
+        left: 0,
+        width: "260px",
+        height: "100vh",
+        flexShrink: 0,
+        zIndex: 1000,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
+      {/* ===================================================
           SIDEBAR HEADER
-      ===================================================== */}
+      =================================================== */}
 
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          padding: "18px 18px 10px",
+          justifyContent:
+            "space-between",
+          padding:
+            "18px 18px 10px",
         }}
       >
-        {/* Optional sidebar title */}
         <div
           style={{
-            fontSize: "0.72rem",
+            fontSize:
+              "0.72rem",
             fontWeight: 700,
-            letterSpacing: "0.14em",
-            textTransform: "uppercase",
-            color: "var(--mid, #777)",
+            letterSpacing:
+              "0.14em",
+            textTransform:
+              "uppercase",
+            color:
+              "var(--mid, #777)",
           }}
         >
           Menu
         </div>
 
         {/* CLOSE BUTTON */}
+
         <button
-          onClick={() => setIsSidebarOpen(false)}
+          onClick={() =>
+            setIsSidebarOpen(
+              false
+            )
+          }
           aria-label="Close sidebar"
           title="Close sidebar"
           style={{
@@ -289,9 +430,11 @@ export default function DashboardSidebar() {
 
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent:
+              "center",
 
-            borderRadius: "10px",
+            borderRadius:
+              "10px",
 
             border:
               "1px solid rgba(128,128,128,0.18)",
@@ -331,9 +474,9 @@ export default function DashboardSidebar() {
         </button>
       </div>
 
-      {/* =====================================================
+      {/* ===================================================
           SIDEBAR CONTENT
-      ===================================================== */}
+      =================================================== */}
 
       <div className="sidebar-content">
 
@@ -349,47 +492,63 @@ export default function DashboardSidebar() {
 
           <nav className="sidebar-nav">
 
-            {mainItems.map((item) => {
-              const Icon = item.icon;
+            {mainItems.map(
+              (item) => {
+                const Icon =
+                  item.icon;
 
-              const isActive =
-                pathname === item.href;
+                const isActive =
+                  pathname ===
+                    item.href ||
+                  (
+                    item.href !==
+                      "/dashboard/seeker" &&
+                    pathname.startsWith(
+                      `${item.href}/`
+                    )
+                  );
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`sidebar-link ${
-                    isActive ? "active" : ""
-                  }`}
-                >
+                return (
+                  <Link
+                    key={
+                      item.href
+                    }
+                    href={
+                      item.href
+                    }
+                    className={`sidebar-link ${
+                      isActive
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <div className="link-content">
 
-                  <div className="link-content">
+                      <Icon
+                        className="sidebar-icon"
+                        size={20}
+                      />
 
-                    <Icon
-                      className="sidebar-icon"
-                      size={20}
-                    />
+                      <span>
+                        {
+                          item.name
+                        }
+                      </span>
 
-                    <span>
-                      {item.name}
-                    </span>
+                    </div>
 
-                  </div>
-
-                  {isActive && (
-                    <ChevronRight
-                      className="active-chevron"
-                      size={16}
-                    />
-                  )}
-
-                </Link>
-              );
-            })}
+                    {isActive && (
+                      <ChevronRight
+                        className="active-chevron"
+                        size={16}
+                      />
+                    )}
+                  </Link>
+                );
+              }
+            )}
 
           </nav>
-
         </div>
 
         {/* =================================================
@@ -404,62 +563,74 @@ export default function DashboardSidebar() {
 
           <nav className="sidebar-nav">
 
-            {accountItems.map((item) => {
-              const Icon = item.icon;
+            {accountItems.map(
+              (item) => {
+                const Icon =
+                  item.icon;
 
-              const isActive =
-                pathname === item.href;
+                const isActive =
+                  pathname ===
+                    item.href ||
+                  pathname.startsWith(
+                    `${item.href}/`
+                  );
 
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`sidebar-link ${
-                    isActive ? "active" : ""
-                  }`}
-                >
+                return (
+                  <Link
+                    key={
+                      item.href
+                    }
+                    href={
+                      item.href
+                    }
+                    className={`sidebar-link ${
+                      isActive
+                        ? "active"
+                        : ""
+                    }`}
+                  >
+                    <div className="link-content">
 
-                  <div className="link-content">
+                      <Icon
+                        className="sidebar-icon"
+                        size={20}
+                      />
 
-                    <Icon
-                      className="sidebar-icon"
-                      size={20}
-                    />
+                      <span>
+                        {
+                          item.name
+                        }
+                      </span>
 
-                    <span>
-                      {item.name}
-                    </span>
+                    </div>
 
-                  </div>
-
-                  {isActive && (
-                    <ChevronRight
-                      className="active-chevron"
-                      size={16}
-                    />
-                  )}
-
-                </Link>
-              );
-            })}
+                    {isActive && (
+                      <ChevronRight
+                        className="active-chevron"
+                        size={16}
+                      />
+                    )}
+                  </Link>
+                );
+              }
+            )}
 
           </nav>
-
         </div>
-
       </div>
 
-      {/* =====================================================
+      {/* ===================================================
           LOGOUT
-      ===================================================== */}
+      =================================================== */}
 
       <div className="sidebar-footer">
 
         <button
           className="logout-btn"
-          onClick={handleLogout}
+          onClick={
+            handleLogout
+          }
         >
-
           <LogOut
             size={18}
             className="sidebar-icon"
@@ -468,11 +639,9 @@ export default function DashboardSidebar() {
           <span>
             Logout
           </span>
-
         </button>
 
       </div>
-
     </aside>
   );
 }

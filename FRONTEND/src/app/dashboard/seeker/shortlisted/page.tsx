@@ -21,7 +21,7 @@ export default function ShortlistedTalent() {
 
   const handleMessage = (name: string) => {
     // Navigate to messages
-    router.push(`/messages`);
+    router.push(`/dashboard/seeker/messages`);
   };
 
   const handleShare = (name: string) => {
@@ -36,7 +36,7 @@ export default function ShortlistedTalent() {
   };
 
   return (
-    <div className="dashboard-grid" style={{ paddingBottom: '40px' }}>
+    <div className="dashboard-grid" style={{ paddingTop: '56px', paddingBottom: '40px' }}>
       <div className="col-span-12" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: 0, color: 'var(--dash-text-main)' }}>Shortlisted Talent</h2>

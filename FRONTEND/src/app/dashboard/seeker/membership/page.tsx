@@ -4,7 +4,7 @@ import { CheckCircle2, Crown, Building } from "lucide-react";
 
 export default function SeekerMembership() {
   return (
-    <div className="dashboard-grid" style={{ paddingBottom: '40px' }}>
+    <div className="dashboard-grid" style={{ paddingTop: '56px', paddingBottom: '40px' }}>
       
       <div className="col-span-12 dashboard-card-ui" style={{ padding: '40px 24px', textAlign: 'center', background: 'linear-gradient(135deg, rgba(232,169,58,0.1) 0%, rgba(20,20,20,1) 100%)' }}>
         <Crown size={48} color="var(--gold)" style={{ marginBottom: '16px' }} />

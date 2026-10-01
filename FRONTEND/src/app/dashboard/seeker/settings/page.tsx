@@ -37,7 +37,7 @@ export default function SeekerSettings() {
   };
 
   return (
-    <div className="dashboard-grid" style={{ paddingBottom: '40px' }}>
+    <div className="dashboard-grid" style={{ paddingTop: '56px', paddingBottom: '40px' }}>
       
       <div className="col-span-12 dashboard-card-ui" style={{ padding: '24px' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 8px 0', color: 'var(--dash-text-main)' }}>Settings</h2>

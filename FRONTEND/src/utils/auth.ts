@@ -1,112 +1,288 @@
-import { UserProfile } from "@/types/user";
-import { cache } from "./cache";
+import type { UserProfile } from "@/types/user";
 
-const USERS_KEY = "indcasting_users";
-const USERS_CACHE_KEY = "users_list";
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
 const CURRENT_USER_KEY = "indcasting_current_user";
-const PASSWORD_SALT_KEY = "indcasting_password_salt";
 
-function getSalt(): string {
-  if (typeof window === "undefined") return "";
-  const salt = localStorage.getItem(PASSWORD_SALT_KEY);
-  if (salt) return salt;
-  const random = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, "0")).join("");
-  localStorage.setItem(PASSWORD_SALT_KEY, random);
-  return random;
+interface BackendUser {
+  id: string;
+  name: string;
+  email: string;
+  role: "talent" | "seeker";
+
+  // Backend currently returns these only through some user/profile
+  // responses, so keep them optional here.
+  phone?: string | null;
+  mobile?: string | null;
+  city?: string | null;
+  region?: string | null;
+  bio?: string | null;
 }
 
-async function hashPassword(password: string, salt: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + salt);
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  const array = new Uint8Array(hash);
-  return Array.from(array, b => b.toString(16).padStart(2, "0")).join("");
+interface AuthResponse {
+  user: BackendUser;
 }
 
-async function verifyPassword(password: string, salt: string, hash: string): Promise<boolean> {
-  const computedHash = await hashPassword(password, salt);
-  return computedHash === hash;
-}
+function normalizeUser(user: BackendUser): UserProfile {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
 
-function getUsers(): UserProfile[] {
-  if (typeof window === "undefined") return [];
-
-  const cached = cache.get<UserProfile[]>(USERS_CACHE_KEY);
-  if (cached) return cached;
-
-  const data = localStorage.getItem(USERS_KEY) || "[]";
-  const users = JSON.parse(data);
-
-  cache.set(USERS_CACHE_KEY, users, 5);
-  return users;
-}
-
-export async function registerUser(user: UserProfile) {
-  const users = getUsers();
-
-  // Store the user with hashed password
-  const hashedPassword = await hashPassword(user.password, getSalt());
-  const userWithHash = {
-    ...user,
-    password: hashedPassword
+    // The frontend UserProfile still expects these fields.
+    // The backend auth response does not currently return them,
+    // so use empty strings rather than inventing values.
+    password: "",
+    phone: user.phone ?? user.mobile ?? "",
+    city: user.city ?? user.region ?? "",
+    role: user.role,
+    bio: user.bio ?? "",
   };
-
-  users.push(userWithHash);
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  cache.remove(USERS_CACHE_KEY);
 }
 
-export async function loginUser(email: string, password: string, remember: boolean = true) {
-  const users = getUsers();
-  const salt = getSalt();
+function saveCurrentUser(user: UserProfile) {
+  if (typeof window === "undefined") return;
 
-  const user = users.find(
-    u => u.email === email
+  localStorage.setItem(
+    CURRENT_USER_KEY,
+    JSON.stringify(user)
   );
-
-  if (!user) return null;
-
-  // Verify password using the stored salt and hash
-  const isValid = await verifyPassword(password, salt, user.password);
-
-  if (!isValid) return null;
-
-  if (remember) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-  } else {
-    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
-  }
-
-  return user;
 }
 
-export function getCurrentUser(): UserProfile | null {
-  if (typeof window === "undefined") return null;
+function clearCurrentUser() {
+  if (typeof window === "undefined") return;
 
-  const data = localStorage.getItem(CURRENT_USER_KEY) || sessionStorage.getItem(CURRENT_USER_KEY);
-
-  return data ? JSON.parse(data) : null;
-}
-
-export function logoutUser() {
   localStorage.removeItem(CURRENT_USER_KEY);
   sessionStorage.removeItem(CURRENT_USER_KEY);
 }
 
-export function updateUser(oldEmail: string, updatedUser: UserProfile) {
-  if (typeof window === "undefined") return;
+async function parseResponse(response: Response) {
+  const contentType = response.headers.get("content-type") || "";
 
-  const users = getUsers();
-  const index = users.findIndex(u => u.email === oldEmail);
-  if (index !== -1) {
-    users[index] = updatedUser;
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    cache.remove(USERS_CACHE_KEY);
+  if (contentType.includes("application/json")) {
+    return response.json();
   }
 
-  if (localStorage.getItem(CURRENT_USER_KEY)) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
-  } else if (sessionStorage.getItem(CURRENT_USER_KEY)) {
-    sessionStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+  return null;
+}
+
+function getErrorMessage(data: any, fallback: string): string {
+  if (!data) return fallback;
+
+  if (Array.isArray(data.message)) {
+    return data.message.join(", ");
   }
+
+  if (typeof data.message === "string") {
+    return data.message;
+  }
+
+  if (typeof data.error === "string") {
+    return data.error;
+  }
+
+  return fallback;
+}
+
+/**
+ * Register a new user through the NestJS backend.
+ */
+export async function registerUser(
+  userData: Omit<UserProfile, "id"> & {
+    password: string;
+    phone?: string;
+    city?: string;
+  },
+  _remember = true
+): Promise<UserProfile> {
+  const response = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      name: userData.name.trim(),
+      email: userData.email.trim().toLowerCase(),
+      password: userData.password,
+      phone: userData.phone?.trim() || undefined,
+      city: userData.city?.trim() || undefined,
+      role: userData.role,
+    }),
+  });
+
+  const data = await parseResponse(response);
+
+  if (!response.ok) {
+    throw new Error(
+      getErrorMessage(
+        data,
+        "Unable to create your account. Please try again."
+      )
+    );
+  }
+
+  if (!data?.user) {
+    throw new Error(
+      "Account was created, but the server did not return user information."
+    );
+  }
+
+  const user = normalizeUser(data.user);
+
+  saveCurrentUser(user);
+
+  return user;
+}
+
+/**
+ * Login through the NestJS backend.
+ *
+ * The backend sets the JWT as an HTTP-only cookie.
+ * We do NOT store the JWT in localStorage.
+ */
+export async function loginUser(
+  email: string,
+  password: string,
+  _remember = true
+): Promise<UserProfile> {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      email: email.trim().toLowerCase(),
+      password,
+    }),
+  });
+
+  const data = await parseResponse(response);
+
+  if (!response.ok) {
+    throw new Error(
+      getErrorMessage(
+        data,
+        "Invalid email or password."
+      )
+    );
+  }
+
+  if (!data?.user) {
+    throw new Error(
+      "Login succeeded, but the server did not return user information."
+    );
+  }
+
+  const user = normalizeUser(data.user);
+
+  saveCurrentUser(user);
+
+  return user;
+}
+
+/**
+ * Get the currently authenticated user from the backend.
+ *
+ * Important:
+ * /auth/me returns the user directly, NOT { user: ... }.
+ */
+export async function getCurrentUser(): Promise<UserProfile | null> {
+  try {
+    const response = await fetch(`${API_URL}/auth/me`, {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+
+      const user = normalizeUser(data);
+
+      saveCurrentUser(user);
+
+      return user;
+    }
+
+    if (response.status === 401) {
+      clearCurrentUser();
+      return null;
+    }
+
+    return getCachedUser();
+  } catch (error) {
+    console.error("Failed to get current user:", error);
+
+    return getCachedUser();
+  }
+}
+
+/**
+ * Read the cached frontend user.
+ *
+ * This is only a UI cache.
+ * Authentication itself is handled by the HTTP-only backend cookie.
+ */
+function getCachedUser(): UserProfile | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const stored = localStorage.getItem(CURRENT_USER_KEY);
+
+    if (!stored) {
+      return null;
+    }
+
+    return JSON.parse(stored) as UserProfile;
+  } catch {
+    clearCurrentUser();
+    return null;
+  }
+}
+
+/**
+ * Logout from the backend and clear the local UI cache.
+ */
+export async function logoutUser(): Promise<void> {
+  try {
+    await fetch(`${API_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch (error) {
+    console.error("Backend logout failed:", error);
+  } finally {
+    clearCurrentUser();
+  }
+}
+
+/**
+ * Update user information.
+ *
+ * The current backend auth API does not expose a general
+ * user-update endpoint, so keep the existing local behaviour
+ * for now rather than sending unsupported requests.
+ */
+export async function updateUser(
+  updates: Partial<UserProfile>
+): Promise<UserProfile | null> {
+  const currentUser = getCachedUser();
+
+  if (!currentUser) {
+    return null;
+  }
+
+  const updatedUser: UserProfile = {
+    ...currentUser,
+    ...updates,
+  };
+
+  saveCurrentUser(updatedUser);
+
+  return updatedUser;
 }
