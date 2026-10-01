@@ -1,12 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+
+import {
+  usePathname,
+  useRouter,
+} from "next/navigation";
+
 import { gsap } from "gsap";
-import { getCurrentUser, logoutUser } from "@/utils/auth";
+
+import {
+  getCurrentUser,
+  logoutUser,
+} from "@/utils/auth";
+
 import { UserProfile } from "@/types/user";
-import { Bell, Menu, X, ChevronDown } from "lucide-react";
+
+import {
+  Bell,
+  Menu,
+  X,
+  ChevronDown,
+} from "lucide-react";
 
 /* ─────────────────────────────────────────
    NAV LINKS
@@ -15,23 +36,42 @@ import { Bell, Menu, X, ChevronDown } from "lucide-react";
 const NAV_LINKS_PUBLIC = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/post" },
-  { label: "Talent Directory", href: "/applications" },
-  { label: "Membership", href: "/membership" },
+  {
+    label: "Talent Directory",
+    href: "/applications",
+  },
+  {
+    label: "Membership",
+    href: "/membership",
+  },
 ];
 
 const NAV_LINKS_AUTHED = [
   { label: "Home", href: "/" },
   { label: "Posts", href: "/post" },
-  { label: "Messages", href: "/dashboard/messages" },
-  { label: "Talent Directory", href: "/applications" },
-  { label: "Membership", href: "/membership" },
+  {
+    label: "Messages",
+    href: "/dashboard/messages",
+  },
+  {
+    label: "Talent Directory",
+    href: "/applications",
+  },
+  {
+    label: "Membership",
+    href: "/membership",
+  },
 ];
 
 /* ─────────────────────────────────────────
    CONTRAST ICON
 ───────────────────────────────────────── */
 
-function ContrastIcon({ size = 16 }: { size?: number }) {
+function ContrastIcon({
+  size = 16,
+}: {
+  size?: number;
+}) {
   return (
     <svg
       width={size}
@@ -63,59 +103,71 @@ function ContrastIcon({ size = 16 }: { size?: number }) {
 
 export default function Header() {
   const router = useRouter();
-  const pathname = usePathname() || "";
 
-  const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [darkMode, setDarkMode] = useState(true);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [unread, setUnread] = useState(true);
+  const pathname =
+    usePathname() || "";
+
+  const [scrolled, setScrolled] =
+    useState(false);
+
+  const [user, setUser] =
+    useState<UserProfile | null>(null);
+
+  const [darkMode, setDarkMode] =
+    useState(true);
+
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
+
+  const [profileOpen, setProfileOpen] =
+    useState(false);
+
+  const [unread, setUnread] =
+    useState(true);
 
   /* ─────────────────────────────────────
      REFS
   ───────────────────────────────────── */
 
-  const profileRef = useRef<HTMLDivElement>(null);
+  const profileRef =
+    useRef<HTMLDivElement>(null);
 
   /*
    * Container containing all desktop navigation links.
    * This is the area where the proximity effect listens
    * for the cursor.
    */
-  const navRef = useRef<HTMLElement>(null);
+
+  const navRef =
+    useRef<HTMLElement>(null);
 
   /*
    * Individual navigation link references.
    */
-  const navLinksRef = useRef<(HTMLAnchorElement | null)[]>([]);
 
-  const displayUser =
-    user ||
-    (pathname.startsWith("/dashboard")
-      ? ({
-          name: pathname.includes("/seeker")
-            ? "Casting Director"
-            : "Aahana",
-          email: "demo@indcasting.in",
-          password: "",
-          role: pathname.includes("/seeker")
-            ? "seeker"
-            : "talent",
-        } as UserProfile)
-      : null);
+  const navLinksRef =
+    useRef<(HTMLAnchorElement | null)[]>([]);
+
+  /*
+   * Only show a user when the backend/local
+   * authentication state actually provides one.
+   *
+   * Do NOT use a fake demo user here.
+   */
+  const displayUser = user;
 
   const NAV_LINKS = displayUser
     ? NAV_LINKS_AUTHED
     : NAV_LINKS_PUBLIC;
 
-  const initials = displayUser?.name
-    .split(" ")
-    .filter(Boolean)
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  const initials =
+    displayUser?.name
+      .split(" ")
+      .filter(Boolean)
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
 
   /* ─────────────────────────────────────────
      SCROLL STATE
@@ -123,15 +175,23 @@ export default function Header() {
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(window.scrollY > 40);
+      setScrolled(
+        window.scrollY > 40
+      );
     };
 
     onScroll();
 
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener(
+      "scroll",
+      onScroll
+    );
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener(
+        "scroll",
+        onScroll
+      );
     };
   }, []);
 
@@ -140,49 +200,63 @@ export default function Header() {
   ───────────────────────────────────────── */
 
   useEffect(() => {
-  let cancelled = false;
+    let cancelled = false;
 
-  async function loadCurrentUser() {
-    try {
-      const currentUser = await getCurrentUser();
+    async function loadCurrentUser() {
+      try {
+        const currentUser =
+          await getCurrentUser();
 
-      if (!cancelled) {
-        setUser(currentUser);
-      }
-    } catch (error) {
-      console.error("Failed to load current user:", error);
+        if (!cancelled) {
+          setUser(currentUser);
+        }
+      } catch (error) {
+        console.error(
+          "Failed to load current user:",
+          error
+        );
 
-      if (!cancelled) {
-        setUser(null);
+        if (!cancelled) {
+          setUser(null);
+        }
       }
     }
-  }
 
-  loadCurrentUser();
+    loadCurrentUser();
 
-  return () => {
-    cancelled = true;
-  };
-}, [pathname]);
+    return () => {
+      cancelled = true;
+    };
+  }, [pathname]);
 
   /* ─────────────────────────────────────────
      CLOSE PROFILE DROPDOWN
   ───────────────────────────────────────── */
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
+    const handler = (
+      e: MouseEvent
+    ) => {
       if (
         profileRef.current &&
-        !profileRef.current.contains(e.target as Node)
+        !profileRef.current.contains(
+          e.target as Node
+        )
       ) {
         setProfileOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handler);
+    document.addEventListener(
+      "mousedown",
+      handler
+    );
 
     return () => {
-      document.removeEventListener("mousedown", handler);
+      document.removeEventListener(
+        "mousedown",
+        handler
+      );
     };
   }, []);
 
@@ -191,9 +265,13 @@ export default function Header() {
   ───────────────────────────────────────── */
 
   useEffect(() => {
-    const saved = localStorage.getItem("theme");
+    const saved =
+      localStorage.getItem(
+        "theme"
+      );
 
-    const isDark = saved !== "light";
+    const isDark =
+      saved !== "light";
 
     setDarkMode(isDark);
 
@@ -224,9 +302,10 @@ export default function Header() {
   ───────────────────────────────────────── */
 
   useEffect(() => {
-    const saved = localStorage.getItem(
-      "hasUnreadNotifications"
-    );
+    const saved =
+      localStorage.getItem(
+        "hasUnreadNotifications"
+      );
 
     if (saved === "false") {
       setUnread(false);
@@ -254,16 +333,20 @@ export default function Header() {
   ───────────────────────────────────────── */
 
   async function handleLogout() {
-  try {
-    await logoutUser();
-  } catch (error) {
-    console.error("Logout failed:", error);
-  } finally {
-    setUser(null);
-    setProfileOpen(false);
-    router.push("/login");
+    try {
+      await logoutUser();
+    } catch (error) {
+      console.error(
+        "Logout failed:",
+        error
+      );
+    } finally {
+      setUser(null);
+      setProfileOpen(false);
+      router.push("/login");
+    }
   }
-}
+
   /* ─────────────────────────────────────────
      CLOSE MOBILE MENU ON ROUTE CHANGE
   ───────────────────────────────────────── */
@@ -276,7 +359,9 @@ export default function Header() {
      ACTIVE LINK
   ───────────────────────────────────────── */
 
-  const isActive = (href: string) =>
+  const isActive = (
+    href: string
+  ) =>
     href === "/"
       ? pathname === "/"
       : pathname.startsWith(href);
@@ -284,7 +369,7 @@ export default function Header() {
   /* ═════════════════════════════════════════
      PROXIMITY SCALE EFFECT
 
-     Adapted from the GSAP proximity effect:
+     Adapted from the CodePen proximity effect:
      cursor distance → scale amount
   ═════════════════════════════════════════ */
 
@@ -293,9 +378,10 @@ export default function Header() {
 
     if (!nav) return;
 
-    const links = navLinksRef.current.filter(
-      Boolean
-    ) as HTMLAnchorElement[];
+    const links =
+      navLinksRef.current.filter(
+        Boolean
+      ) as HTMLAnchorElement[];
 
     if (!links.length) return;
 
@@ -303,39 +389,48 @@ export default function Header() {
      * Smaller than the CodePen because this is a
      * navigation bar rather than a large grid.
      */
+
     const radius = 130;
 
     /*
      * Maximum scale of the closest item.
      * 1.20 = 20% larger.
      */
+
     const maxScale = 1.2;
 
     /*
      * Animation speed.
      */
+
     const duration = 0.25;
 
     const handlePointerMove = (
       event: PointerEvent
     ) => {
-      const mouseX = event.clientX;
-      const mouseY = event.clientY;
+      const mouseX =
+        event.clientX;
+
+      const mouseY =
+        event.clientY;
 
       links.forEach((link) => {
         const rect =
           link.getBoundingClientRect();
 
         const centerX =
-          rect.left + rect.width / 2;
+          rect.left +
+          rect.width / 2;
 
         const centerY =
-          rect.top + rect.height / 2;
+          rect.top +
+          rect.height / 2;
 
-        const distance = Math.hypot(
-          mouseX - centerX,
-          mouseY - centerY
-        );
+        const distance =
+          Math.hypot(
+            mouseX - centerX,
+            mouseY - centerY
+          );
 
         /*
          * Convert distance into proximity.
@@ -343,17 +438,22 @@ export default function Header() {
          * 0 distance   → 1
          * radius       → 0
          */
-        const proximity = Math.max(
-          0,
-          Math.min(
-            1,
-            1 - distance / radius
-          )
-        );
+
+        const proximity =
+          Math.max(
+            0,
+            Math.min(
+              1,
+              1 -
+                distance /
+                  radius
+            )
+          );
 
         const scale =
           1 +
-          (maxScale - 1) * proximity;
+          (maxScale - 1) *
+            proximity;
 
         gsap.to(link, {
           scale,
@@ -368,7 +468,8 @@ export default function Header() {
       links.forEach((link) => {
         gsap.to(link, {
           scale: 1,
-          duration: duration * 1.8,
+          duration:
+            duration * 1.8,
           overwrite: true,
           ease: "power2.out",
         });
@@ -402,7 +503,10 @@ export default function Header() {
         scale: 1,
       });
     };
-  }, [NAV_LINKS.length, pathname]);
+  }, [
+    NAV_LINKS.length,
+    pathname,
+  ]);
 
   return (
     <>
@@ -573,42 +677,44 @@ export default function Header() {
            * Important for proximity effect:
            * the nav itself becomes the interaction area.
            */
+
           padding: 8px 4px;
 
           /*
            * Gives the cursor a little more room
            * around the links.
            */
+
           margin: -8px -4px;
         }
 
         .ic-nav-link {
-  position: relative;
+          position: relative;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
 
-  padding: 6px 15px;
+          padding: 6px 15px;
 
-  font-size: 1rem;
-  font-weight: 600;
+          font-size: 1rem;
+          font-weight: 600;
 
-  letter-spacing: 0.01em;
+          letter-spacing: 0.01em;
 
-  color: var(--ink-50);
+          color: var(--ink-50);
 
-  text-decoration: none;
+          text-decoration: none;
 
-  border-radius: 6px;
+          border-radius: 6px;
 
-  white-space: nowrap;
+          white-space: nowrap;
 
-  will-change: transform;
-  transform-origin: center center;
+          will-change: transform;
+          transform-origin: center center;
 
-  transition: color 0.18s ease;
-}
+          transition: color 0.18s ease;
+        }
 
         .ic-nav-link:hover {
           color:
@@ -626,6 +732,7 @@ export default function Header() {
         /*
          * Active gold line.
          */
+
         .ic-nav-link.active::after {
           content: "";
 
@@ -652,6 +759,7 @@ export default function Header() {
            * Keep underline from scaling
            * independently.
            */
+
           transform-origin:
             center;
         }
@@ -660,6 +768,7 @@ export default function Header() {
          * Small glow when the link is
          * actually being approached.
          */
+
         .ic-nav-link:hover {
           text-shadow:
             0 0 18px
@@ -1024,6 +1133,7 @@ export default function Header() {
         @keyframes dropIn {
           from {
             opacity: 0;
+
             transform:
               translateY(-6px)
               scale(0.97);
@@ -1031,6 +1141,7 @@ export default function Header() {
 
           to {
             opacity: 1;
+
             transform:
               translateY(0)
               scale(1);
@@ -1566,7 +1677,9 @@ export default function Header() {
 
       <header
         className={`ic-header${
-          scrolled ? " scrolled" : ""
+          scrolled
+            ? " scrolled"
+            : ""
         }`}
       >
         <div className="ic-inner">
@@ -1599,13 +1712,20 @@ export default function Header() {
             aria-label="Main navigation"
           >
             {NAV_LINKS.map(
-              ({ label, href }, index) => (
+              (
+                {
+                  label,
+                  href,
+                },
+                index
+              ) => (
                 <Link
                   key={href}
                   href={href}
                   ref={(element) => {
-                    navLinksRef.current[index] =
-                      element;
+                    navLinksRef.current[
+                      index
+                    ] = element;
                   }}
                   className={`ic-nav-link${
                     isActive(href)
@@ -1694,7 +1814,8 @@ export default function Header() {
                   aria-label="Profile menu"
                 >
                   <span className="ic-avatar">
-                    {initials || "?"}
+                    {initials ||
+                      "?"}
                   </span>
 
                   <span className="ic-avatar-name">
@@ -1734,7 +1855,9 @@ export default function Header() {
                       }
                       className="ic-dd-link"
                       onClick={() =>
-                        setProfileOpen(false)
+                        setProfileOpen(
+                          false
+                        )
                       }
                     >
                       Dashboard
@@ -1744,7 +1867,9 @@ export default function Header() {
                       href="/dashboard/portfolio"
                       className="ic-dd-link"
                       onClick={() =>
-                        setProfileOpen(false)
+                        setProfileOpen(
+                          false
+                        )
                       }
                     >
                       My Portfolio
@@ -1754,7 +1879,9 @@ export default function Header() {
                       href="/applications"
                       className="ic-dd-link"
                       onClick={() =>
-                        setProfileOpen(false)
+                        setProfileOpen(
+                          false
+                        )
                       }
                     >
                       Talent Directory
@@ -1764,7 +1891,9 @@ export default function Header() {
                       href="/dashboard/settings"
                       className="ic-dd-link"
                       onClick={() =>
-                        setProfileOpen(false)
+                        setProfileOpen(
+                          false
+                        )
                       }
                     >
                       Settings
@@ -1774,7 +1903,9 @@ export default function Header() {
 
                     <button
                       className="ic-dd-link danger"
-                      onClick={handleLogout}
+                      onClick={
+                        handleLogout
+                      }
                     >
                       Log Out
                     </button>
@@ -1868,7 +1999,10 @@ export default function Header() {
             <nav className="ic-panel-nav">
 
               {NAV_LINKS.map(
-                ({ label, href }) => (
+                ({
+                  label,
+                  href,
+                }) => (
                   <Link
                     key={href}
                     href={href}
@@ -1878,7 +2012,9 @@ export default function Header() {
                         : ""
                     }`}
                     onClick={() =>
-                      setMobileOpen(false)
+                      setMobileOpen(
+                        false
+                      )
                     }
                   >
                     {label}
@@ -1904,7 +2040,9 @@ export default function Header() {
                     className="ic-ghost"
                     aria-label="Notifications"
                     onClick={() =>
-                      setMobileOpen(false)
+                      setMobileOpen(
+                        false
+                      )
                     }
                     style={{
                       position:
@@ -1924,7 +2062,9 @@ export default function Header() {
 
                 <button
                   className="ic-ghost"
-                  onClick={toggleTheme}
+                  onClick={
+                    toggleTheme
+                  }
                   aria-label="Toggle theme"
                 >
                   <ContrastIcon size={16} />
@@ -1937,7 +2077,9 @@ export default function Header() {
                   href="/signup"
                   className="ic-panel-signin"
                   onClick={() =>
-                    setMobileOpen(false)
+                    setMobileOpen(
+                      false
+                    )
                   }
                 >
                   Sign In
@@ -1953,7 +2095,9 @@ export default function Header() {
                     }
                     className="ic-panel-link"
                     onClick={() =>
-                      setMobileOpen(false)
+                      setMobileOpen(
+                        false
+                      )
                     }
                   >
                     Dashboard
@@ -1965,7 +2109,9 @@ export default function Header() {
                     href="/dashboard/portfolio"
                     className="ic-panel-link"
                     onClick={() =>
-                      setMobileOpen(false)
+                      setMobileOpen(
+                        false
+                      )
                     }
                   >
                     My Portfolio
@@ -1983,7 +2129,9 @@ export default function Header() {
 
                   <button
                     className="ic-panel-link"
-                    onClick={handleLogout}
+                    onClick={
+                      handleLogout
+                    }
                     style={{
                       color:
                         "#c62828",

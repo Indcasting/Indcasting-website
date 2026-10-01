@@ -23,6 +23,7 @@ interface Application {
   experience?: string;
   languages?: string;
   age?: string;
+  gender?: string;
 }
 
 /* =========================================================

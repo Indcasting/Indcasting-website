@@ -176,8 +176,15 @@ export default function Membership() {
       await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
       await loadScript("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js");
 
-      const { gsap, ScrollTrigger } = window;
-      gsap.registerPlugin(ScrollTrigger);
+      const gsap = (window as typeof window & {
+  gsap: any;
+}).gsap;
+
+const ScrollTrigger = (window as typeof window & {
+  ScrollTrigger: any;
+}).ScrollTrigger;
+
+gsap.registerPlugin(ScrollTrigger);
 
       gsap.to(".progress-bar", {
         scaleX: 1, ease: "none",
@@ -217,7 +224,7 @@ export default function Membership() {
         gsap.to(heroImg, { y: -18, duration: 3, ease: "sine.inOut", yoyo: true, repeat: -1, delay: 1.3 });
       }
 
-      gsap.utils.toArray<HTMLElement>(".plan-card").forEach((el, i) => {
+      gsap.utils.toArray(".plan-card").forEach((el: HTMLElement, i: number) => {
         gsap.from(el, {
           y: 60, opacity: 0, scale: 0.94,
           rotateZ: i === 1 ? 0 : i === 0 ? -1.5 : 1.5,
@@ -275,14 +282,14 @@ export default function Membership() {
         });
       });
 
-      gsap.utils.toArray<Element>(".section-title").forEach((el) => {
+      gsap.utils.toArray(".section-title").forEach((el: Element) => {
         gsap.from(el, {
           clipPath: "inset(0 100% 0 0)", duration: 0.9, ease: "power4.inOut",
           scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
         });
       });
 
-      gsap.utils.toArray<Element>(".reveal").forEach((el) => {
+      gsap.utils.toArray(".reveal").forEach((el: Element) => {
         gsap.from(el, {
           y: 40, opacity: 0, duration: 0.8, ease: "power2.out",
           scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" },
@@ -308,7 +315,15 @@ export default function Membership() {
 
     })();
 
-    return () => { window.ScrollTrigger?.getAll?.()?.forEach((t) => t.kill()); };
+    return () => {
+  const ScrollTrigger = (window as typeof window & {
+    ScrollTrigger?: {
+      getAll?: () => Array<{ kill: () => void }>;
+    };
+  }).ScrollTrigger;
+
+  ScrollTrigger?.getAll?.()?.forEach((t) => t.kill());
+};
   }, []);
 
   const ROW1 = [...TESTIMONIALS.slice(0, 4), ...TESTIMONIALS.slice(0, 4)];

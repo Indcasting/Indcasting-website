@@ -69,14 +69,14 @@ function SignUpContent() {
     setIsLoading(true);
 
     try {
+      /*
+       * The backend generates the actual
+       * database UUID.
+       *
+       * Do NOT send an id from the frontend.
+       */
       const user =
         await registerUser({
-          /*
-           * Backend generates the actual
-           * database UUID.
-           */
-          id: "",
-
           name,
           email,
           phone,
@@ -100,21 +100,27 @@ function SignUpContent() {
        * 3. Created the JWT
        * 4. Set the HTTP-only cookie
        *
-       * Now send the user to login.
+       * Therefore the user is already authenticated.
        */
+
       if (redirect) {
-        const safeRedirect =
+        router.push(
           validateInternalPath(
             redirect
-          );
+          )
+        );
 
+        return;
+      }
+
+      if (user.role === "talent") {
         router.push(
-          `/login?redirect=${encodeURIComponent(
-            safeRedirect
-          )}`
+          "/dashboard/talent"
         );
       } else {
-        router.push("/login");
+        router.push(
+          "/dashboard/seeker"
+        );
       }
     } catch (err) {
       console.error(
