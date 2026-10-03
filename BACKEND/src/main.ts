@@ -17,6 +17,7 @@ async function bootstrap() {
     origin: [
       "http://localhost:3000",
       "https://indcasting.karthik31012007.workers.dev",
+      "https://indcasting.maskedtesting.fyi",
     ],
     credentials: true,
     methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
