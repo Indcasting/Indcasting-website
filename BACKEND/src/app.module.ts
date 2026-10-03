@@ -1,3 +1,4 @@
+import { DebugController } from './debug/debug.controller';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -15,8 +16,8 @@ import { MediaModule } from './media/media.module';
 import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
-  imports: [ConfigModule, DatabaseModule, AuthModule, UsersModule, TalentProfilesModule, CastingCallsModule, ApplicationsModule, PortfolioModule, MessagingModule, NotificationsModule, MediaModule, ReviewsModule],
-  controllers: [AppController],
+  imports: [ConfigModule, DatabaseModule, AuthModule, UsersModule, TalentProfilesModule, CastingCallsModule, ApplicationsModule, PortfolioModule, MessagingModule, NotificationsModule, MediaModule, ReviewsModule,],
+  controllers: [AppController,DebugController],
   providers: [AppService],
 })
 export class AppModule {}
