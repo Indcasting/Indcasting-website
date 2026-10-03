@@ -1,5 +1,5 @@
 "use client";
-
+import { apiFetch } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -1820,24 +1820,24 @@ export default function ProfilePage() {
         setLoading(true);
         setError("");
 
-        const response = await fetch(
-          `http://localhost:4000/talent-profiles/${slug}`
-        );
+        let data: ApiTalent;
 
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error(
-              "Talent profile not found"
-            );
+        try {
+          data = await apiFetch(
+            `/talent-profiles/${encodeURIComponent(slug)}`
+          );
+        } catch (err) {
+          if (
+            err instanceof Error &&
+            err.message.includes("API error 404")
+          ) {
+            throw new Error("Talent profile not found");
           }
 
           throw new Error(
             "Unable to load talent profile"
           );
         }
-
-        const data: ApiTalent =
-          await response.json();
 
         /*
          * Convert the backend User object

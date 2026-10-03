@@ -5,18 +5,18 @@ import Link from "next/link";
 import {
   Search,
   MapPin,
-  Star,
   Briefcase,
   Languages,
   Heart,
   MessageCircle,
   Share2,
   CheckCircle2,
-  Clock,
   ArrowRight,
   Sparkles,
   SlidersHorizontal,
 } from "lucide-react";
+
+import { apiFetch } from "@/lib/api";
 
 interface Talent {
   id: string;
@@ -69,15 +69,7 @@ export default function TalentDiscoveryPage() {
         setIsLoading(true);
         setError("");
 
-        const response = await fetch(
-          "http://localhost:4000/talent-profiles"
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch talent profiles");
-        }
-
-        const data = await response.json();
+        const data = await apiFetch("/talent-profiles");
 
         if (!Array.isArray(data)) {
           throw new Error("Invalid response from server");
@@ -90,7 +82,7 @@ export default function TalentDiscoveryPage() {
         setError(
           err instanceof Error
             ? err.message
-            : "Unable to load talent profiles."
+            : "Unable to load talent profiles.",
         );
       } finally {
         setIsLoading(false);
@@ -114,7 +106,7 @@ export default function TalentDiscoveryPage() {
       .toLowerCase();
 
     const matchesSearch = searchableText.includes(
-      searchQuery.toLowerCase()
+      searchQuery.toLowerCase(),
     );
 
     const profession =
@@ -130,14 +122,14 @@ export default function TalentDiscoveryPage() {
       activeCategory === "All" ||
       profession.toLowerCase().includes(categoryName) ||
       talent.tags.some((tag) =>
-        tag.toLowerCase().includes(categoryName)
+        tag.toLowerCase().includes(categoryName),
       );
 
     return matchesSearch && matchesCategory;
   });
 
   const featuredTalents = talents.filter(
-    (talent) => talent.verified
+    (talent) => talent.verified,
   );
 
   return (
@@ -369,9 +361,11 @@ export default function TalentDiscoveryPage() {
                 marginTop: "8px",
               }}
             >
-              {talents.filter(
-                (talent) => talent.verified
-              ).length}
+              {
+                talents.filter(
+                  (talent) => talent.verified,
+                ).length
+              }
             </div>
           </div>
 
@@ -877,9 +871,7 @@ function TalentCard({
             gap: "6px",
             padding: "7px 10px",
             borderRadius: "999px",
-            background: talent.available
-              ? "rgba(20,20,20,0.8)"
-              : "rgba(20,20,20,0.8)",
+            background: "rgba(20,20,20,0.8)",
             color: talent.available
               ? "#fff"
               : "#888",
@@ -1054,7 +1046,8 @@ function TalentCard({
           <Languages size={15} />
 
           <span>
-            {talent.language || "Language not specified"}
+            {talent.language ||
+              "Language not specified"}
           </span>
         </div>
 
@@ -1068,24 +1061,26 @@ function TalentCard({
             marginBottom: "18px",
           }}
         >
-          {skills.slice(0, 4).map((skill, index) => (
-            <span
-              key={`${skill}-${index}`}
-              style={{
-                padding: "6px 9px",
-                borderRadius: "7px",
-                background:
-                  "rgba(255,255,255,0.06)",
-                border:
-                  "1px solid rgba(255,255,255,0.08)",
-                color: "#aaa",
-                fontSize: "0.7rem",
-                fontWeight: 700,
-              }}
-            >
-              {skill}
-            </span>
-          ))}
+          {skills
+            .slice(0, 4)
+            .map((skill, index) => (
+              <span
+                key={`${skill}-${index}`}
+                style={{
+                  padding: "6px 9px",
+                  borderRadius: "7px",
+                  background:
+                    "rgba(255,255,255,0.06)",
+                  border:
+                    "1px solid rgba(255,255,255,0.08)",
+                  color: "#aaa",
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                }}
+              >
+                {skill}
+              </span>
+            ))}
         </div>
 
         {/* Bio */}

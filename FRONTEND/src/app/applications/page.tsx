@@ -16,6 +16,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroCarousel from "@/components/ui/Herocarousel";
 import { talentHeroSlides } from "@/data/heroSlides";
 import { PortfolioData } from "@/types/portfolio";
+import { apiFetch } from "@/lib/api";
 
 /* ─────────────────────────────────────────
    TYPES / CONSTANTS
@@ -1151,21 +1152,12 @@ export default function ApplicationsPage() {
   const loadTalents = useCallback(
     async (silent = false) => {
       try {
-        const response = await fetch(
-          "http://localhost:4000/talent-profiles",
+        const data: TalentApi[] = await apiFetch(
+          "/talent-profiles",
           {
             cache: "no-store",
           }
         );
-
-        if (!response.ok) {
-          throw new Error(
-            `Failed to load talent profiles (${response.status})`
-          );
-        }
-
-        const data: TalentApi[] =
-          await response.json();
 
         const portfolios = data
           .filter(
