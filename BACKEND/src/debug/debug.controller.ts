@@ -38,11 +38,7 @@ export class DebugController {
 
       return {
         ok: true,
-        stage: 'postgres',
-        host,
-        port,
-        resolvedIPv4: dnsResult.address,
-        database: result.rows[0],
+        
       };
     } catch (error: any) {
       return {
