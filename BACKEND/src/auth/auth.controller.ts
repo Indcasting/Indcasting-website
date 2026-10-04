@@ -8,15 +8,16 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 const COOKIE_NAME = 'access_token';
 
 function setAuthCookie(response: Response, token: string) {
+  const isProduction = process.env.NODE_ENV === 'production';
+
   response.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: '/',
   });
 }
-
 @Controller('auth')
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
@@ -43,7 +44,11 @@ export class AuthController {
 
   @Post('logout')
   logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie(COOKIE_NAME, { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production', path: '/' });
-    return { success: true };
+    response.clearCookie(COOKIE_NAME, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+    });
   }
 }
