@@ -1,57 +1,126 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Filter, CheckCircle, XCircle, Clock, MessageSquare, Heart, PlayCircle, FileText, ChevronRight, X, MapPin, Calendar, Briefcase } from "lucide-react";
 import NeobrutalistCard from "@/components/ui/NeobrutalistCard";
 
-const applicationsData = [
-  { 
-    id: 1, 
-    title: 'Lead Female Actor', 
-    studio: 'Indie Film Project', 
-    location: 'Mumbai', 
-    status: 'Pending', 
-    time: '2 days ago',
-    candidateName: 'Aria Sharma',
-    professionalTitle: 'Lead Actor',
-    experience: '4 Years',
-    coverLetter: "Award-winning lead actor known for powerful dramatic performances and extensive training in classical dance. Highly adaptable and takes direction well.",
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=500&auto=format&fit=crop',
-  },
-  { 
-    id: 2, 
-    title: 'Cinematographer', 
-    studio: 'Indie Film Project', 
-    location: 'Delhi', 
-    status: 'Shortlisted', 
-    time: '1 week ago',
-    candidateName: 'Rohani Das',
-    professionalTitle: 'Cinematographer',
-    experience: '5 Years',
-    coverLetter: "Award-winning DoP with a distinct visual style. Shot 3 feature films and numerous high-end commercials. Specialized in low-light and natural lighting.",
-    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=500&auto=format&fit=crop',
-  },
-  { 
-    id: 3, 
-    title: 'Music Video Dancer', 
-    studio: 'Rhythm Productions', 
-    location: 'Bengaluru', 
-    status: 'Rejected', 
-    time: '2 weeks ago',
-    candidateName: 'Kabir Khan',
-    professionalTitle: 'Professional Dancer',
-    experience: '6 Years',
-    coverLetter: "Dance is my life. I have choreographed and performed in over 15 music videos. Rhythm Productions has always produced great work, and I'd love to be part of it.",
-    avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=500&auto=format&fit=crop',
+type ApiApplication = {
+  id: string;
+  status?: string | null;
+  coverNote?: string | null;
+  createdAt?: string;
+  job?: {
+    id?: string;
+    title?: string | null;
+    company?: string | null;
+    location?: string | null;
+  } | null;
+  talent?: {
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    skill?: string | null;
+    bio?: string | null;
+    avatarUrl?: string | null;
+  } | null;
+};
+
+type ApplicationViewModel = {
+  id: string;
+  title: string;
+  studio: string;
+  location: string;
+  status: string;
+  time: string;
+  candidateName: string;
+  professionalTitle: string;
+  experience: string;
+  coverLetter: string;
+  avatar: string;
+};
+
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/$/, "");
+const fallbackAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop";
+
+function displayStatus(status?: string | null) {
+  switch ((status || "pending").toLowerCase()) {
+    case "shortlisted": return "Shortlisted";
+    case "accepted": return "Accepted";
+    case "rejected": return "Rejected";
+    default: return "Pending";
   }
-];
+}
+
+function relativeTime(dateString?: string) {
+  if (!dateString) return "Date unavailable";
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  const days = Math.max(0, Math.floor((Date.now() - date.getTime()) / 86400000));
+  if (days === 0) return "Today";
+  if (days === 1) return "1 day ago";
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks === 1) return "1 week ago";
+  if (weeks < 5) return `${weeks} weeks ago`;
+  return date.toLocaleDateString();
+}
+
+function mapApplication(application: ApiApplication): ApplicationViewModel {
+  return {
+    id: application.id,
+    title: application.job?.title || "Casting call",
+    studio: application.job?.company || "Production company",
+    location: application.job?.location || "Location not specified",
+    status: displayStatus(application.status),
+    time: relativeTime(application.createdAt),
+    candidateName: application.talent?.name || "Unnamed applicant",
+    professionalTitle: application.talent?.skill || "Talent applicant",
+    experience: "Not specified",
+    coverLetter: application.coverNote?.trim() || application.talent?.bio?.trim() || "No cover letter or pitch was provided.",
+    avatar: application.talent?.avatarUrl || fallbackAvatar,
+  };
+}
 
 export default function ApplicationsView() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [apps, setApps] = useState(applicationsData);
-  const [selectedApp, setSelectedApp] = useState<typeof applicationsData[0] | null>(null);
+  const [apps, setApps] = useState<ApplicationViewModel[]>([]);
+  const [selectedApp, setSelectedApp] = useState<ApplicationViewModel | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadApplications() {
+      setIsLoading(true);
+      setLoadError("");
+      try {
+        const response = await fetch(`${API_URL}/applications/received`, {
+          method: "GET",
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            throw new Error("Please log in with your seeker account to view received applications.");
+          }
+          throw new Error(`Could not load applications (HTTP ${response.status}).`);
+        }
+        const data: unknown = await response.json();
+        if (!Array.isArray(data)) throw new Error("The server returned an unexpected applications response.");
+        if (!cancelled) setApps((data as ApiApplication[]).map(mapApplication));
+      } catch (error) {
+        if (!cancelled) setLoadError(error instanceof Error ? error.message : "Could not load applications.");
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+    loadApplications();
+    return () => { cancelled = true; };
+  }, []);
 
   const filteredApps = apps.filter(app => {
     const matchesSearch = app.candidateName.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -60,8 +129,42 @@ export default function ApplicationsView() {
     return matchesSearch && matchesFilter;
   });
 
-  const updateStatus = (id: number, newStatus: string) => {
-    setApps(apps.map(app => app.id === id ? { ...app, status: newStatus } : app));
+  const updateStatus = async (id: string, newStatus: string) => {
+    const apiStatus: Record<string, string> = {
+      Pending: "pending",
+      Shortlisted: "shortlisted",
+      Accepted: "accepted",
+      Rejected: "rejected",
+    };
+    const status = apiStatus[newStatus];
+    if (!status) return;
+
+    setActionError("");
+    setUpdatingId(id);
+    try {
+      const response = await fetch(`${API_URL}/applications/${encodeURIComponent(id)}/status`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      if (!response.ok) {
+        let message = `Could not update application (HTTP ${response.status}).`;
+        try {
+          const body = await response.json();
+          if (typeof body?.message === "string") message = body.message;
+        } catch { /* Keep the HTTP error message. */ }
+        throw new Error(message);
+      }
+      const updated = await response.json();
+      const savedStatus = displayStatus(updated?.status || status);
+      setApps(current => current.map(app => app.id === id ? { ...app, status: savedStatus } : app));
+      setSelectedApp(current => current?.id === id ? { ...current, status: savedStatus } : current);
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : "Could not update application status.");
+    } finally {
+      setUpdatingId(null);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -131,9 +234,12 @@ export default function ApplicationsView() {
         </div>
       </div>
 
+      {loadError && <div role="alert" style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', border: '1px solid #ef4444', color: '#ef4444', background: 'rgba(239,68,68,0.08)' }}>{loadError}</div>}
+      {actionError && <div role="alert" style={{ marginBottom: '20px', padding: '14px 16px', borderRadius: '12px', border: '1px solid #ef4444', color: '#ef4444', background: 'rgba(239,68,68,0.08)' }}>{actionError}</div>}
+
       {/* GRID OF CARDS */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(500px, 1fr))', gap: '32px' }}>
-        {filteredApps.map(app => {
+        {isLoading ? <div style={{ color: 'var(--dash-text-main, #ddd)', padding: '24px' }}>Loading applications…</div> : filteredApps.length === 0 ? <div style={{ color: 'var(--dash-text-main, #ddd)', padding: '24px', border: '1px dashed var(--dash-border, #333)', borderRadius: '16px' }}>{loadError ? 'Applications could not be loaded.' : searchQuery || filterStatus !== 'All' ? 'No applications match your search or filter.' : 'No applications have been received yet.'}</div> : filteredApps.map(app => {
           const colors = getStatusColor(app.status);
           
           return (
@@ -174,7 +280,8 @@ export default function ApplicationsView() {
                   </button>
                   
                   <button 
-                    onClick={() => updateStatus(app.id, app.status === 'Shortlisted' ? 'Pending' : 'Shortlisted')}
+                    disabled={updatingId === app.id}
+                    onClick={() => void updateStatus(app.id, app.status === 'Shortlisted' ? 'Pending' : 'Shortlisted')}
                     style={{ width: '44px', height: '44px', flexShrink: 0, borderRadius: '10px', border: '2px solid var(--dash-border, #333)', backgroundColor: 'transparent', color: app.status === 'Shortlisted' ? 'var(--gold, #c9a84c)' : 'var(--dash-text-main, #fff)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease', boxShadow: '2px 2px 0px 0px var(--dash-border, #333)' }}
                     onMouseEnter={(e) => { e.currentTarget.style.transform = 'translate(-1px, -1px)'; e.currentTarget.style.boxShadow = '3px 3px 0px 0px var(--gold, #c9a84c)'; e.currentTarget.style.borderColor = 'var(--gold, #c9a84c)'; e.currentTarget.style.color = 'var(--gold, #c9a84c)' }}
                     onMouseLeave={(e) => { e.currentTarget.style.transform = 'translate(0, 0)'; e.currentTarget.style.boxShadow = '2px 2px 0px 0px var(--dash-border, #333)'; e.currentTarget.style.borderColor = 'var(--dash-border, #333)'; e.currentTarget.style.color = app.status === 'Shortlisted' ? 'var(--gold, #c9a84c)' : 'var(--dash-text-main, #fff)' }}
@@ -212,8 +319,8 @@ export default function ApplicationsView() {
                 <p style={{ color: '#888', lineHeight: 1.6, margin: 0 }}>"{selectedApp.coverLetter}"</p>
               </div>
               <div style={{ display: 'flex', gap: '16px' }}>
-                <button onClick={() => { updateStatus(selectedApp.id, 'Accepted'); setSelectedApp(null); }} style={{ flex: 1, padding: '14px', borderRadius: '12px', border: 'none', backgroundColor: '#10b981', color: '#000', fontWeight: 700, cursor: 'pointer' }}>Accept</button>
-                <button onClick={() => { updateStatus(selectedApp.id, 'Rejected'); setSelectedApp(null); }} style={{ flex: 1, padding: '14px', borderRadius: '12px', border: '1px solid #ef4444', backgroundColor: 'transparent', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}>Reject</button>
+                <button disabled={updatingId === selectedApp.id} onClick={() => void updateStatus(selectedApp.id, 'Accepted')} style={{ flex: 1, padding: '14px', borderRadius: '12px', border: 'none', backgroundColor: '#10b981', color: '#000', fontWeight: 700, cursor: 'pointer' }}>Accept</button>
+                <button disabled={updatingId === selectedApp.id} onClick={() => void updateStatus(selectedApp.id, 'Rejected')} style={{ flex: 1, padding: '14px', borderRadius: '12px', border: '1px solid #ef4444', backgroundColor: 'transparent', color: '#ef4444', fontWeight: 700, cursor: 'pointer' }}>Reject</button>
               </div>
             </div>
           </div>

@@ -29,50 +29,92 @@ interface CastingPost {
 }
 
 /* ─────────────────────────────────────────
-   LOCAL-STORAGE HELPERS
+   BACKEND API HELPERS
 ───────────────────────────────────────── */
-function getPosts(): CastingPost[] {
-  if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem("castingPosts") ?? "[]"); }
-  catch { return []; }
-}
-function savePosts(posts: CastingPost[]): void {
-  localStorage.setItem("castingPosts", JSON.stringify(posts));
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/$/, "");
+
+interface BackendCastingCall {
+  id: string;
+  seekerId: string;
+  company?: string | null;
+  title: string;
+  category?: string | null;
+  role?: string | null;
+  gender?: string | null;
+  age?: string | null;
+  height?: string | null;
+  languages?: string | null;
+  experience?: string | null;
+  location: string;
+  budget: string | number;
+  description?: string | null;
+  status?: string | null;
+  createdAt: string;
+  applicationDeadline?: string | null;
+  seeker?: { id: string; name?: string | null; companyName?: string | null } | null;
 }
 
-/* ─────────────────────────────────────────
-   SEED DATA
-───────────────────────────────────────── */
-const SEED: CastingPost[] = [
-  {
-    id: "seed-1", title: "Lead Actor — Drama Web Series", company: "Hotstar Originals",
-    category: "Actor", location: "Mumbai", age: "25-35", gender: "Male",
-    experience: "Intermediate", languages: "Hindi, English", budget: "80000",
-    description: "Looking for a lead actor for a 10-episode drama series set in modern Delhi. Must have strong emotive range and prior OTT experience.",
-    status: "Open", userId: "other-user", createdAt: new Date(Date.now() - 86400000 * 2).toISOString(), deadline: "2025-08-30",
-  },
-  {
-    id: "seed-2", title: "Female Model — Fashion Campaign", company: "Lakme India",
-    category: "Model", location: "Delhi", age: "18-28", gender: "Female",
-    experience: "Beginner", languages: "Hindi", budget: "45000",
-    description: "Seeking fresh faces for our upcoming autumn collection shoot. Portfolio and comp card required.",
-    status: "Open", userId: "other-user", createdAt: new Date(Date.now() - 86400000 * 4).toISOString(), deadline: "2025-07-25",
-  },
-  {
-    id: "seed-3", title: "Voice Artist — Animated Series", company: "Toonz Media",
-    category: "Voice Artist", location: "Remote", age: "20-40", gender: "Any",
-    experience: "Intermediate", languages: "Tamil, Telugu", budget: "30000",
-    description: "Require voice artists for character dubbing in an animated kids' series. South Indian language proficiency mandatory.",
-    status: "Closed", userId: "current-user", createdAt: new Date(Date.now() - 86400000 * 7).toISOString(),
-  },
-  {
-    id: "seed-4", title: "Dancer — Bollywood Music Video", company: "T-Series",
-    category: "Dancer", location: "Mumbai", age: "18-30", gender: "Female",
-    experience: "Expert", languages: "Hindi", budget: "55000",
-    description: "High-energy Bollywood choreography for an upcoming music video. Classical or contemporary background preferred.",
-    status: "Open", userId: "current-user", createdAt: new Date(Date.now() - 86400000 * 1).toISOString(), deadline: "2025-08-05",
-  },
-];
+function mapBackendCastingCall(call: BackendCastingCall): CastingPost {
+  return {
+    id: call.id,
+    title: call.title,
+    company: call.company || call.seeker?.companyName || call.seeker?.name || "Production Company",
+    category: call.category || call.role || "General",
+    location: call.location || "",
+    age: call.age || "",
+    gender: call.gender || "Any",
+    experience: call.experience || "",
+    languages: call.languages || "",
+    budget: String(call.budget ?? "0"),
+    description: call.description || "",
+    status: (call.status || "active").toLowerCase() === "active" ? "Open" : "Closed",
+    userId: call.seekerId,
+    createdAt: call.createdAt,
+    deadline: call.applicationDeadline ? call.applicationDeadline.slice(0, 10) : undefined,
+  };
+}
+
+async function readApiError(response: Response): Promise<string> {
+  try {
+    const data = await response.json();
+    if (typeof data?.message === "string") return data.message;
+    if (Array.isArray(data?.message)) return data.message.join(", ");
+    return `Request failed (${response.status})`;
+  } catch {
+    return `Request failed (${response.status})`;
+  }
+}
+
+async function fetchCastingCalls(): Promise<CastingPost[]> {
+  const response = await fetch(`${API_URL}/casting-calls`, {
+    method: "GET",
+    credentials: "include",
+    cache: "no-store",
+  });
+  if (!response.ok) throw new Error(await readApiError(response));
+  const data: BackendCastingCall[] = await response.json();
+  return Array.isArray(data) ? data.map(mapBackendCastingCall) : [];
+}
+
+function toBackendPayload(post: CastingPost) {
+  return {
+    company: post.company,
+    title: post.title,
+    category: post.category,
+    role: post.category,
+    gender: post.gender || undefined,
+    age: post.age || undefined,
+    languages: post.languages || undefined,
+    experience: post.experience || undefined,
+    location: post.location,
+    budget: post.budget,
+    description: post.description || undefined,
+    applicationDeadline: post.deadline
+      ? new Date(`${post.deadline}T00:00:00.000Z`).toISOString()
+      : undefined,
+    type: "one_off",
+  };
+}
 
 /* ─────────────────────────────────────────
    CONSTANTS
@@ -254,6 +296,7 @@ function LanguageMultiSelect({
    No category badge. Info cells match card
    black-block style. Hard border + shadow.
 ───────────────────────────────────────── */
+
 function DetailsModal({
   post,
   onClose,
@@ -261,6 +304,11 @@ function DetailsModal({
   post: CastingPost;
   onClose: () => void;
 }) {
+  const [isApplying, setIsApplying] = useState(false);
+  const [applicationMessage, setApplicationMessage] = useState("");
+  const [applicationSuccess, setApplicationSuccess] = useState(false);
+  const [coverNote, setCoverNote] = useState("");
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
 
@@ -275,6 +323,87 @@ function DetailsModal({
       window.removeEventListener("keydown", esc);
     };
   }, [onClose]);
+
+  async function handleApply() {
+    if (isApplying) return;
+
+    if (post.status !== "Open") {
+      setApplicationMessage(
+        "This casting call is no longer accepting applications."
+      );
+      setApplicationSuccess(false);
+      return;
+    }
+
+    setIsApplying(true);
+    const trimmedCoverNote = coverNote.trim();
+
+if (!trimmedCoverNote) {
+  setApplicationMessage(
+    "Please add a short cover letter or audition pitch before applying."
+  );
+  setApplicationSuccess(false);
+  return;
+}
+
+if (trimmedCoverNote.length > 5000) {
+  setApplicationMessage(
+    "Your cover letter must be 5,000 characters or fewer."
+  );
+  setApplicationSuccess(false);
+  return;
+}
+
+    try {
+      const response = await fetch(
+        `${API_URL}/applications/${encodeURIComponent(post.id)}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ coverNote: trimmedCoverNote }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      setApplicationSuccess(true);
+      setApplicationMessage("Application submitted successfully!");
+    } catch (error) {
+      console.error("Unable to submit application:", error);
+
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Please try again.";
+
+      if (/already applied/i.test(message)) {
+        setApplicationMessage(
+          "You have already applied to this casting call."
+        );
+      } else if (/401|unauthorized/i.test(message)) {
+        setApplicationMessage(
+          "Please log in to your talent account before applying."
+        );
+      } else if (/403|forbidden/i.test(message)) {
+        setApplicationMessage(
+          "Only talent accounts can apply to casting calls. Please check your account role."
+        );
+      } else {
+        setApplicationMessage(
+          `Could not submit your application: ${message}`
+        );
+      }
+
+      setApplicationSuccess(false);
+    } finally {
+      setIsApplying(false);
+    }
+  }
 
   const infoItems: [string, string][] = [
     ["ROLE", post.category || "Casting"],
@@ -309,11 +438,11 @@ function DetailsModal({
           ×
         </button>
 
-        {/* COMPACT COVER — matches application popup */}
+        {/* COMPACT COVER — original design preserved */}
         <div className="casting-modal-cover" aria-hidden="true" />
 
         <div className="casting-modal-content">
-          {/* AVATAR — matches application popup */}
+          {/* AVATAR */}
           <div className="casting-modal-avatar" aria-hidden="true">
             {(post.title || post.category || "C")[0].toUpperCase()}
           </div>
@@ -368,10 +497,75 @@ function DetailsModal({
             POSTED <b>{fmt(post.createdAt)}</b>
           </div>
 
-          {/* ACTIONS */}
+          {/* APPLICATION COVER LETTER / AUDITION PITCH */}
+<div className="modal-section" style={{ marginTop: "20px" }}>
+  <h3>YOUR COVER LETTER / AUDITION PITCH *</h3>
+
+  <p style={{ marginBottom: "12px" }}>
+    Introduce yourself and explain why you're suitable for this role.
+  </p>
+
+  <textarea
+    className="hf-inp"
+    value={coverNote}
+    onChange={(e) => setCoverNote(e.target.value)}
+    placeholder="Write a short introduction, relevant experience, and why you'd be a good fit..."
+    maxLength={5000}
+    rows={5}
+    disabled={isApplying || applicationSuccess}
+    aria-label="Cover letter or audition pitch"
+    aria-required="true"
+    style={{
+      resize: "vertical",
+      minHeight: "120px",
+      lineHeight: 1.6,
+      width: "100%",
+    }}
+  />
+
+  <p
+    style={{
+      textAlign: "right",
+      fontSize: "0.75rem",
+      color: "var(--mid)",
+      marginTop: "6px",
+    }}
+  >
+    {coverNote.length}/5000 characters
+  </p>
+</div>
+
+          {/* APPLICATION FEEDBACK */}
+          {applicationMessage && (
+            <p
+              role="status"
+              aria-live="polite"
+              style={{
+                marginTop: "12px",
+                marginBottom: "4px",
+                color: applicationSuccess ? "#6fcf87" : "#f28b82",
+                fontSize: "0.9rem",
+                fontWeight: 600,
+              }}
+            >
+              {applicationMessage}
+            </p>
+          )}
+
+          {/* ACTIONS — original classes and design preserved */}
           <div className="modal-actions">
-            <button className="film-btn film-btn-gold" type="button">
-              APPLY NOW
+            <button
+              className="film-btn film-btn-gold"
+              type="button"
+              onClick={handleApply}
+              disabled={isApplying || applicationSuccess || post.status !== "Open"}
+              aria-busy={isApplying}
+            >
+              {isApplying
+                ? "SUBMITTING..."
+                : applicationSuccess
+                  ? "APPLIED"
+                  : "APPLY NOW"}
             </button>
 
             <button
@@ -387,6 +581,7 @@ function DetailsModal({
     </div>
   );
 }
+
 
 /* ─────────────────────────────────────────
    CASTING FORM
@@ -428,8 +623,8 @@ function CastingFormSection({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!f.title || !f.company || !f.category || !f.location) {
-      alert("Please fill in Title, Company, Category, and Location."); return;
+    if (!f.title || !f.company || !f.category || !f.location || !f.budget || Number(f.budget) < 0) {
+      alert("Please fill in Title, Company, Category, Location, and a valid Budget."); return;
     }
     const post: CastingPost = {
       ...f, id: editing?.id ?? uid(), userId: "current-user",
@@ -750,6 +945,7 @@ export default function PostPage() {
   const searchParams = useSearchParams();
 
   const [posts, setPosts] = useState<CastingPost[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [editing, setEditing] = useState<CastingPost | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [selectedPost, setSelectedPost] = useState<CastingPost | null>(null);
@@ -771,9 +967,40 @@ export default function PostPage() {
   }, [searchParams]);
 
   useEffect(() => {
-    const stored = getPosts();
-    if (stored.length === 0) { savePosts(SEED); setPosts(SEED); }
-    else setPosts(stored);
+    let cancelled = false;
+
+    async function loadPageData() {
+      try {
+        const [userResponse, castingPosts] = await Promise.all([
+          fetch(`${API_URL}/auth/me`, {
+            method: "GET",
+            credentials: "include",
+            cache: "no-store",
+          }),
+          fetchCastingCalls(),
+        ]);
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          const user = userData?.user ?? userData;
+          if (!cancelled) setCurrentUserId(user?.id ? String(user.id) : null);
+        } else if (!cancelled) {
+          setCurrentUserId(null);
+        }
+
+        if (!cancelled) setPosts(castingPosts);
+      } catch (error) {
+        if (!cancelled) {
+          console.error("Unable to load casting calls:", error);
+          alert(error instanceof Error
+            ? `Could not load casting calls: ${error.message}`
+            : "Could not load casting calls. Please check that the backend is running.");
+        }
+      }
+    }
+
+    void loadPageData();
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -832,15 +1059,58 @@ export default function PostPage() {
   };
 }, []);
 
-  function handleSave(post: CastingPost) {
-    const updated = editing ? posts.map(p => p.id === post.id ? post : p) : [post, ...posts];
-    setPosts(updated); savePosts(updated);
-    setEditing(null); setShowForm(false);
+  async function handleSave(post: CastingPost) {
+    try {
+      const isEditing = Boolean(editing);
+      const response = await fetch(
+        isEditing ? `${API_URL}/casting-calls/${encodeURIComponent(post.id)}` : `${API_URL}/casting-calls`,
+        {
+          method: isEditing ? "PATCH" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(toBackendPayload(post)),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(await readApiError(response));
+      }
+
+      // Refresh from the server so the UI reflects the canonical saved record.
+      const refreshedPosts = await fetchCastingCalls();
+      setPosts(refreshedPosts);
+      setEditing(null);
+      setShowForm(false);
+
+      if (isEditing) {
+        const refreshed = refreshedPosts.find(item => item.id === post.id);
+        if (refreshed && selectedPost?.id === post.id) setSelectedPost(refreshed);
+      }
+    } catch (error) {
+      console.error("Unable to save casting call:", error);
+      alert(error instanceof Error
+        ? `Could not save casting call: ${error.message}`
+        : "Could not save casting call. Please try again.");
+    }
   }
-  function handleDelete(id: string) {
+
+  async function handleDelete(id: string) {
     if (!confirm("Delete this casting call?")) return;
-    const updated = posts.filter(p => p.id !== id);
-    setPosts(updated); savePosts(updated);
+    try {
+      const response = await fetch(`${API_URL}/casting-calls/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!response.ok) throw new Error(await readApiError(response));
+
+      setPosts(previous => previous.filter(post => post.id !== id));
+      if (selectedPost?.id === id) setSelectedPost(null);
+    } catch (error) {
+      console.error("Unable to delete casting call:", error);
+      alert(error instanceof Error
+        ? `Could not delete casting call: ${error.message}`
+        : "Could not delete casting call. Please try again.");
+    }
   }
   function handleEdit(post: CastingPost) {
     setEditing(post); setShowForm(true);
@@ -861,7 +1131,7 @@ export default function PostPage() {
     setFilters({ search: "", category: "", location: "", gender: "", experience: "", languages: [], age: "", budget: "", status: "", sort: "newest" });
   }
 
-  const CURRENT = "current-user";
+  const CURRENT = currentUserId;
   const now = new Date();
   const totalPosts = posts.length;
   const openPosts = posts.filter(p => p.status === "Open").length;
@@ -2194,7 +2464,7 @@ export default function PostPage() {
             <div className="posts-grid">
               {filtered.map(post => (
                 <CastingCard key={post.id} post={post}
-                  isOwn={post.userId === CURRENT}
+                  isOwn={Boolean(CURRENT) && post.userId === CURRENT}
                   onEdit={handleEdit} onDelete={handleDelete}
                   onView={p => setSelectedPost(p)} />
               ))}
@@ -2203,7 +2473,7 @@ export default function PostPage() {
             <div>
               {filtered.map(post => (
                 <CastingListRow key={post.id} post={post}
-                  isOwn={post.userId === CURRENT}
+                  isOwn={Boolean(CURRENT) && post.userId === CURRENT}
                   onEdit={handleEdit} onDelete={handleDelete}
                   onView={p => setSelectedPost(p)} />
               ))}

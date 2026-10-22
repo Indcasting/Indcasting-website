@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlusCircle, Search, Filter, MoreVertical, MapPin, Users, Calendar, Play, Pause, Copy, Edit2, Trash2, X, Film, Activity, Clock, CheckCircle, Flame, Sparkles, LayoutGrid, List, Columns, MessageSquare, ChevronRight, BarChart2, Star, Target } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -8,97 +8,127 @@ import { useRouter } from "next/navigation";
 export default function SeekerCastingCalls() {
   const router = useRouter();
   
-  // Extended mock data for Production Control Center
-  const [calls, setCalls] = useState([
-    { 
-      id: 1, 
-      title: "Lead Actor - Indie Film", 
-      company: "Moonlight Studios",
-      category: "Actors",
-      genre: "Drama / Thriller",
-      location: "Mumbai, India", 
-      apps: 145, 
-      reviewed: 120,
-      shortlisted: 18,
-      auditions: 5,
-      deadline: "Closing Today", 
-      deadlineColor: "#ef4444",
-      status: "Live", 
-      date: "Oct 1",
-      experience: "Advanced",
-      ageRange: "25 - 35",
-      gender: "Male",
-      language: "Hindi, English",
-      compensation: "₹5,00,000",
-      completionPercentage: 82
-    },
-    { 
-      id: 2, 
-      title: "Background Dancers", 
-      company: "Rhythm Prod",
-      category: "Dancers",
-      genre: "Music Video",
-      location: "Delhi, India", 
-      apps: 420, 
-      reviewed: 150,
-      shortlisted: 45,
-      auditions: 12,
-      deadline: "Oct 20", 
-      deadlineColor: "#f59e0b",
-      status: "Reviewing", 
-      date: "Sep 28",
-      experience: "Intermediate",
-      ageRange: "18 - 30",
-      gender: "Any",
-      language: "Any",
-      compensation: "₹15,000/day",
-      completionPercentage: 35
-    },
-    { 
-      id: 3, 
-      title: "Commercial Model", 
-      company: "Vogue India",
-      category: "Models",
-      genre: "Advertising",
-      location: "Bengaluru, India", 
-      apps: 85, 
-      reviewed: 85,
-      shortlisted: 5,
-      auditions: 5,
-      deadline: "Oct 15", 
-      deadlineColor: "#6b7280",
-      status: "Auditions", 
-      date: "Sep 20",
-      experience: "Expert",
-      ageRange: "20 - 28",
-      gender: "Female",
-      language: "English",
-      compensation: "₹50,000/shoot",
-      completionPercentage: 100
-    },
-    { 
-      id: 4, 
-      title: "Versatile Voice Actor", 
-      company: "AudioVerse",
-      category: "Voice Artists",
-      genre: "Animation",
-      location: "Remote", 
-      apps: 320, 
-      reviewed: 320,
-      shortlisted: 20,
+  const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/$/, "");
+
+  type CastingCallCard = {
+    id: string | number;
+    title: string;
+    company: string;
+    category: string;
+    genre: string;
+    location: string;
+    apps: number;
+    reviewed: number;
+    shortlisted: number;
+    auditions: number;
+    deadline: string;
+    deadlineColor: string;
+    status: string;
+    date: string;
+    experience: string;
+    ageRange: string;
+    gender: string;
+    language: string;
+    compensation: string;
+    completionPercentage: number;
+    raw?: any;
+  };
+
+  const [calls, setCalls] = useState<CastingCallCard[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [pageError, setPageError] = useState("");
+  const [newBudget, setNewBudget] = useState("");
+
+  const formatDeadline = (value: unknown) => {
+    if (!value) return "Not specified";
+    const date = new Date(String(value));
+    return Number.isNaN(date.getTime())
+      ? String(value)
+      : date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  };
+
+  const mapCastingCall = (item: any): CastingCallCard => {
+    const statusValue = String(item.status || "active").toLowerCase();
+    const status = statusValue === "closed" || statusValue === "inactive"
+      ? "Closed"
+      : statusValue === "reviewing" ? "Reviewing"
+      : statusValue === "auditions" ? "Auditions" : "Live";
+    const category = item.category || item.role || "Actors";
+    const budget = item.budget;
+    return {
+      id: item.id,
+      title: item.title || "Untitled casting call",
+      company: item.company || item.seeker?.companyName || item.seeker?.name || "Your Production",
+      category,
+      genre: item.type || item.role || category,
+      location: item.location || "Not specified",
+      apps: Array.isArray(item.applications) ? item.applications.length : 0,
+      reviewed: 0,
+      shortlisted: 0,
       auditions: 0,
-      deadline: "Oct 10", 
+      deadline: formatDeadline(item.applicationDeadline || item.shootEndDate),
       deadlineColor: "#6b7280",
-      status: "Closed", 
-      date: "Sep 15",
-      experience: "Intermediate",
-      ageRange: "18 - 50",
-      gender: "Any",
-      language: "English",
-      compensation: "₹5,000/hr",
-      completionPercentage: 100
+      status,
+      date: formatDeadline(item.createdAt),
+      experience: item.experience || "Not specified",
+      ageRange: item.age || "Any",
+      gender: item.gender || "Any",
+      language: Array.isArray(item.languages) ? item.languages.join(", ") : item.languages || "Any",
+      compensation: budget === null || budget === undefined ? "Not specified" : `₹${Number(budget).toLocaleString("en-IN")}`,
+      completionPercentage: 0,
+      raw: item,
+    };
+  };
+
+  const loadCastingCalls = async () => {
+    setIsLoading(true);
+    setPageError("");
+    try {
+      const [userResponse, callsResponse] = await Promise.all([
+        fetch(`${API_URL}/auth/me`, { credentials: "include", cache: "no-store" }),
+        fetch(`${API_URL}/casting-calls`, { credentials: "include", cache: "no-store" }),
+      ]);
+
+      if (userResponse.status === 401) {
+        throw new Error("Your session has expired. Please log in again.");
+      }
+      if (!userResponse.ok) {
+        throw new Error("Unable to load your account. Please refresh and try again.");
+      }
+      if (!callsResponse.ok) {
+        throw new Error("Unable to load casting calls from the backend.");
+      }
+
+      const userData = await userResponse.json();
+      const callsData = await callsResponse.json();
+      const user = userData?.user ?? userData;
+      const userId = user?.id ? String(user.id) : null;
+      setCurrentUserId(userId);
+
+      const records = Array.isArray(callsData) ? callsData : callsData?.data;
+      if (!Array.isArray(records)) {
+        throw new Error("The casting-calls endpoint returned an unexpected response.");
+      }
+
+      // The API currently returns all calls; display only calls owned by this seeker.
+      const ownRecords = userId
+        ? records.filter((item: any) => String(item.seekerId ?? item.seeker?.id ?? "") === userId)
+        : [];
+      setCalls(ownRecords.map(mapCastingCall));
+    } catch (error) {
+      setPageError(error instanceof Error ? error.message : "Something went wrong while loading casting calls.");
+    } finally {
+      setIsLoading(false);
     }
-  ]);
+  };
+
+  useEffect(() => {
+    void loadCastingCalls();
+    // Load once when the page mounts.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -109,32 +139,113 @@ export default function SeekerCastingCalls() {
 
   // Form State
   const [isCreating, setIsCreating] = useState(false);
+  const [editingCall, setEditingCall] = useState<CastingCallCard | null>(null);
+  const [isDeletingId, setIsDeletingId] = useState<string | number | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [newLocation, setNewLocation] = useState("");
   const [newDeadline, setNewDeadline] = useState("");
 
-  const handleCreateNew = (e: React.FormEvent) => {
+  const openCreateModal = () => {
+    setEditingCall(null);
+    setNewTitle("");
+    setNewCategory("");
+    setNewLocation("");
+    setNewDeadline("");
+    setNewBudget("");
+    setPageError("");
+    setIsCreating(true);
+  };
+
+  const openEditModal = (call: CastingCallCard) => {
+    setEditingCall(call);
+    setNewTitle(call.title);
+    setNewCategory(call.category);
+    setNewLocation(call.location);
+    const rawDeadline = call.raw?.applicationDeadline;
+    setNewDeadline(rawDeadline ? String(rawDeadline).slice(0, 10) : "");
+    setNewBudget(call.raw?.budget === undefined || call.raw?.budget === null ? "" : String(call.raw.budget));
+    setPageError("");
+    setIsCreating(true);
+  };
+
+  const handleCreateNew = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTitle || !newCategory || !newLocation || !newDeadline) return;
-    
-    const newJob = {
-      id: calls.length + 1,
-      title: newTitle,
-      company: "Your Production",
-      category: newCategory,
-      genre: "TBD",
-      location: newLocation,
-      apps: 0, reviewed: 0, shortlisted: 0, auditions: 0,
-      deadline: newDeadline, deadlineColor: "#10b981",
-      status: "Live", date: "Just now",
-      experience: "TBD", ageRange: "Any", gender: "Any", language: "Any", compensation: "TBD",
-      completionPercentage: 0
-    };
-    
-    setCalls([newJob, ...calls]);
-    setIsCreating(false);
-    setNewTitle(""); setNewCategory(""); setNewLocation(""); setNewDeadline("");
+    if (!newTitle.trim() || !newCategory || !newLocation.trim() || !newDeadline || !newBudget.trim()) {
+      setPageError("Please complete all required fields.");
+      return;
+    }
+
+    setIsSaving(true);
+    setPageError("");
+    try {
+      const payload = {
+        title: newTitle.trim(),
+        category: newCategory,
+        role: newCategory,
+        location: newLocation.trim(),
+        applicationDeadline: newDeadline,
+        // The backend DTO validates budget as a string.
+        budget: String(newBudget).trim(),
+        company: editingCall?.company || "Your Production",
+        type: editingCall?.raw?.type || "Casting",
+      };
+      const isEditing = Boolean(editingCall);
+      const response = await fetch(
+        isEditing
+          ? `${API_URL}/casting-calls/${encodeURIComponent(String(editingCall!.id))}`
+          : `${API_URL}/casting-calls`,
+        {
+          method: isEditing ? "PATCH" : "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const message = Array.isArray(result?.message) ? result.message.join(", ") : result?.message;
+        throw new Error(message || `Could not ${isEditing ? "update" : "create"} casting call (HTTP ${response.status}).`);
+      }
+
+      setIsCreating(false);
+      setEditingCall(null);
+      setNewTitle("");
+      setNewCategory("");
+      setNewLocation("");
+      setNewDeadline("");
+      setNewBudget("");
+      await loadCastingCalls();
+    } catch (error) {
+      setPageError(error instanceof Error ? error.message : "Could not save casting call.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDeleteCall = async (call: CastingCallCard) => {
+    const confirmed = window.confirm(`Delete "${call.title}"? This action cannot be undone.`);
+    if (!confirmed) return;
+
+    setIsDeletingId(call.id);
+    setPageError("");
+    try {
+      const response = await fetch(`${API_URL}/casting-calls/${encodeURIComponent(String(call.id))}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        const message = Array.isArray(result?.message) ? result.message.join(", ") : result?.message;
+        throw new Error(message || `Could not delete casting call (HTTP ${response.status}).`);
+      }
+      setCalls(previous => previous.filter(item => String(item.id) !== String(call.id)));
+    } catch (error) {
+      setPageError(error instanceof Error ? error.message : "Could not delete casting call.");
+    } finally {
+      setIsDeletingId(null);
+    }
   };
 
   const getStatusVisuals = (status: string) => {
@@ -343,6 +454,13 @@ export default function SeekerCastingCalls() {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       `}} />
 
+      {pageError && (
+        <div role="alert" style={{ margin: "0 0 20px", padding: "14px 18px", borderRadius: "12px", border: "1px solid rgba(239,68,68,0.4)", background: "rgba(239,68,68,0.08)", color: "#fca5a5", display: "flex", justifyContent: "space-between", gap: "12px" }}>
+          <span>{pageError}</span>
+          <button type="button" onClick={() => setPageError("")} aria-label="Dismiss error" style={{ background: "transparent", color: "inherit", border: 0, cursor: "pointer" }}><X size={16} /></button>
+        </div>
+      )}
+
       {/* Premium Hero */}
       <div className="pcc-hero">
         <div>
@@ -369,6 +487,13 @@ export default function SeekerCastingCalls() {
           </div>
         </div>
       </div>
+
+      {pageError && (
+        <div role="alert" style={{ marginBottom: 20, padding: "14px 18px", borderRadius: 12, border: "1px solid rgba(239,68,68,0.35)", background: "rgba(239,68,68,0.08)", color: "#fca5a5" }}>
+          {pageError}
+          <button onClick={() => void loadCastingCalls()} style={{ marginLeft: 12, background: "transparent", border: 0, color: "inherit", textDecoration: "underline", cursor: "pointer" }}>Retry</button>
+        </div>
+      )}
 
       {/* Floating Control Bar */}
       <div className="pcc-controls">
@@ -397,7 +522,7 @@ export default function SeekerCastingCalls() {
             style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '12px 24px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 700, transition: 'all 0.2s', boxShadow: '0 8px 16px rgba(212,175,55,0.2)' }}
             onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-            onClick={() => setIsCreating(true)}
+            onClick={openCreateModal}
           >
             <PlusCircle size={18} /> New Casting Call
           </button>
@@ -417,13 +542,15 @@ export default function SeekerCastingCalls() {
         
         {/* Left Column: Productions */}
         <div>
-          {filteredCalls.length === 0 ? (
+          {isLoading ? (
+            <div style={{ padding: "80px 20px", textAlign: "center", color: "#888" }}>Loading your casting calls from the server…</div>
+          ) : filteredCalls.length === 0 ? (
             <div style={{ paddingTop: "56px",  padding: '80px 20px', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '24px', border: '1px dashed rgba(255,255,255,0.1)' }}>
               <Film size={64} color="var(--gold)" style={{ margin: '0 auto 24px auto', opacity: 0.5 }} />
               <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>You haven't launched a production yet</h2>
               <p style={{ color: '#888', marginBottom: '24px' }}>Create a casting call and start discovering exceptional talent.</p>
               <button 
-                onClick={() => setIsCreating(true)}
+                onClick={openCreateModal}
                 style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '14px 28px', borderRadius: '100px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
               >
                 <PlusCircle size={18} /> Create Your First Casting Call
@@ -432,7 +559,7 @@ export default function SeekerCastingCalls() {
           ) : (
             viewMode === 'grid' ? (
               <div className="pcc-grid">
-                {filteredCalls.map(call => <ProductionCard key={call.id} call={call} getStatusVisuals={getStatusVisuals} router={router} hoveredCard={hoveredCard} setHoveredCard={setHoveredCard} />)}
+                {filteredCalls.map(call => <ProductionCard key={call.id} call={call} getStatusVisuals={getStatusVisuals} router={router} hoveredCard={hoveredCard} setHoveredCard={setHoveredCard} onEdit={openEditModal} onDelete={handleDeleteCall} isDeleting={isDeletingId === call.id} />)}
               </div>
             ) : (
               <div className="pcc-kanban">
@@ -445,7 +572,7 @@ export default function SeekerCastingCalls() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                       {filteredCalls.filter(c => c.status === col).map(call => (
-                        <ProductionCard key={call.id} call={call} getStatusVisuals={getStatusVisuals} router={router} hoveredCard={hoveredCard} setHoveredCard={setHoveredCard} isCompact />
+                        <ProductionCard key={call.id} call={call} getStatusVisuals={getStatusVisuals} router={router} hoveredCard={hoveredCard} setHoveredCard={setHoveredCard} onEdit={openEditModal} onDelete={handleDeleteCall} isDeleting={isDeletingId === call.id} isCompact />
                       ))}
                     </div>
                   </div>
@@ -498,11 +625,11 @@ export default function SeekerCastingCalls() {
 
       {/* Create Modal (Placeholder for UI) */}
       {isCreating && (
-        <div className="cine-modal-overlay" onClick={() => setIsCreating(false)}>
+        <div className="cine-modal-overlay" onClick={() => { setIsCreating(false); setEditingCall(null); }}>
           <div className="cine-modal-content" onClick={e => e.stopPropagation()}>
             <div style={{ padding: '32px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: '#fff' }}>Launch New Production</h2>
-              <button onClick={() => setIsCreating(false)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0, color: '#fff' }}>{editingCall ? "Edit Production" : "Launch New Production"}</h2>
+              <button onClick={() => { setIsCreating(false); setEditingCall(null); }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', color: '#aaa', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X size={18} />
               </button>
             </div>
@@ -524,13 +651,17 @@ export default function SeekerCastingCalls() {
                   <input required type="text" value={newLocation} onChange={e => setNewLocation(e.target.value)} placeholder="e.g. Mumbai" style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }} />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.9rem', color: '#aaa', marginBottom: '8px' }}>Deadline</label>
-                  <input required type="text" value={newDeadline} onChange={e => setNewDeadline(e.target.value)} placeholder="e.g. Nov 15" style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }} />
+                  <label style={{ display: 'block', fontSize: '0.9rem', color: '#aaa', marginBottom: '8px' }}>Application Deadline</label>
+                  <input required type="date" value={newDeadline} onChange={e => setNewDeadline(e.target.value)} min={new Date().toISOString().slice(0, 10)} style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }} />
                 </div>
               </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', color: '#aaa', marginBottom: '8px' }}>Budget (₹)</label>
+                <input required type="number" min="1" step="1" value={newBudget} onChange={e => setNewBudget(e.target.value)} placeholder="e.g. 5000" style={{ width: '100%', padding: '12px 16px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', outline: 'none' }} />
+              </div>
               <div style={{ padding: '24px 0 0 0', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
-                <button type="button" onClick={() => setIsCreating(false)} style={{ background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
-                <button type="submit" style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '12px 24px', borderRadius: '100px', fontWeight: 700, cursor: 'pointer' }}>Create Casting Call</button>
+                <button type="button" onClick={() => { setIsCreating(false); setEditingCall(null); }} style={{ background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', fontWeight: 600 }}>Cancel</button>
+                <button type="submit" disabled={isSaving} style={{ background: 'var(--gold)', border: 'none', color: '#000', padding: '12px 24px', borderRadius: '100px', fontWeight: 700, cursor: isSaving ? 'wait' : 'pointer', opacity: isSaving ? 0.7 : 1 }}>{isSaving ? "Saving…" : editingCall ? "Save Changes" : "Create Casting Call"}</button>
               </div>
             </form>
           </div>
@@ -542,7 +673,7 @@ export default function SeekerCastingCalls() {
 }
 
 // Subcomponent for Production Cards
-function ProductionCard({ call, getStatusVisuals, router, hoveredCard, setHoveredCard, isCompact = false }: any) {
+function ProductionCard({ call, getStatusVisuals, router, hoveredCard, setHoveredCard, onEdit, onDelete, isDeleting = false, isCompact = false }: any) {
   const statusVis = getStatusVisuals(call.status);
   const isHovered = hoveredCard === call.id;
 
@@ -588,10 +719,10 @@ function ProductionCard({ call, getStatusVisuals, router, hoveredCard, setHovere
     >
       {/* Quick Actions (Hover) */}
       <div className="quick-actions">
-        <button className="qa-btn" title="Edit Casting"><Edit2 size={16} /></button>
-        <button className="qa-btn" title="View Analytics"><BarChart2 size={16} /></button>
-        <button className="qa-btn" title="Duplicate"><Copy size={16} /></button>
-        <button className="qa-btn delete" title="Close/Delete"><Trash2 size={16} /></button>
+        <button className="qa-btn" title="Edit Casting" aria-label={`Edit ${call.title}`} onClick={() => onEdit(call)}><Edit2 size={16} /></button>
+        <button className="qa-btn" title="View Analytics" aria-label={`View analytics for ${call.title}`} onClick={() => router.push('/dashboard/seeker/analytics')}><BarChart2 size={16} /></button>
+        <button className="qa-btn" title="Duplicate" aria-label={`Duplicate ${call.title}`} onClick={() => window.alert("Duplicate is not yet supported by the backend. Use New Casting Call to create a separate record.")}><Copy size={16} /></button>
+        <button className="qa-btn delete" title={isDeleting ? "Deleting…" : "Delete Casting"} aria-label={`Delete ${call.title}`} disabled={isDeleting} onClick={() => onDelete(call)}><Trash2 size={16} /></button>
       </div>
 
       <div className="prod-header">

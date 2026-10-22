@@ -2,112 +2,109 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { getCurrentUser } from "@/utils/auth";
 
 type CastingCall = {
-  id: number;
+  id: string | number;
   category: string;
   title: string;
   role: string;
   location: string;
   budget: string;
   deadline: string;
-  match: number;
+  match: number | null;
 };
 
 type Activity = {
-  id: number;
+  id: string | number;
   type: string;
   title: string;
   company: string;
   time: string;
 };
 
-const CASTING_CALLS: CastingCall[] = [
-  {
-    id: 1,
-    category: "OTT SERIES",
-    title: "The Last Summer",
-    role: "Supporting Actor",
-    location: "Mumbai",
-    budget: "₹30K – ₹50K",
-    deadline: "2 days left",
-    match: 94,
-  },
-  {
-    id: 2,
-    category: "COMMERCIAL",
-    title: "Summer Campaign",
-    role: "Female Model",
-    location: "Delhi",
-    budget: "₹20K – ₹35K",
-    deadline: "5 days left",
-    match: 89,
-  },
-  {
-    id: 3,
-    category: "WEB SERIES",
-    title: "Between Two Worlds",
-    role: "Lead Actor",
-    location: "Mumbai",
-    budget: "₹45K – ₹70K",
-    deadline: "7 days left",
-    match: 86,
-  },
-  {
-    id: 4,
-    category: "FASHION",
-    title: "Autumn Collection",
-    role: "Editorial Model",
-    location: "Bengaluru",
-    budget: "₹25K – ₹40K",
-    deadline: "9 days left",
-    match: 82,
-  },
+type ApplicationRecord = {
+  id?: string | number;
+  status?: string | null;
+  appliedAt?: string | Date | null;
+  createdAt?: string | Date | null;
+  applied_at?: string | Date | null;
+  created_at?: string | Date | null;
+  job?: Record<string, unknown> | null;
+  castingCall?: Record<string, unknown> | null;
+};
+
+type DashboardStat = {
+  value: number;
+  label: string;
+};
+
+const EMPTY_STATS: DashboardStat[] = [
+  { value: 0, label: "Applications" },
+  { value: 0, label: "Profile Views" },
+  { value: 0, label: "Shortlisted" },
+  { value: 0, label: "Messages" },
 ];
 
-const ACTIVITIES: Activity[] = [
-  {
-    id: 1,
-    type: "SHORTLISTED",
-    title: "The Last Summer",
-    company: "Northstar Studios",
-    time: "Today · 10:42 AM",
-  },
-  {
-    id: 2,
-    type: "APPLICATION",
-    title: "Summer Campaign",
-    company: "Framehouse Media",
-    time: "Yesterday · 4:18 PM",
-  },
-  {
-    id: 3,
-    type: "PROFILE VIEW",
-    title: "Your profile was viewed",
-    company: "Blue Door Productions",
-    time: "Yesterday · 1:06 PM",
-  },
-  {
-    id: 4,
-    type: "APPLICATION",
-    title: "Between Two Worlds",
-    company: "Indie Motion",
-    time: "3 days ago",
-  },
-];
+const asRecord = (value: unknown): Record<string, unknown> | null =>
+  value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
 
-const STATS = [
-  { value: 14, label: "Applications" },
-  { value: 7, label: "Profile Views" },
-  { value: 3, label: "Shortlisted" },
-  { value: 2, label: "Messages" },
-];
+const getString = (record: Record<string, unknown> | null, ...keys: string[]) => {
+  if (!record) return "";
+  for (const key of keys) {
+    const value = record[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+    if (typeof value === "number") return String(value);
+  }
+  return "";
+};
+
+const unwrapArray = (payload: unknown, keys: string[] = []): unknown[] => {
+  if (Array.isArray(payload)) return payload;
+  const record = asRecord(payload);
+  if (!record) return [];
+  for (const key of ["data", ...keys]) {
+    if (Array.isArray(record[key])) return record[key] as unknown[];
+  }
+  return [];
+};
+
+const formatRelativeDate = (rawDate: unknown): string => {
+  if (typeof rawDate !== "string" && !(rawDate instanceof Date)) return "Date unavailable";
+  const date = rawDate instanceof Date ? rawDate : new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  const diff = Date.now() - date.getTime();
+  if (diff < 60_000) return "Just now";
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)} min ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)} hr ago`;
+  if (diff < 172_800_000) return "Yesterday";
+  return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+};
+
+const formatDeadline = (rawDate: unknown): string => {
+  if (typeof rawDate !== "string" && !(rawDate instanceof Date)) return "Deadline not specified";
+  const date = rawDate instanceof Date ? rawDate : new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return "Deadline not specified";
+  const days = Math.ceil((date.getTime() - Date.now()) / 86_400_000);
+  if (days < 0) return "Deadline passed";
+  if (days === 0) return "Closes today";
+  return `${days} day${days === 1 ? "" : "s"} left`;
+};
 
 export default function TalentDashboard() {
   const [darkMode, setDarkMode] = useState(false);
-  const [profileStrength] = useState(82);
+  const [profileStrength, setProfileStrength] = useState(0);
+  const [castingCalls, setCastingCalls] = useState<CastingCall[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [recommendedCategories, setRecommendedCategories] = useState<Array<{ number: string; title: string; subtitle: string }>>([]);
+  const [callsLoading, setCallsLoading] = useState(true);
+  const [activityLoading, setActivityLoading] = useState(true);
+  const [dashboardStats, setDashboardStats] =
+    useState<DashboardStat[]>(EMPTY_STATS);
   const [animatedStats, setAnimatedStats] = useState([0, 0, 0, 0]);
-  const [userName, setUserName] = useState("Aahana");
+  const [userName, setUserName] = useState("there");
 
   const statsRef = useRef<HTMLDivElement>(null);
 
@@ -136,42 +133,191 @@ export default function TalentDashboard() {
 
   /*
    * ---------------------------------------------------------
-   * USER NAME
-   * Tries to read the logged-in user's name from localStorage.
-   * Falls back to Aahana.
+   * AUTHENTICATED USER PROFILE
+   * Loads the signed-in user from the backend via auth.ts.
    * ---------------------------------------------------------
    */
   useEffect(() => {
-    try {
-      const possibleKeys = [
-        "user",
-        "currentUser",
-        "loggedInUser",
-        "indcastingUser",
-      ];
+    let cancelled = false;
 
-      for (const key of possibleKeys) {
-        const saved = localStorage.getItem(key);
+    async function loadCurrentUser() {
+      try {
+        const user = await getCurrentUser();
 
-        if (!saved) continue;
+        if (cancelled) return;
 
-        try {
-          const parsed = JSON.parse(saved);
+        if (user?.name?.trim()) {
+          setUserName(user.name.trim().split(/\s+/)[0]);
+        } else {
+          setUserName("there");
+        }
 
-          if (parsed?.name) {
-            setUserName(parsed.name.split(" ")[0]);
-            break;
-          }
-        } catch {
-          if (saved.trim()) {
-            setUserName(saved.trim().split(" ")[0]);
-            break;
-          }
+        // Calculate completion only from fields actually returned by the profile API.
+        const profile = asRecord(user as unknown);
+        const profileFields = [
+          ["name"], ["email"], ["phone", "phoneNumber", "phone_number"],
+          ["bio", "about"], ["location", "city"], ["gender"],
+          ["experience", "experienceLevel", "experience_level"],
+          ["skills", "categories", "talentType", "talent_type"],
+          ["profileImage", "profilePicture", "avatar", "profile_image"],
+          ["portfolio", "portfolioUrl", "portfolio_url", "portfolioItems"],
+        ];
+        const completed = profileFields.filter((keys) => {
+          const value = getString(profile, ...keys);
+          if (value) return true;
+          return keys.some((key) => {
+            const candidate = profile?.[key];
+            return Array.isArray(candidate) && candidate.length > 0;
+          });
+        }).length;
+        setProfileStrength(Math.round((completed / profileFields.length) * 100));
+      } catch (error) {
+        console.error("Failed to load talent dashboard profile:", error);
+
+        if (!cancelled) {
+          setUserName("there");
         }
       }
-    } catch {
-      // Keep fallback name.
     }
+
+    loadCurrentUser();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /*
+   * ---------------------------------------------------------
+   * LIVE DASHBOARD DATA
+   * Uses the authenticated API and keeps cookie-based auth.
+   * ---------------------------------------------------------
+   */
+  useEffect(() => {
+    let cancelled = false;
+    const apiBaseUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000").replace(/\/$/, "");
+
+    async function loadDashboardData() {
+      const request = async (path: string) => {
+        const response = await fetch(`${apiBaseUrl}${path}`, {
+          method: "GET",
+          credentials: "include",
+          headers: { Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error(`${path} request failed: ${response.status}`);
+        return response.json() as Promise<unknown>;
+      };
+
+      const [applicationResult, castingResult] = await Promise.allSettled([
+        request("/applications/mine"),
+        request("/casting-calls"),
+      ]);
+
+      let applications: ApplicationRecord[] = [];
+      if (applicationResult.status === "fulfilled") {
+        applications = unwrapArray(applicationResult.value, ["applications", "items"]) as ApplicationRecord[];
+      } else {
+        console.error("Failed to load talent applications:", applicationResult.reason);
+      }
+
+      if (castingResult.status === "fulfilled") {
+        const calls = unwrapArray(castingResult.value, ["castingCalls", "casting_calls", "items", "posts"])
+          .map((item): CastingCall | null => {
+            const record = asRecord(item);
+            if (!record) return null;
+            const id = record.id ?? record.jobId ?? record.job_id;
+            if (id === undefined || id === null) return null;
+            const category = getString(record, "category", "type", "castingType", "casting_type") || "CASTING CALL";
+            const title = getString(record, "title", "name", "projectTitle", "project_title") || "Untitled opportunity";
+            const role = getString(record, "role", "roleName", "role_name", "description") || category;
+            const location = getString(record, "location", "city", "shootLocation", "shoot_location") || "Location not specified";
+            const rawBudget = getString(record, "budget", "pay", "rate", "compensation", "salary");
+            const budget = rawBudget ? (/₹|\$|£|€/.test(rawBudget) ? rawBudget : `₹${rawBudget}`) : "Budget not specified";
+            const deadlineRaw = record.deadline ?? record.applicationDeadline ?? record.application_deadline ?? record.endDate ?? record.end_date;
+            return { id: id as string | number, category: category.toUpperCase(), title, role, location, budget, deadline: formatDeadline(deadlineRaw), match: null };
+          })
+          .filter((call): call is CastingCall => call !== null)
+          .slice(0, 4);
+        if (!cancelled) setCastingCalls(calls);
+      } else {
+        console.error("Failed to load casting calls:", castingResult.reason);
+        if (!cancelled) setCastingCalls([]);
+      }
+
+      const now = new Date();
+      const isThisMonth = (application: ApplicationRecord) => {
+        const rawDate = application.appliedAt ?? application.createdAt ?? application.applied_at ?? application.created_at;
+        if (!rawDate) return false;
+        const date = rawDate instanceof Date ? rawDate : new Date(rawDate);
+        return !Number.isNaN(date.getTime()) && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      };
+      const monthlyApplications = applications.filter(isThisMonth);
+      const monthlyShortlisted = monthlyApplications.filter((application) =>
+        String(application.status ?? "").trim().toLowerCase() === "shortlisted"
+      );
+
+      const sortedApplications = [...applications].sort((a, b) => {
+        const dateOf = (item: ApplicationRecord) => new Date((item.appliedAt ?? item.createdAt ?? item.applied_at ?? item.created_at ?? 0) as string | number).getTime();
+        return dateOf(b) - dateOf(a);
+      });
+      const recentActivities: Activity[] = sortedApplications.slice(0, 4).map((application, index) => {
+        const job = asRecord(application.job) ?? asRecord(application.castingCall);
+        const status = String(application.status ?? "Applied").trim();
+        const isShortlisted = status.toLowerCase() === "shortlisted";
+        const date = application.appliedAt ?? application.createdAt ?? application.applied_at ?? application.created_at;
+        return {
+          id: application.id ?? `${index}-${String(date ?? "application")}`,
+          type: isShortlisted ? "SHORTLISTED" : "APPLICATION",
+          title: getString(job, "title", "name", "projectTitle", "project_title") || "Casting application",
+          company: getString(job, "companyName", "company_name", "company", "productionHouse", "production_house") || "Casting team",
+          time: formatRelativeDate(date),
+        };
+      });
+
+      const categoryCounts = new Map<string, number>();
+      const categorySubtitles = new Map<string, string>();
+      const sourceCalls = castingResult.status === "fulfilled"
+        ? unwrapArray(castingResult.value, ["castingCalls", "casting_calls", "items", "posts"])
+        : [];
+      sourceCalls.forEach((item) => {
+        const record = asRecord(item);
+        const category = getString(record, "category", "type", "castingType", "casting_type");
+        if (!category) return;
+        categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+        const subtitle = getString(record, "genre", "industry", "subCategory", "sub_category", "role") || "Open opportunities";
+        if (!categorySubtitles.has(category)) categorySubtitles.set(category, subtitle);
+      });
+      const recommendations = [...categoryCounts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([title], index) => ({ number: String(index + 1).padStart(2, "0"), title, subtitle: categorySubtitles.get(title) || "Open opportunities" }));
+
+      if (cancelled) return;
+      setDashboardStats([
+        { value: monthlyApplications.length, label: "Applications" },
+        { value: 0, label: "Profile Views" },
+        { value: monthlyShortlisted.length, label: "Shortlisted" },
+        { value: 0, label: "Messages" },
+      ]);
+      setActivities(recentActivities);
+      setRecommendedCategories(recommendations);
+      setCallsLoading(false);
+      setActivityLoading(false);
+    }
+
+    loadDashboardData().catch((error) => {
+      console.error("Failed to load talent dashboard data:", error);
+      if (!cancelled) {
+        setDashboardStats(EMPTY_STATS);
+        setCastingCalls([]);
+        setActivities([]);
+        setRecommendedCategories([]);
+        setCallsLoading(false);
+        setActivityLoading(false);
+      }
+    });
+
+    return () => { cancelled = true; };
   }, []);
 
   /*
@@ -200,7 +346,7 @@ export default function TalentDashboard() {
           const eased = 1 - Math.pow(1 - progress, 3);
 
           setAnimatedStats(
-            STATS.map((stat) => Math.round(stat.value * eased))
+            dashboardStats.map((stat) => Math.round(stat.value * eased))
           );
 
           if (progress < 1) {
@@ -217,7 +363,7 @@ export default function TalentDashboard() {
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, []);
+  }, [dashboardStats]);
 
   /*
    * ---------------------------------------------------------
@@ -468,7 +614,7 @@ export default function TalentDashboard() {
 
         .td-progress-fill {
           height: 100%;
-          width: ${profileStrength}%;
+          width: 100%;
           background: var(--td-gold);
           transform-origin: left;
           animation: progressReveal 1.2s 0.5s cubic-bezier(.22,1,.36,1) both;
@@ -1334,7 +1480,7 @@ export default function TalentDashboard() {
                 </div>
 
                 <div className="td-progress">
-                  <div className="td-progress-fill" />
+                  <div className="td-progress-fill" style={{ width: `${profileStrength}%` }} />
                 </div>
 
                 <Link
@@ -1363,7 +1509,10 @@ export default function TalentDashboard() {
                 </div>
 
                 <span className="td-section-note">
-                  August 2026
+                  {new Date().toLocaleDateString("en-IN", {
+                    month: "long",
+                    year: "numeric",
+                  })}
                 </span>
               </div>
 
@@ -1371,7 +1520,7 @@ export default function TalentDashboard() {
                 className="td-stats"
                 ref={statsRef}
               >
-                {STATS.map((stat, index) => (
+                {dashboardStats.map((stat, index) => (
                   <div
                     className="td-stat"
                     key={stat.label}
@@ -1415,7 +1564,7 @@ export default function TalentDashboard() {
               </div>
 
               <div className="td-casting-list">
-                {CASTING_CALLS.map((call) => (
+                {castingCalls.map((call) => (
                   <Link
                     href={`/post/${call.id}`}
                     className="td-casting-card"
@@ -1485,11 +1634,11 @@ export default function TalentDashboard() {
 
                     <div className="td-card-match">
                       <span className="td-match-number">
-                        {call.match}%
+                        {call.match === null ? "OPEN" : `${call.match}%`}
                       </span>
 
                       <span className="td-match-label">
-                        Profile match
+                        {call.match === null ? "Opportunity" : "Profile match"}
                       </span>
 
                       <span
@@ -1501,6 +1650,10 @@ export default function TalentDashboard() {
                     </div>
                   </Link>
                 ))}
+                {!callsLoading && castingCalls.length === 0 && (
+                  <p className="td-section-note">No active casting calls are available right now.</p>
+                )}
+                {callsLoading && <p className="td-section-note">Loading current opportunities…</p>}
               </div>
             </section>
 
@@ -1522,13 +1675,7 @@ export default function TalentDashboard() {
               </div>
 
               <div className="td-recommendations">
-                {[
-                  ["01", "Actor", "Film & OTT"],
-                  ["02", "Model", "Fashion & Commercial"],
-                  ["03", "Voice Artist", "Audio & Digital"],
-                  ["04", "Commercial", "Brand Campaigns"],
-                  ["05", "OTT", "Series & Streaming"],
-                ].map(([number, title, subtitle]) => (
+                {recommendedCategories.map(({ number, title, subtitle }) => (
                   <Link
                     href="/post"
                     className="td-recommendation"
@@ -1547,6 +1694,9 @@ export default function TalentDashboard() {
                     </span>
                   </Link>
                 ))}
+                {recommendedCategories.length === 0 && (
+                  <p className="td-section-note">Recommendations will appear when active casting calls are available.</p>
+                )}
               </div>
             </section>
 
@@ -1573,7 +1723,7 @@ export default function TalentDashboard() {
                   </div>
 
                   <div className="td-activity">
-                    {ACTIVITIES.map((activity, index) => (
+                    {activities.map((activity, index) => (
                       <div
                         className="td-activity-item"
                         key={activity.id}
@@ -1603,6 +1753,10 @@ export default function TalentDashboard() {
                         </span>
                       </div>
                     ))}
+                    {!activityLoading && activities.length === 0 && (
+                      <p className="td-section-note">Your application activity will appear here after you apply to a casting call.</p>
+                    )}
+                    {activityLoading && <p className="td-section-note">Loading your recent activity…</p>}
                   </div>
                 </div>
 
